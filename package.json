@@ -1,0 +1,30 @@
+{
+  "name": "tree-kit",
+  "version": "0.0.1",
+  "description": "Tree utilities.",
+  "main": "lib/tree.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expect.js": "~0.3.1",
+    "jshint": "~2.4.4",
+    "mocha": "~1.17.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cronvel/tree-kit.git"
+  },
+  "keywords": [
+    "tree", "extend", "mask"
+  ],
+  "author": "Cédric Ronvel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cronvel/tree-kit/issues"
+  }
+}
