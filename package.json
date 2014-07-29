@@ -1,6 +1,6 @@
 {
   "name": "tree-kit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tree utilities.",
   "main": "lib/tree.js",
   "directories": {
@@ -20,7 +20,9 @@
     "url": "https://github.com/cronvel/tree-kit.git"
   },
   "keywords": [
-    "tree", "extend", "mask"
+    "tree",
+    "extend",
+    "mask"
   ],
   "author": "Cédric Ronvel",
   "license": "MIT",
