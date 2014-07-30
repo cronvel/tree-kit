@@ -1,15 +1,3 @@
-
-
-
-
- { filesArray: 
-   [ { name: 'background.png', size: '97856' },
-     { name: 'header.png', size: '44193' },
-     { name: 'footer.png', size: '36411' } ] } 
-
-
-
-
 # TOC
    - [extend()](#extend)
    - [Masks](#masks)
@@ -244,6 +232,97 @@ expect( typeof e.embed1.hello ).to.equal( 'function' ) ;
 expect( typeof e.embed2.world ).to.equal( 'function' ) ;
 ```
 
+with 'nofunc' option should skip function.
+
+```js
+var e , o , proto ;
+
+proto = {
+	proto1: 'proto1' ,
+	proto2: 'proto2' ,
+	hello: function() { console.log( "Hello..." ) ; }
+} ;
+
+o = Object.create( proto ) ;
+o.own1 = 'own1' ;
+o.world = function() { console.log( "world!!!" ) ; } ;
+o.own2 = 'own2' ;
+
+// default behaviour
+e = tree.extend( { nofunc: true } , null , o ) ;
+expect( e ).not.to.be( o ) ;
+expect( e ).to.eql( { own1: 'own1' , own2: 'own2' , proto1: 'proto1' , proto2: 'proto2' } ) ;
+
+// with 'own'
+e = tree.extend( { nofunc: true , own: true } , null , o ) ;
+expect( e ).not.to.be( o ) ;
+expect( e ).to.eql( { own1: 'own1' , own2: 'own2' } ) ;
+
+// with 'proto', function exists if there are in the prototype
+e = tree.extend( { nofunc: true , proto: true } , null , o ) ;
+expect( e ).not.to.be( o ) ;
+expect( e.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
+expect( e ).to.eql( { own1: 'own1' , own2: 'own2' } ) ;
+expect( e.proto1 ).to.be( 'proto1' ) ;
+expect( e.proto2 ).to.be( 'proto2' ) ;
+expect( typeof e.hello ).to.equal( 'function' ) ;
+```
+
+with 'move' option should move source properties to target properties, i.e. delete them form the source.
+
+```js
+var e , o ;
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE'
+} ;
+
+o = {
+	three: 3 ,
+	four: '4'
+} ;
+
+tree.extend( { move: true } , e , o ) ;
+expect( e ).to.eql( { one: '1' , two: 2 , three: 3 , four: '4' } ) ;
+expect( o ).to.eql( {} ) ;
+```
+
+with 'inherit' option should inherit rather than extend: each source property create a new Object or mutate existing Object into the related target property, using itself as the prototype.
+
+```js
+var e , o ;
+
+o = {
+	three: 3 ,
+	four: '4'
+} ;
+
+e = {} ;
+
+tree.extend( { inherit: true } , e , o ) ;
+
+expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
+expect( e ).to.eql( {} ) ;
+expect( e.three ).to.be( 3 ) ;
+expect( e.four ).to.be( '4' ) ;
+
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE'
+} ;
+
+tree.extend( { inherit: true } , e , o ) ;
+
+expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
+expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' } ) ;
+expect( e.three ).to.be( 'THREE' ) ;
+expect( e.four ).to.be( '4' ) ;
+```
+
 <a name="masks"></a>
 # Masks
 should apply a simple mask tree to the input tree.
@@ -342,7 +421,8 @@ expect( output ).to.eql( {
 		}
 	]
 } ) ;
-console.log( "\n\n\n\n" , output , "\n\n\n\n" ) ;
+
+//console.log( "\n\n\n\n" , output , "\n\n\n\n" ) ;
 ```
 
 should apply a mask with a mask's leaf callback to the input tree.
