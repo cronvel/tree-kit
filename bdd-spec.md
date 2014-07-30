@@ -296,7 +296,11 @@ var e , o ;
 
 o = {
 	three: 3 ,
-	four: '4'
+	four: '4' ,
+	subtree: {
+		five: 'FIVE' ,
+		six: 6
+	}
 } ;
 
 e = {} ;
@@ -307,12 +311,13 @@ expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
 expect( e ).to.eql( {} ) ;
 expect( e.three ).to.be( 3 ) ;
 expect( e.four ).to.be( '4' ) ;
+expect( e.subtree ).to.equal( o.subtree ) ;
 
 
 e = {
 	one: '1' ,
 	two: 2 ,
-	three: 'THREE'
+	three: 'THREE' ,
 } ;
 
 tree.extend( { inherit: true } , e , o ) ;
@@ -321,6 +326,94 @@ expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
 expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' } ) ;
 expect( e.three ).to.be( 'THREE' ) ;
 expect( e.four ).to.be( '4' ) ;
+expect( e.subtree ).to.equal( o.subtree ) ;	// jshint ignore:line
+expect( e.subtree ).to.eql( { five: 'FIVE' , six: 6 } ) ;
+
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE' ,
+	subtree: {
+		six: 'SIX' ,
+		seven: 7
+	}
+} ;
+
+tree.extend( { inherit: true } , e , o ) ;
+
+expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
+expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , subtree: { six: 'SIX' , seven: 7 } } ) ;
+expect( e.three ).to.be( 'THREE' ) ;
+expect( e.four ).to.be( '4' ) ;
+expect( e.subtree ).to.eql( { six: 'SIX' , seven: 7 } ) ;
+expect( e.subtree.five ).to.equal( undefined ) ;
+```
+
+with 'inherit' and 'deep' option should inherit recursively.
+
+```js
+var e , o ;
+
+o = {
+	three: 3 ,
+	four: '4' ,
+	subtree: {
+		five: 'FIVE' ,
+		six: 6
+	}
+} ;
+
+e = {} ;
+
+tree.extend( { inherit: true , deep: true } , e , o ) ;
+
+expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
+expect( e ).to.eql( { subtree: {} } ) ;
+expect( e.three ).to.be( 3 ) ;
+expect( e.four ).to.be( '4' ) ;
+expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
+expect( e.subtree.five ).to.equal( 'FIVE' ) ;
+expect( e.subtree.six ).to.equal( 6 ) ;
+
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE' ,
+} ;
+
+tree.extend( { inherit: true , deep: true } , e , o ) ;
+
+expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
+expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , subtree: {} } ) ;
+expect( e.three ).to.be( 'THREE' ) ;
+expect( e.four ).to.be( '4' ) ;
+expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
+expect( e.subtree ).to.eql( {} ) ;
+expect( e.subtree.five ).to.equal( 'FIVE' ) ;
+expect( e.subtree.six ).to.equal( 6 ) ;
+
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE' ,
+	subtree: {
+		six: 'SIX' ,
+		seven: 7
+	}
+} ;
+
+tree.extend( { inherit: true , deep: true } , e , o ) ;
+
+expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
+expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , subtree: { six: 'SIX' , seven: 7 } } ) ;
+expect( e.three ).to.be( 'THREE' ) ;
+expect( e.four ).to.be( '4' ) ;
+expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
+expect( e.subtree ).to.eql( { six: 'SIX' , seven: 7 } ) ;
+expect( e.subtree.five ).to.equal( 'FIVE' ) ;
 ```
 
 <a name="masks"></a>
