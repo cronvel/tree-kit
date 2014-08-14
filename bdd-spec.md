@@ -268,6 +268,27 @@ expect( e.proto2 ).to.be( 'proto2' ) ;
 expect( typeof e.hello ).to.equal( 'function' ) ;
 ```
 
+with 'preserve' option should not overwrite existing properties in the target.
+
+```js
+var e , o ;
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE'
+} ;
+
+o = {
+	three: 3 ,
+	four: '4'
+} ;
+
+tree.extend( { preserve: true } , e , o ) ;
+expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
+expect( o ).to.eql( { three: 3 , four: '4' } ) ;
+```
+
 with 'move' option should move source properties to target properties, i.e. delete them form the source.
 
 ```js
@@ -287,6 +308,27 @@ o = {
 tree.extend( { move: true } , e , o ) ;
 expect( e ).to.eql( { one: '1' , two: 2 , three: 3 , four: '4' } ) ;
 expect( o ).to.eql( {} ) ;
+```
+
+with 'preserve' and 'move' option should not overwrite existing properties in the target, so it should not move/delete them from the source object.
+
+```js
+var e , o ;
+
+e = {
+	one: '1' ,
+	two: 2 ,
+	three: 'THREE'
+} ;
+
+o = {
+	three: 3 ,
+	four: '4'
+} ;
+
+tree.extend( { preserve: true , move: true } , e , o ) ;
+expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
+expect( o ).to.eql( { three: 3 } ) ;
 ```
 
 with 'inherit' option should inherit rather than extend: each source property create a new Object or mutate existing Object into the related target property, using itself as the prototype.

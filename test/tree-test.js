@@ -384,6 +384,26 @@ describe( "extend()" , function() {
 		expect( typeof e.hello ).to.equal( 'function' ) ;
 	} ) ;
 	
+	it( "with 'preserve' option should not overwrite existing properties in the target" , function() {
+		
+		var e , o ;
+		
+		e = {
+			one: '1' ,
+			two: 2 ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			three: 3 ,
+			four: '4'
+		} ;
+		
+		tree.extend( { preserve: true } , e , o ) ;
+		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
+		expect( o ).to.eql( { three: 3 , four: '4' } ) ;
+	} ) ;
+	
 	it( "with 'move' option should move source properties to target properties, i.e. delete them form the source" , function() {
 		
 		var e , o ;
@@ -402,6 +422,26 @@ describe( "extend()" , function() {
 		tree.extend( { move: true } , e , o ) ;
 		expect( e ).to.eql( { one: '1' , two: 2 , three: 3 , four: '4' } ) ;
 		expect( o ).to.eql( {} ) ;
+	} ) ;
+	
+	it( "with 'preserve' and 'move' option should not overwrite existing properties in the target, so it should not move/delete them from the source object" , function() {
+		
+		var e , o ;
+		
+		e = {
+			one: '1' ,
+			two: 2 ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			three: 3 ,
+			four: '4'
+		} ;
+		
+		tree.extend( { preserve: true , move: true } , e , o ) ;
+		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
+		expect( o ).to.eql( { three: 3 } ) ;
 	} ) ;
 	
 	it( "with 'inherit' option should inherit rather than extend: each source property create a new Object or mutate existing Object into the related target property, using itself as the prototype" , function() {
