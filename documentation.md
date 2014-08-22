@@ -49,7 +49,7 @@ a reference of the original one).
 
 With the *deep* option, a deep copy is performed, so nested object are cloned too.
 
-The *own* option clone only owned properties.
+The *own* option clone only owned properties from the sources, properties that are part of the source's prototype would not be copied/cloned.
 
 You can also clone an object as close as it is possible to do in javascript by doing this:
 ```js
