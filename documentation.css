@@ -1,0 +1,40 @@
+
+._0_deprecated {
+    border-color: #d60027;
+    }
+    
+._1_experimental {
+    border-color: #ec5315;
+    }
+
+._2_unstable {
+	border-color: #ffd700;
+}
+
+._3_stable {
+	border-color: #aec516;
+}
+
+._4_frozen {
+    border-color: #009431;
+    }
+
+._5_locked {
+	border-color: #0084b6;
+}    
+
+._stability {
+	-moz-border-bottom-colors: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
+	border-color: #e8e8e8;
+	border-style: solid;
+	border-width: 1px 1px 1px 6px;
+	margin: -0.5em 0 1.1em;
+	overflow-x: auto;
+	padding: 1em 1.6em 1em 1.2em;
+	vertical-align: top;
+	font-family: monospace;
+	line-height: 1.5438em;
+}
