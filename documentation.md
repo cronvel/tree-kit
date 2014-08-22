@@ -2,7 +2,7 @@
 
 # Tree Kit
 
-This lib is a toolbox that provide functions to deal with nested `Object` structure.
+This lib is a toolbox that provide functions to operate with nested `Object` structure.
 It features the classic `.extend()` method, but provide a whole bunch of options that the others library lack.
 
 * License: MIT
@@ -60,6 +60,53 @@ Also please note that:
 * design pattern using private members cannot be truly cloned since those private members are hidden in an inaccessible closure's scope
 
 Mixing *inherit* and *deep* provides a nice multi-level inheritance.
+
+
+
+# .diff( left , right , [options] )
+
+* left `Object` the left-hand side object structure
+* right `Object` the right-hand side object structure
+* options `Object` containing options, it supports:
+	* path `string` the initial path, default: empty string
+	* pathSeparator `string` the path separator, default: '.'
+
+This tool reports diff between a left-hand side and right-hand side object structure.
+It returns an object, each key is a path where a difference is reported, the value being an object containing (again) the path
+and a human-readable message.
+
+See this example:
+```js
+var left = {
+	a: 'a',
+	b: 2,
+	c: 'three',
+	sub: {
+		e: 5,
+		f: 'six',
+	}
+} ;
+
+var right = {
+	b: 2,
+	c: 3,
+	d: 'dee',
+	sub: {
+		e: 5,
+		f: 6,
+	}
+} ;
+
+console.log( tree.diff( a , b ) ) ;
+```
+It will output:
+```js
+{ '.a': { path: '.a', message: 'does not exist in right-hand side' },
+  '.c': { path: '.c', message: 'different typeof: string - number' },
+  '.sub.f': { path: '.sub.f', message: 'different typeof: string - number' },
+  '.d': { path: '.d', message: 'does not exist in left-hand side' } }
+```
+
 
 
 

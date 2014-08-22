@@ -26,6 +26,7 @@
     "prototype",
     "inherit",
     "deep",
+    "diff",
     "mask"
   ],
   "author": "Cédric Ronvel",

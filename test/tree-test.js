@@ -40,7 +40,7 @@ var expect = require( 'expect.js' ) ;
 
 
 // The input tree used in most tests
-input = {
+var input = {
 	'undefined' : undefined ,
 	'null' : null ,
 	'bool' : true ,
@@ -55,8 +55,8 @@ input = {
 	object : {} ,
 	range : 47 ,
 	color : 'blue' ,
-	note : 'sol' ,  
-	size : 37 ,     
+	note : 'sol' ,
+	size : 37 ,
 	useless : 'useless' ,
 	attachement : {
 		filename : 'preview.png' ,
@@ -154,16 +154,14 @@ describe( "extend()" , function() {
 	} ) ;
 	
 	it( "should extend an empty Object with a deep Object performing a SHALLOW copy, the result should be equal to the deep Object, nested object MUST be equal AND identical" , function() {
-		var copy ;
-		
-		copy = tree.extend( null , {} , input.subtree ) ;
+		var copy = tree.extend( null , {} , input.subtree ) ;
 		expect( copy ).to.eql( input.subtree ) ;
 		expect( copy ).not.to.equal( input.subtree ) ;
 		expect( copy.subtree2 ).to.equal( input.subtree.subtree2 ) ;
 	} ) ;
 		
 	it( "with the 'deep' option should extend an empty Object with a deep Object performing a DEEP copy, the result should be equal to the deep Object, nested object MUST be equal BUT NOT identical" , function() {
-		copy = tree.extend( { deep: true } , {} , input.subtree ) ;
+		var copy = tree.extend( { deep: true } , {} , input.subtree ) ;
 		expect( copy ).to.eql( input.subtree ) ;
 		expect( copy ).not.to.equal( input.subtree ) ;
 		expect( copy.subtree2 ).not.to.equal( input.subtree.subtree2 ) ;
@@ -574,12 +572,70 @@ describe( "extend()" , function() {
 
 
 
-/*
 describe( "Diff" , function() {
 	
-	it( "Test needed there!" ) ;
+	it( "should return an array of differences for two objects without nested object" , function() {
+		var a = {
+			a: 'a',
+			b: 2,
+			c: 'three'
+		} ;
+		
+		var b = {
+			b: 2,
+			c: 3,
+			d: 'dee'
+		} ;
+		
+		var diff = tree.diff( a , b ) ;
+		
+		//console.log( diff ) ;
+		expect( diff ).not.to.be( null ) ;
+		expect( diff ).to.only.have.keys( '.a', '.c', '.d' ) ;
+	} ) ;
+	
+	it( "should return an array of differences for two objects with nested objects" , function() {
+		var a = {
+			a: 'a',
+			b: 2,
+			c: 'three',
+			sub: {
+				e: 5,
+				f: 'six',
+				subsub: {
+					g: 'gee',
+					h: 'h'
+				}
+			},
+			suba: {
+				j: 'djay'
+			}
+		} ;
+		
+		var b = {
+			b: 2,
+			c: 3,
+			d: 'dee',
+			sub: {
+				e: 5,
+				f: 6,
+				subsub: {
+					g: 'gee',
+					i: 'I'
+				}
+			},
+			subb: {
+				k: 'k'
+			}
+		} ;
+		
+		var diff = tree.diff( a , b ) ;
+		
+		//console.log( diff ) ;
+		expect( diff ).not.to.be( null ) ;
+		expect( diff ).to.only.have.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
+	} ) ;
 } ) ;
-*/
 
 
 

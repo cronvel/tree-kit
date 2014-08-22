@@ -1,5 +1,6 @@
 # TOC
    - [extend()](#extend)
+   - [Diff](#diff)
    - [Masks](#masks)
    - [Inverse masks](#inverse-masks)
 <a name=""></a>
@@ -30,9 +31,7 @@ expect( tree.extend( { deep: true } , copy , input.subtree.subtree2 ) ).to.eql( 
 should extend an empty Object with a deep Object performing a SHALLOW copy, the result should be equal to the deep Object, nested object MUST be equal AND identical.
 
 ```js
-var copy ;
-
-copy = tree.extend( null , {} , input.subtree ) ;
+var copy = tree.extend( null , {} , input.subtree ) ;
 expect( copy ).to.eql( input.subtree ) ;
 expect( copy ).not.to.equal( input.subtree ) ;
 expect( copy.subtree2 ).to.equal( input.subtree.subtree2 ) ;
@@ -41,7 +40,7 @@ expect( copy.subtree2 ).to.equal( input.subtree.subtree2 ) ;
 with the 'deep' option should extend an empty Object with a deep Object performing a DEEP copy, the result should be equal to the deep Object, nested object MUST be equal BUT NOT identical.
 
 ```js
-copy = tree.extend( { deep: true } , {} , input.subtree ) ;
+var copy = tree.extend( { deep: true } , {} , input.subtree ) ;
 expect( copy ).to.eql( input.subtree ) ;
 expect( copy ).not.to.equal( input.subtree ) ;
 expect( copy.subtree2 ).not.to.equal( input.subtree.subtree2 ) ;
@@ -456,6 +455,74 @@ expect( e.four ).to.be( '4' ) ;
 expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
 expect( e.subtree ).to.eql( { six: 'SIX' , seven: 7 } ) ;
 expect( e.subtree.five ).to.equal( 'FIVE' ) ;
+```
+
+<a name="diff"></a>
+# Diff
+should return an array of differences for two objects without nested object.
+
+```js
+var a = {
+	a: 'a',
+	b: 2,
+	c: 'three'
+} ;
+
+var b = {
+	b: 2,
+	c: 3,
+	d: 'dee'
+} ;
+
+var diff = tree.diff( a , b ) ;
+
+//console.log( diff ) ;
+expect( diff ).not.to.be( null ) ;
+expect( diff ).to.only.have.keys( '.a', '.c', '.d' ) ;
+```
+
+should return an array of differences for two objects with nested objects.
+
+```js
+var a = {
+	a: 'a',
+	b: 2,
+	c: 'three',
+	sub: {
+		e: 5,
+		f: 'six',
+		subsub: {
+			g: 'gee',
+			h: 'h'
+		}
+	},
+	suba: {
+		j: 'djay'
+	}
+} ;
+
+var b = {
+	b: 2,
+	c: 3,
+	d: 'dee',
+	sub: {
+		e: 5,
+		f: 6,
+		subsub: {
+			g: 'gee',
+			i: 'I'
+		}
+	},
+	subb: {
+		k: 'k'
+	}
+} ;
+
+var diff = tree.diff( a , b ) ;
+
+//console.log( diff ) ;
+expect( diff ).not.to.be( null ) ;
+expect( diff ).to.only.have.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
 ```
 
 <a name="masks"></a>
