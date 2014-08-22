@@ -23,7 +23,7 @@ Use Node Package Manager:
 
 ## .extend( options , target , source1 , [source2] , [...] )
 
-<pre style="border: 1px solid #aec516; border-left-width:6px;">Stability: 3 - Stable</pre>
+<!-- <pre style="border: 1px solid #aec516; border-left-width:6px;">Stability: 3 - Stable</pre> -->
 
 * options `Object` extend options, it supports the properties:
 	* own `boolean` only copy owned properties from the sources
