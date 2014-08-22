@@ -2,15 +2,64 @@
 
 # Tree Kit
 
-Tree utilities (extend, mask, etc...)
+This lib is a toolbox that provide functions to deal with nested `Object` structure.
+It features the classic `.extend()` method, but provide a whole bunch of options that the others library lack.
 
 * License: MIT
-* Current status: alpha/unstable
+* Current status: beta
 * Platform: Node.js only (browser support is planned)
 
 
 
-Documentation will be written soon.
+# Install
+
+Use Node Package Manager:
+
+    npm install tree-kit
+
+
+
+# .extend( options , target , source1 , [source2] , [...] )
+
+* options `Object` extend options, it supports the properties:
+	* own `boolean` only copy owned properties from the sources
+	* deep `boolean` perform a deep (recursive) extend
+	* move `boolean` move properties from the sources object to the target object (delete properties from the sources object)
+	* preserve `boolean` existing properties in the target object will not be overwritten
+	* nofunc `boolean` skip properties that are functions
+	* proto `boolean` alter the target's prototype so that it matches the source's prototype.
+	  It forces option 'own'. Specifying multiple sources does not make sens here.
+	* inherit `boolean` make the target inherit from the source (the target's prototype will be the source itself, not its prototype).
+	  It forces option 'own' and disable 'proto'. Specifying multiple sources does not make sens here.
+	* skipRoot `boolean` prevent the prototype of the target **root** object from mutation.
+	  Only nested objects' prototype will be mutated.
+* target `Object` the target of the extend, properties will be copied to this object
+* source `Object` the source of the extend, properties will be copied from this object
+
+This is a full-featured *extend* of an object with one or more source object.
+
+It is easily translated from jQuery-like *extend()*:
+* `extend( target , source )` translate into `tree.extend( null , target , source )`
+* `extend( true , target , source )` translate into `tree.extend( { deep: true } , target , source )`
+
+However, here we have full control over what will be extended and how.
+
+By default, `tree.extend()` will copy all enumerable properties, and perform a shallow copy (a nested object is not cloned, it remains
+a reference of the original one).
+
+With the *deep* option, a deep copy is performed, so nested object are cloned too.
+
+The *own* option clone only owned properties.
+
+You can also clone an object as close as it is possible to do in javascript by doing this:
+```js
+var clone = tree.extend( { deep: true, proto: true } , null , original ) ;
+```
+Also please note that:
+* properties that are not enumerable will never be cloned: javascript does not provide a way to search for them
+* design pattern using private members cannot be truly cloned since those private members are hidden in an inaccessible closure's scope
+
+Mixing *inherit* and *deep* provides a nice multi-level inheritance.
 
 
 

@@ -1,7 +1,7 @@
 {
   "name": "tree-kit",
   "version": "0.0.5",
-  "description": "Tree utilities.",
+  "description": "Tree utilities which provides a full-featured extend and object cloning facility, and various tools to deal with nested object structure.",
   "main": "lib/tree.js",
   "directories": {
     "test": "test"
@@ -22,6 +22,10 @@
   "keywords": [
     "tree",
     "extend",
+    "clone",
+    "prototype",
+    "inherit",
+    "deep",
     "mask"
   ],
   "author": "Cédric Ronvel",
