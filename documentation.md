@@ -21,9 +21,14 @@ Use Node Package Manager:
 
 # Library references
 
-## .extend( options , target , source1 , [source2] , [...] )
+In all examples below, it is assumed that you have required the lib into the `tree` variable:
+```js
+var tree = require( 'tree-kit' ) ;
+```
 
-<!-- <pre style="border: 1px solid #aec516; border-left-width:6px;">Stability: 3 - Stable</pre> -->
+
+
+## .extend( options , target , source1 , [source2] , [...] )
 
 * options `Object` extend options, it supports the properties:
 	* own `boolean` only copy owned properties from the sources
