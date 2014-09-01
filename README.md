@@ -46,6 +46,9 @@ var tree = require( 'tree-kit' ) ;
 	  object whose prototype is listed (only direct prototype will match, for performance purpose the rest of the
 	  prototype chain will not be checked)
 	* deepWhitelist `Array` the opposite of deepBlacklist, it's a white-list
+	* flat `boolean|string` sources properties are copied in a way to produce a *flat* target, the target's key
+	  is the full path (separated by '.') of the source's key, also if a string is provided it will be used as
+	  the path separator
 * target `Object` the target of the extend, properties will be copied to this object
 * source `Object` the source of the extend, properties will be copied from this object
 
@@ -74,7 +77,26 @@ Also please note that:
 
 Mixing *inherit* and *deep* provides a nice multi-level inheritance.
 
+With the *flat* option example:
+```js
+var o = {
+	one: 1,
+	sub: {
+		two: 2,
+		three: 3
+	}
+} ;
 
+var flatCopy = tree.extend( { flat: true } , {} , o ) ;
+```
+... it will produce:
+```js
+{
+	one: 1,
+	"sub.two": 2,
+	"sub.three": 3
+}
+```
 
 ## .diff( left , right , [options] )
 
