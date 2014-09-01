@@ -567,7 +567,6 @@ describe( "extend()" , function() {
 		expect( e.subtree.five ).to.equal( 'FIVE' ) ;
 	} ) ;
 	
-	/*
 	it( "with 'flat' option" , function() {
 		
 		var e , o ;
@@ -577,15 +576,43 @@ describe( "extend()" , function() {
 			four: '4' ,
 			subtree: {
 				five: 'FIVE' ,
-				six: 6
+				six: 6 ,
+				subsubtree: {
+					subsubsubtree: { one: 'ONE' } ,
+					seven: 'seven'
+				} ,
+				emptysubtree: {}
+			} ,
+			eight: 8 ,
+			anothersubtree: {
+				nine: '9'
 			}
 		} ;
 		
-		e = {} ;
+		e = tree.extend( { flat: true } , {} , o ) ;
+		expect( e ).to.eql( {
+			three: 3 ,
+			four: '4' ,
+			'subtree.five': 'FIVE' ,
+			'subtree.six': 6 ,
+			'subtree.subsubtree.seven': 'seven' ,
+			'subtree.subsubtree.subsubsubtree.one': 'ONE' ,
+			eight: 8 ,
+			'anothersubtree.nine': '9'
+		} ) ;
 		
-		tree.extend( { flat: true } , e , o ) ;
+		e = tree.extend( { flat: '/' } , {} , o ) ;
+		expect( e ).to.eql( {
+			three: 3 ,
+			four: '4' ,
+			'subtree/five': 'FIVE' ,
+			'subtree/six': 6 ,
+			'subtree/subsubtree/seven': 'seven' ,
+			'subtree/subsubtree/subsubsubtree/one': 'ONE' ,
+			eight: 8 ,
+			'anothersubtree/nine': '9'
+		} ) ;
 	} ) ;
-	*/
 	
 	it( "with 'skipRoot' option" ) ;
 	it( "with 'deepWhitelist' option" ) ;

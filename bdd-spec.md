@@ -457,6 +457,54 @@ expect( e.subtree ).to.eql( { six: 'SIX' , seven: 7 } ) ;
 expect( e.subtree.five ).to.equal( 'FIVE' ) ;
 ```
 
+with 'flat' option.
+
+```js
+var e , o ;
+
+o = {
+	three: 3 ,
+	four: '4' ,
+	subtree: {
+		five: 'FIVE' ,
+		six: 6 ,
+		subsubtree: {
+			subsubsubtree: { one: 'ONE' } ,
+			seven: 'seven'
+		} ,
+		emptysubtree: {}
+	} ,
+	eight: 8 ,
+	anothersubtree: {
+		nine: '9'
+	}
+} ;
+
+e = tree.extend( { flat: true } , {} , o ) ;
+expect( e ).to.eql( {
+	three: 3 ,
+	four: '4' ,
+	'subtree.five': 'FIVE' ,
+	'subtree.six': 6 ,
+	'subtree.subsubtree.seven': 'seven' ,
+	'subtree.subsubtree.subsubsubtree.one': 'ONE' ,
+	eight: 8 ,
+	'anothersubtree.nine': '9'
+} ) ;
+
+e = tree.extend( { flat: '/' } , {} , o ) ;
+expect( e ).to.eql( {
+	three: 3 ,
+	four: '4' ,
+	'subtree/five': 'FIVE' ,
+	'subtree/six': 6 ,
+	'subtree/subsubtree/seven': 'seven' ,
+	'subtree/subsubtree/subsubsubtree/one': 'ONE' ,
+	eight: 8 ,
+	'anothersubtree/nine': '9'
+} ) ;
+```
+
 <a name="diff"></a>
 # Diff
 should return an array of differences for two objects without nested object.
