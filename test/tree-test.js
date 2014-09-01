@@ -567,7 +567,27 @@ describe( "extend()" , function() {
 		expect( e.subtree.five ).to.equal( 'FIVE' ) ;
 	} ) ;
 	
-	//it( "with 'skipRoot' option" ) ;
+	/*
+	it( "with 'flat' option" , function() {
+		
+		var e , o ;
+		
+		o = {
+			three: 3 ,
+			four: '4' ,
+			subtree: {
+				five: 'FIVE' ,
+				six: 6
+			}
+		} ;
+		
+		e = {} ;
+		
+		tree.extend( { flat: true } , e , o ) ;
+	} ) ;
+	*/
+	
+	it( "with 'skipRoot' option" ) ;
 	it( "with 'deepWhitelist' option" ) ;
 	it( "with 'deepBlacklist' option" ) ;
 } ) ;
