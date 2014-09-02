@@ -49,6 +49,9 @@ var tree = require( 'tree-kit' ) ;
 	* flat `boolean|string` sources properties are copied in a way to produce a *flat* target, the target's key
 	  is the full path (separated by '.') of the source's key, also if a string is provided it will be used as
 	  the path separator
+	* unflat `boolean|string` it is the opposite of 'flat': assuming that the sources are in the *flat* format,
+	  it expands all flat properties -- whose name are path with '.' as the separator -- deeply into the target, 
+	  also if a string is provided it will be used as the path separator
 * target `Object` the target of the extend, properties will be copied to this object
 * source `Object` the source of the extend, properties will be copied from this object
 
@@ -97,6 +100,9 @@ var flatCopy = tree.extend( { flat: true } , {} , o ) ;
 	"sub.three": 3
 }
 ```
+
+By the way, the *unflat* option does the opposite, and thus can reverse this back to the original form.
+
 
 ## .diff( left , right , [options] )
 
@@ -653,6 +659,70 @@ expect( e ).to.eql( {
 	'subtree/subsubtree/subsubsubtree/one': 'ONE' ,
 	eight: 8 ,
 	'anothersubtree/nine': '9'
+} ) ;
+```
+
+with 'unflat' option.
+
+```js
+var e , o ;
+
+o = {
+	three: 3 ,
+	four: '4' ,
+	'subtree.five': 'FIVE' ,
+	'subtree.six': 6 ,
+	'subtree.subsubtree.seven': 'seven' ,
+	'subtree.subsubtree.subsubsubtree.one': 'ONE' ,
+	eight: 8 ,
+	'anothersubtree.nine': '9'
+} ;
+
+e = tree.extend( { unflat: true } , {} , o ) ;
+expect( e ).to.eql( {
+	three: 3 ,
+	four: '4' ,
+	subtree: {
+		five: 'FIVE' ,
+		six: 6 ,
+		subsubtree: {
+			subsubsubtree: { one: 'ONE' } ,
+			seven: 'seven'
+		}
+	} ,
+	eight: 8 ,
+	anothersubtree: {
+		nine: '9'
+	}
+} ) ;
+
+o = {
+	three: 3 ,
+	four: '4' ,
+	'subtree/five': 'FIVE' ,
+	'subtree/six': 6 ,
+	'subtree/subsubtree/seven': 'seven' ,
+	'subtree/subsubtree/subsubsubtree/one': 'ONE' ,
+	eight: 8 ,
+	'anothersubtree/nine': '9'
+} ;
+
+e = tree.extend( { unflat: '/' } , {} , o ) ;
+expect( e ).to.eql( {
+	three: 3 ,
+	four: '4' ,
+	subtree: {
+		five: 'FIVE' ,
+		six: 6 ,
+		subsubtree: {
+			subsubsubtree: { one: 'ONE' } ,
+			seven: 'seven'
+		}
+	} ,
+	eight: 8 ,
+	anothersubtree: {
+		nine: '9'
+	}
 } ) ;
 ```
 

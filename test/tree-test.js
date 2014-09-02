@@ -614,6 +614,69 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
+	it( "with 'unflat' option" , function() {
+		
+		var e , o ;
+		
+		o = {
+			three: 3 ,
+			four: '4' ,
+			'subtree.five': 'FIVE' ,
+			'subtree.six': 6 ,
+			'subtree.subsubtree.seven': 'seven' ,
+			'subtree.subsubtree.subsubsubtree.one': 'ONE' ,
+			eight: 8 ,
+			'anothersubtree.nine': '9'
+		} ;
+		
+		e = tree.extend( { unflat: true } , {} , o ) ;
+		expect( e ).to.eql( {
+			three: 3 ,
+			four: '4' ,
+			subtree: {
+				five: 'FIVE' ,
+				six: 6 ,
+				subsubtree: {
+					subsubsubtree: { one: 'ONE' } ,
+					seven: 'seven'
+				}
+			} ,
+			eight: 8 ,
+			anothersubtree: {
+				nine: '9'
+			}
+		} ) ;
+		
+		o = {
+			three: 3 ,
+			four: '4' ,
+			'subtree/five': 'FIVE' ,
+			'subtree/six': 6 ,
+			'subtree/subsubtree/seven': 'seven' ,
+			'subtree/subsubtree/subsubsubtree/one': 'ONE' ,
+			eight: 8 ,
+			'anothersubtree/nine': '9'
+		} ;
+		
+		e = tree.extend( { unflat: '/' } , {} , o ) ;
+		expect( e ).to.eql( {
+			three: 3 ,
+			four: '4' ,
+			subtree: {
+				five: 'FIVE' ,
+				six: 6 ,
+				subsubtree: {
+					subsubsubtree: { one: 'ONE' } ,
+					seven: 'seven'
+				}
+			} ,
+			eight: 8 ,
+			anothersubtree: {
+				nine: '9'
+			}
+		} ) ;
+	} ) ;
+	
 	it( "with 'skipRoot' option" ) ;
 	it( "with 'deepWhitelist' option" ) ;
 	it( "with 'deepBlacklist' option" ) ;
