@@ -1,6 +1,6 @@
 {
   "name": "tree-kit",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Tree utilities which provides a full-featured extend and object cloning facility, and various tools to deal with nested object structure.",
   "main": "lib/tree.js",
   "directories": {
