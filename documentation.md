@@ -42,16 +42,18 @@ var tree = require( 'tree-kit' ) ;
 	  It forces option 'own' and disable 'proto'. Specifying multiple sources does not make sens here.
 	* skipRoot `boolean` prevent the prototype of the target **root** object from mutation.
 	  Only nested objects' prototype will be mutated.
-	* deepBlacklist `Array` list of black-listed prototype: the recursiveness of the 'deep' option will be disabled for
-	  object whose prototype is listed (only direct prototype will match, for performance purpose the rest of the
-	  prototype chain will not be checked)
-	* deepWhitelist `Array` the opposite of deepBlacklist, it's a white-list
 	* flat `boolean|string` sources properties are copied in a way to produce a *flat* target, the target's key
 	  is the full path (separated by '.') of the source's key, also if a string is provided it will be used as
 	  the path separator
 	* unflat `boolean|string` it is the opposite of 'flat': assuming that the sources are in the *flat* format,
 	  it expands all flat properties -- whose name are path with '.' as the separator -- deeply into the target, 
 	  also if a string is provided it will be used as the path separator
+	* deepFilter `Object` filter the recursiveness of the 'deep' option, filtered objects will be referenced
+	  just the way it would be if the 'deep' option was turned off, objects are filtered based upon their
+	  prototypes (only direct prototype match, for performance purpose the rest of the prototype chain will
+	  not be checked)
+		* blacklist `Array` list of black-listed prototype
+		* whitelist `Array` list of white-listed prototype
 * target `Object` the target of the extend, properties will be copied to this object
 * source `Object` the source of the extend, properties will be copied from this object
 

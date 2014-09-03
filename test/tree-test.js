@@ -678,8 +678,7 @@ describe( "extend()" , function() {
 	} ) ;
 	
 	it( "with 'skipRoot' option" ) ;
-	it( "with 'deepWhitelist' option" ) ;
-	it( "with 'deepBlacklist' option" ) ;
+	it( "with 'deepFilter' option" ) ;
 } ) ;
 
 
