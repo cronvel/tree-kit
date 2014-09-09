@@ -105,6 +105,25 @@ var flatCopy = tree.extend( { flat: true } , {} , o ) ;
 
 By the way, the *unflat* option does the opposite, and thus can reverse this back to the original form.
 
+The *deepFilter* option is used when you do not want to clone some type of object.
+Let's say you want a deep copy except for `Buffer` objects, you simply want them to share the same reference:
+```js
+var o = {
+	one: '1' ,
+	buf: new Buffer( "My buffer" ) ,
+	subtree: {
+		two: 2 ,
+		three: 'THREE'
+	}
+} ;
+
+// either
+var extended1 = tree.extend( { deep: true, deepFilter: { whitelist: [ Object.prototype ] } } , {} , o ) ;
+// or
+var extended2 = tree.extend( { deep: true, deepFilter: { blacklist: [ Buffer.prototype ] } } , {} , o ) ;
+```
+
+
 
 ## .diff( left , right , [options] )
 
