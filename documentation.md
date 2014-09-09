@@ -123,6 +123,8 @@ var extended1 = tree.extend( { deep: true, deepFilter: { whitelist: [ Object.pro
 var extended2 = tree.extend( { deep: true, deepFilter: { blacklist: [ Buffer.prototype ] } } , {} , o ) ;
 ```
 
+Doing this, we have `o.buf === extended1.buf === extended2.buf`, and `o.subtree !== extended1.subtree !== extended2.subtree`.
+
 
 
 ## .diff( left , right , [options] )
