@@ -677,8 +677,73 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
+	it( "with 'deepFilter' option, using blacklist" , function() {
+		
+		var buf = new Buffer( "My buffer" ) ;
+		
+		var o = {
+			one: '1' ,
+			buf: buf ,
+			subtree: {
+				two: 2 ,
+				three: 'THREE'
+			}
+		} ;
+		
+		var e = tree.extend( { deep: true, deepFilter: { blacklist: [ Buffer.prototype ] } } , {} , o ) ;
+		
+		o.subtree.three = 3 ;
+		buf[ 0 ] = 'm'.charCodeAt() ;
+		
+		expect( e.buf ).to.be.a( Buffer ) ;
+		expect( e.buf.toString() ).to.be( "my buffer" ) ;
+		expect( e.buf ).to.be( buf ) ;
+		
+		expect( e ).to.eql( {
+			one: '1' ,
+			buf: buf ,
+			subtree: {
+				two: 2 ,
+				three: 'THREE'
+			}
+		} ) ;
+		
+	} ) ;
+	
+	it( "with 'deepFilter' option, using whitelist" , function() {
+		
+		var buf = new Buffer( "My buffer" ) ;
+		
+		var o = {
+			one: '1' ,
+			buf: buf ,
+			subtree: {
+				two: 2 ,
+				three: 'THREE'
+			}
+		} ;
+		
+		var e = tree.extend( { deep: true, deepFilter: { whitelist: [ Object.prototype ] } } , {} , o ) ;
+		
+		o.subtree.three = 3 ;
+		buf[ 0 ] = 'm'.charCodeAt() ;
+		
+		expect( e.buf ).to.be.a( Buffer ) ;
+		expect( e.buf.toString() ).to.be( "my buffer" ) ;
+		expect( e.buf ).to.be( buf ) ;
+		
+		expect( e ).to.eql( {
+			one: '1' ,
+			buf: buf ,
+			subtree: {
+				two: 2 ,
+				three: 'THREE'
+			}
+		} ) ;
+		
+	} ) ;
+	
 	it( "with 'skipRoot' option" ) ;
-	it( "with 'deepFilter' option" ) ;
 } ) ;
 
 
