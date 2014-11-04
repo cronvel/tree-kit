@@ -1,3 +1,4 @@
+{ z: 'Zee', Func: { [Function: Func] prop: 'property' } }
 # TOC
    - [extend()](#extend)
    - [Diff](#diff)
@@ -44,6 +45,24 @@ var copy = tree.extend( { deep: true } , {} , input.subtree ) ;
 expect( copy ).to.eql( input.subtree ) ;
 expect( copy ).not.to.equal( input.subtree ) ;
 expect( copy.subtree2 ).not.to.equal( input.subtree.subtree2 ) ;
+```
+
+with the 'deep' option, sources functions are still simply copied/referenced into target.
+
+```js
+var copy = tree.extend( { deep: true } , {} , input.subtreeWithFunction ) ;
+console.log( copy ) ;
+expect( copy ).to.eql( input.subtreeWithFunction ) ;
+expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
+expect( copy.Func.prototype ).to.equal( input.subtreeWithFunction.Func.prototype ) ;
+```
+
+with the 'deep' & 'deepFunc' options, sources functions are treated like regular objects, creating an object rather than a function in the target location, and performing a deep copy of them.
+
+```js
+var copy = tree.extend( { deep: true, deepFunc: true } , {} , input.subtreeWithFunction ) ;
+expect( copy ).not.to.eql( input.subtreeWithFunction ) ;
+expect( copy ).to.eql( { z: 'Zee' , Func: { prop: 'property' } } ) ;
 ```
 
 should extend (by default) properties of the prototype chain.

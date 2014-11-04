@@ -1,0 +1,1 @@
+x 2014-11-04 +extend deep:true bug with function, there are copied as undefined @bug

@@ -36,6 +36,9 @@ var tree = require( 'tree-kit' ) ;
 	* move `boolean` move properties from the sources object to the target object (delete properties from the sources object)
 	* preserve `boolean` existing properties in the target object will not be overwritten
 	* nofunc `boolean` skip properties that are functions
+	* deepFunc `boolean` in conjunction with 'deep', this will process sources functions like objects rather than
+	  copying/referencing them directly into the source (default behaviour), thus, the result will not be a function,
+	  it forces 'deep' options
 	* proto `boolean` alter the target's prototype so that it matches the source's prototype.
 	  It forces option 'own'. Specifying multiple sources does not make sens here.
 	* inherit `boolean` make the target inherit from the source (the target's prototype will be the source itself, not its prototype).

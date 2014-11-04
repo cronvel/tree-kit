@@ -40,6 +40,14 @@ var expect = require( 'expect.js' ) ;
 
 
 // The input tree used in most tests
+
+function Func() { console.log( 'Hellow!' ) ; }
+Func.prototype.fn1 = function fn1() { console.log( 'fn1' ) ; } ;
+Func.prototype.fn2 = function fn2() { console.log( 'fn2' ) ; } ;
+Func.prop = 'property' ;
+
+
+
 var input = {
 	'undefined' : undefined ,
 	'null' : null ,
@@ -122,9 +130,12 @@ var input = {
 			q : [4,5,6] ,
 			r : '2'
 		}
+	} ,
+	subtreeWithFunction: {
+		z: 'Zee',
+		Func: Func
 	}
 } ;
-
 
 
 
@@ -165,6 +176,20 @@ describe( "extend()" , function() {
 		expect( copy ).to.eql( input.subtree ) ;
 		expect( copy ).not.to.equal( input.subtree ) ;
 		expect( copy.subtree2 ).not.to.equal( input.subtree.subtree2 ) ;
+	} ) ;
+		
+	it( "with the 'deep' option, sources functions are still simply copied/referenced into target" , function() {
+		var copy = tree.extend( { deep: true } , {} , input.subtreeWithFunction ) ;
+		console.log( copy ) ;
+		expect( copy ).to.eql( input.subtreeWithFunction ) ;
+		expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
+		expect( copy.Func.prototype ).to.equal( input.subtreeWithFunction.Func.prototype ) ;
+	} ) ;
+	
+	it( "with the 'deep' & 'deepFunc' options, sources functions are treated like regular objects, creating an object rather than a function in the target location, and performing a deep copy of them" , function() {
+		var copy = tree.extend( { deep: true, deepFunc: true } , {} , input.subtreeWithFunction ) ;
+		expect( copy ).not.to.eql( input.subtreeWithFunction ) ;
+		expect( copy ).to.eql( { z: 'Zee' , Func: { prop: 'property' } } ) ;
 	} ) ;
 	
 	it( "should extend (by default) properties of the prototype chain" , function() {
