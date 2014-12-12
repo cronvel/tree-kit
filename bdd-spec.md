@@ -1,6 +1,7 @@
 { z: 'Zee', Func: { [Function: Func] prop: 'property' } }
 # TOC
    - [extend()](#extend)
+   - [defineLazyProperty](#definelazyproperty)
    - [Diff](#diff)
    - [Masks](#masks)
    - [Inverse masks](#inverse-masks)
@@ -652,6 +653,24 @@ expect( e ).to.eql( {
 		three: 'THREE'
 	}
 } ) ;
+```
+
+<a name="definelazyproperty"></a>
+# defineLazyProperty
+should.
+
+```js
+var object = {} ;
+var counter = 0 ;
+
+tree.defineLazyProperty( object , 'myprop' , function() {
+	counter ++ ;
+	return counter ;
+} ) ;
+
+expect( object.myprop ).to.be( 1 ) ;
+expect( object.myprop ).to.be( 1 ) ;
+expect( object.myprop ).to.be( 1 ) ;
 ```
 
 <a name="diff"></a>

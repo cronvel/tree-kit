@@ -773,6 +773,26 @@ describe( "extend()" , function() {
 
 
 
+describe( "defineLazyProperty" , function() {
+	
+	it( 'should' , function() {
+		
+		var object = {} ;
+		var counter = 0 ;
+		
+		tree.defineLazyProperty( object , 'myprop' , function() {
+			counter ++ ;
+			return counter ;
+		} ) ;
+		
+		expect( object.myprop ).to.be( 1 ) ;
+		expect( object.myprop ).to.be( 1 ) ;
+		expect( object.myprop ).to.be( 1 ) ;
+	} ) ;
+} ) ;
+
+
+
 describe( "Diff" , function() {
 	
 	it( "should return an array of differences for two objects without nested object" , function() {
@@ -1064,7 +1084,7 @@ describe( "Inverse masks" , function() {
 		} ) ;
 	} ) ;
 } ) ;
-		
+
 
 
 
