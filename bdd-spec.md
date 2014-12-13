@@ -1,7 +1,7 @@
 { z: 'Zee', Func: { [Function: Func] prop: 'property' } }
 # TOC
    - [extend()](#extend)
-   - [defineLazyProperty](#definelazyproperty)
+   - [defineLazyProperty()](#definelazyproperty)
    - [Diff](#diff)
    - [Masks](#masks)
    - [Inverse masks](#inverse-masks)
@@ -656,8 +656,8 @@ expect( e ).to.eql( {
 ```
 
 <a name="definelazyproperty"></a>
-# defineLazyProperty
-should.
+# defineLazyProperty()
+should define property using a getter that after its first execution is reconfigured as its return-value and is not writable.
 
 ```js
 var object = {} ;
@@ -670,6 +670,9 @@ tree.defineLazyProperty( object , 'myprop' , function() {
 
 expect( object.myprop ).to.be( 1 ) ;
 expect( object.myprop ).to.be( 1 ) ;
+expect( object.myprop ).to.be( 1 ) ;
+expect( counter ).to.be( 1 ) ;
+object.myprop ++ ;
 expect( object.myprop ).to.be( 1 ) ;
 ```
 

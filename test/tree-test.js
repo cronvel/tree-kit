@@ -773,9 +773,9 @@ describe( "extend()" , function() {
 
 
 
-describe( "defineLazyProperty" , function() {
+describe( "defineLazyProperty()" , function() {
 	
-	it( 'should' , function() {
+	it( 'should define property using a getter that after its first execution is reconfigured as its return-value and is not writable' , function() {
 		
 		var object = {} ;
 		var counter = 0 ;
@@ -787,6 +787,9 @@ describe( "defineLazyProperty" , function() {
 		
 		expect( object.myprop ).to.be( 1 ) ;
 		expect( object.myprop ).to.be( 1 ) ;
+		expect( object.myprop ).to.be( 1 ) ;
+		expect( counter ).to.be( 1 ) ;
+		object.myprop ++ ;
 		expect( object.myprop ).to.be( 1 ) ;
 	} ) ;
 } ) ;
