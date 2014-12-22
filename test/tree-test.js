@@ -180,7 +180,7 @@ describe( "extend()" , function() {
 		
 	it( "with the 'deep' option, sources functions are still simply copied/referenced into target" , function() {
 		var copy = tree.extend( { deep: true } , {} , input.subtreeWithFunction ) ;
-		console.log( copy ) ;
+		//console.log( copy ) ;
 		expect( copy ).to.eql( input.subtreeWithFunction ) ;
 		expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
 		expect( copy.Func.prototype ).to.equal( input.subtreeWithFunction.Func.prototype ) ;
