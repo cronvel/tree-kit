@@ -219,7 +219,7 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with the 'own' option should ONLY extend OWNED properties, properties of the prototype chain are SKIPPED" , function() {
+	it( "with the 'own' option should ONLY extend OWNED properties, non-enumerable properties and properties of the prototype chain are SKIPPED" , function() {
 		
 		var proto = {
 			proto1: 'proto1' ,
@@ -231,6 +231,11 @@ describe( "extend()" , function() {
 		o.own1 = 'own1' ;
 		o.own2 = 'own2' ;
 		
+		Object.defineProperties( o , {
+			nonEnum1: { value: 'nonEnum1' } ,
+			nonEnum2: { value: 'nonEnum2' }
+		} ) ;
+		
 		expect( tree.extend( { own: true } , {} , o ) ).to.eql( {
 			own1: 'own1' ,
 			own2: 'own2'
@@ -239,6 +244,38 @@ describe( "extend()" , function() {
 		expect( tree.extend( { deep: true, own: true } , {} , o ) ).to.eql( {
 			own1: 'own1' ,
 			own2: 'own2'
+		} ) ;
+	} ) ;
+	
+	it( "with the 'own' & 'nonEnum' option should ONLY extend OWNED properties, enumerable or not, but properties of the prototype chain are SKIPPED" , function() {
+		
+		var proto = {
+			proto1: 'proto1' ,
+			proto2: 'proto2' ,
+		} ;
+		
+		var o = Object.create( proto ) ;
+		
+		o.own1 = 'own1' ;
+		o.own2 = 'own2' ;
+		
+		Object.defineProperties( o , {
+			nonEnum1: { value: 'nonEnum1' } ,
+			nonEnum2: { value: 'nonEnum2' }
+		} ) ;
+		
+		expect( tree.extend( { own: true , nonEnum: true } , {} , o ) ).to.eql( {
+			own1: 'own1' ,
+			own2: 'own2' ,
+			nonEnum1: 'nonEnum1' ,
+			nonEnum2: 'nonEnum2'
+		} ) ;
+		
+		expect( tree.extend( { deep: true, own: true , nonEnum: true } , {} , o ) ).to.eql( {
+			own1: 'own1' ,
+			own2: 'own2' ,
+			nonEnum1: 'nonEnum1' ,
+			nonEnum2: 'nonEnum2'
 		} ) ;
 	} ) ;
 	

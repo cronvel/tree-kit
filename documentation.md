@@ -31,7 +31,8 @@ var tree = require( 'tree-kit' ) ;
 ## .extend( options , target , source1 , [source2] , [...] )
 
 * options `Object` extend options, it supports the properties:
-	* own `boolean` only copy owned properties from the sources
+	* own `boolean` only copy enumerable own properties from the sources
+    * nonEnum: copy non-enumerable properties as well, works only with own:true
 	* deep `boolean` perform a deep (recursive) extend
 	* move `boolean` move properties from the sources object to the target object (delete properties from the sources object)
 	* preserve `boolean` existing properties in the target object will not be overwritten
