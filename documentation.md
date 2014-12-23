@@ -33,6 +33,7 @@ var tree = require( 'tree-kit' ) ;
 * options `Object` extend options, it supports the properties:
 	* own `boolean` only copy enumerable own properties from the sources
     * nonEnum: copy non-enumerable properties as well, works only with own:true
+    * descriptor: preserve property's descriptor (i.e. writable, enumerable, configurable, get & set)
 	* deep `boolean` perform a deep (recursive) extend
 	* move `boolean` move properties from the sources object to the target object (delete properties from the sources object)
 	* preserve `boolean` existing properties in the target object will not be overwritten
@@ -69,20 +70,36 @@ It is easily translated from jQuery-like *extend()*:
 
 However, here we have full control over what will be extended and how.
 
-By default, `tree.extend()` will copy all enumerable properties, and perform a shallow copy (a nested object is not cloned, it remains
-a reference of the original one).
+**All the options above are inactive by default**.
+You can pass null as argument #0 to get the default behaviour (= all options are inactive).
+So using the default behaviour, `tree.extend()` will copy all enumerable properties, and perform a shallow copy (a nested object
+is not cloned, it remains a reference of the original one).
 
 With the *deep* option, a deep copy is performed, so nested object are cloned too.
 
-The *own* option clone only owned properties from the sources, properties that are part of the source's prototype would not be copied/cloned.
+The *own* option clone only owned properties from the sources, properties that are part of the source's prototype would not
+be copied/cloned.
+
+The *nonEnum* option will clone properties that are not enumerable.
+
+The *descriptor* option will preserve property's descriptor, e.g. if the source property is not writable and not enumerable,
+so will be the copied property.
+
+In case of a *getter* properties:
+
+* without the *descriptor* option, the getter function of the source object will be called, the return value will be put
+  into the target property (so it lose its getter/setter behaviour)
+* with the *descriptor* option, the getter & setter function of the source object will be copied (but not called) into the target
+  property: the getter/setter behaviour is preserved
 
 You can also clone an object as close as it is possible to do in javascript by doing this:
 ```js
-var clone = tree.extend( { deep: true, proto: true } , null , original ) ;
+var clone = tree.extend( { deep: true, own: true, nonEnum: true, descriptor: true, proto: true } , null , original ) ;
 ```
-Also please note that:
-* properties that are not enumerable will never be cloned: javascript does not provide a way to search for them
-* design pattern using private members cannot be truly cloned since those private members are hidden in an inaccessible closure's scope
+**Also please note that design pattern emulating private members using a closure's scope cannot be truly cloned**
+(e.g. the *revealing pattern*).
+This is not possible to mutate a function's scope.
+So the clone's methods will continue to inherit the parent's scope of the original function.
 
 Mixing *inherit* and *deep* provides a nice multi-level inheritance.
 

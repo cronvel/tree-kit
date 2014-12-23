@@ -5,4 +5,5 @@ v0.3.3
 
 extend()
 - 'nonEnum' option that copy non-enumerable properties as well (in conjunction with 'own')
+- 'descriptor' option that preserve property's descriptor
 

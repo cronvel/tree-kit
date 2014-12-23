@@ -1,4 +1,3 @@
-{ z: 'Zee', Func: { [Function: Func] prop: 'property' } }
 # TOC
    - [extend()](#extend)
    - [defineLazyProperty()](#definelazyproperty)
@@ -52,7 +51,7 @@ with the 'deep' option, sources functions are still simply copied/referenced int
 
 ```js
 var copy = tree.extend( { deep: true } , {} , input.subtreeWithFunction ) ;
-console.log( copy ) ;
+//console.log( copy ) ;
 expect( copy ).to.eql( input.subtreeWithFunction ) ;
 expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
 expect( copy.Func.prototype ).to.equal( input.subtreeWithFunction.Func.prototype ) ;
@@ -94,7 +93,7 @@ expect( tree.extend( { deep: true } , {} , o ) ).to.eql( {
 } ) ;
 ```
 
-with the 'own' option should ONLY extend OWNED properties, properties of the prototype chain are SKIPPED.
+with the 'own' option, it should ONLY extend OWNED properties, non-enumerable properties and properties of the prototype chain are SKIPPED.
 
 ```js
 var proto = {
@@ -107,6 +106,11 @@ var o = Object.create( proto ) ;
 o.own1 = 'own1' ;
 o.own2 = 'own2' ;
 
+Object.defineProperties( o , {
+	nonEnum1: { value: 'nonEnum1' } ,
+	nonEnum2: { value: 'nonEnum2' }
+} ) ;
+
 expect( tree.extend( { own: true } , {} , o ) ).to.eql( {
 	own1: 'own1' ,
 	own2: 'own2'
@@ -116,6 +120,100 @@ expect( tree.extend( { deep: true, own: true } , {} , o ) ).to.eql( {
 	own1: 'own1' ,
 	own2: 'own2'
 } ) ;
+```
+
+with the 'own' & 'nonEnum' option, it should ONLY extend OWNED properties, enumerable or not, but properties of the prototype chain are SKIPPED.
+
+```js
+var proto = {
+	proto1: 'proto1' ,
+	proto2: 'proto2' ,
+} ;
+
+var o = Object.create( proto ) ;
+
+o.own1 = 'own1' ;
+o.own2 = 'own2' ;
+
+Object.defineProperties( o , {
+	nonEnum1: { value: 'nonEnum1' } ,
+	nonEnum2: { value: 'nonEnum2' }
+} ) ;
+
+expect( tree.extend( { own: true , nonEnum: true } , {} , o ) ).to.eql( {
+	own1: 'own1' ,
+	own2: 'own2' ,
+	nonEnum1: 'nonEnum1' ,
+	nonEnum2: 'nonEnum2'
+} ) ;
+
+expect( tree.extend( { deep: true, own: true , nonEnum: true } , {} , o ) ).to.eql( {
+	own1: 'own1' ,
+	own2: 'own2' ,
+	nonEnum1: 'nonEnum1' ,
+	nonEnum2: 'nonEnum2'
+} ) ;
+```
+
+with the 'descriptor' option, it should preserve descriptor as well.
+
+```js
+var r ;
+
+var proto = {
+	proto1: 'proto1' ,
+	proto2: 'proto2' ,
+} ;
+
+var o = Object.create( proto ) ;
+
+o.own1 = 'own1' ;
+o.own2 = 'own2' ;
+o.nested = { a: 1 , b: 2 } ;
+
+var getter = function() { return 5 ; } ;
+var setter = function( value ) {} ;
+
+Object.defineProperties( o , {
+	nonEnum1: { value: 'nonEnum1' } ,
+	nonEnum2: { value: 'nonEnum2' , writable: true } ,
+	nonEnum3: { value: 'nonEnum3' , configurable: true } ,
+	nonEnumNested: { value: { c: 3 , d: 4 } } ,
+	getter: { get: getter } ,
+	getterAndSetter: { get: getter , set: setter }
+} ) ;
+
+r = tree.extend( { own: true , nonEnum: true , descriptor: true } , {} , o ) ;
+
+expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+expect( r.nested ).to.be( o.nested ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+expect( r.nonEnumNested ).to.be( o.nonEnumNested ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+
+r = tree.extend( { deep: true , own: true , nonEnum: true , descriptor: true } , {} , o ) ;
+
+expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+expect( r.nested ).not.to.be( o.nested ) ;
+expect( r.nested ).to.eql( o.nested ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
+expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 ```
 
 with the 'deep' option should extend a deep Object into another deep Object correctly.
