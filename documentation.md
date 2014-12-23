@@ -3,10 +3,10 @@
 # Tree Kit
 
 This lib is a toolbox that provide functions to operate with nested `Object` structure.
-It features the classic `.extend()` method, but provide a whole bunch of options that the others library lack.
+It features the best `.extend()` method, providing dozen of options that all others libs miss.
 
 * License: MIT
-* Current status: beta
+* Current status: release candidate
 * Platform: Node.js only (browser support is planned)
 
 
@@ -21,6 +21,12 @@ Use Node Package Manager:
 
 # Library references
 
+* [.extend()](#ref.extend): full-featured extend facility, copy, clone, extend
+* [.clone()](#ref.clone): clone any object
+* [.diff()](#ref.diff): report differences between two objects
+
+
+
 In all examples below, it is assumed that you have required the lib into the `tree` variable:
 ```js
 var tree = require( 'tree-kit' ) ;
@@ -28,6 +34,7 @@ var tree = require( 'tree-kit' ) ;
 
 
 
+<a name="ref.extend"></a>
 ## .extend( options , target , source1 , [source2] , [...] )
 
 * options `Object` extend options, it supports the properties:
@@ -149,6 +156,7 @@ Doing this, we have `o.buf === extended1.buf === extended2.buf`, and `o.subtree 
 
 
 
+<a name="ref.clone"></a>
 ## .clone( original )
 
 * original `Object` the source object to clone
@@ -165,6 +173,7 @@ Design pattern using closure to emulate *private member* (e.g. the revealing pat
 
 
 
+<a name="ref.diff"></a>
 ## .diff( left , right , [options] )
 
 * left `Object` the left-hand side object structure
