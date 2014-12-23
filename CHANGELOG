@@ -1,4 +1,9 @@
 
+v0.3.4
+------
+
+New method: clone(), providing the best object-cloning facility that this lib can offer.
+
 
 v0.3.3
 ------

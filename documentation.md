@@ -60,7 +60,8 @@ var tree = require( 'tree-kit' ) ;
 		* blacklist `Array` list of black-listed prototype
 		* whitelist `Array` list of white-listed prototype
 * target `Object` the target of the extend, properties will be copied to this object
-* source `Object` the source of the extend, properties will be copied from this object
+* source1 `Object` the source of the extend, properties will be copied from this object
+* ...
 
 This is a full-featured *extend* of an object with one or more source object.
 
@@ -145,6 +146,22 @@ var extended2 = tree.extend( { deep: true, deepFilter: { blacklist: [ Buffer.pro
 ```
 
 Doing this, we have `o.buf === extended1.buf === extended2.buf`, and `o.subtree !== extended1.subtree !== extended2.subtree`.
+
+
+
+## .clone( original )
+
+* original `Object` the source object to clone
+
+It returns a clone of the *original* object, providing the best object-cloning facility that this lib can offer.
+
+Behind the scene, this method uses `extend()` with the current options on: *deep, own, nonEnum, descriptor & proto*.
+
+The clone produced are perfect independant copy **in 99% of use case**, but there is one big limitation:
+method that access variables in the parent's scope.
+
+The clone will share those variables with the *original* object, so they are not totally independant entity.
+Design pattern using closure to emulate *private member* (e.g. the revealing pattern) can cause trouble.
 
 
 
