@@ -1,3 +1,4 @@
 +extend options 'all': get non-enumerable properties as well, using Object.getOwnPropertyNames() @code
 +extend options 'descriptor': copy property descriptor as well, using Object.getOwnPropertyDescriptor() & Object.defineProperty() @code
 +defineLazyProperty document it @doc
+(A) +extend still trouble with getter: line 197 use direct access rather than descriptor.value @bug
