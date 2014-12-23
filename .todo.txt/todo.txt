@@ -1,4 +1,3 @@
 +extend options 'all': get non-enumerable properties as well, using Object.getOwnPropertyNames() @code
 +extend options 'descriptor': copy property descriptor as well, using Object.getOwnPropertyDescriptor() & Object.defineProperty() @code
 +defineLazyProperty document it @doc
-(A) +extend finish the 'descriptor' option: what to do with 'deep' when a property is a getter/setter? @code

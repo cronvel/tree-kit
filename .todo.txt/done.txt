@@ -1,2 +1,3 @@
 x 2014-11-04 +extend deep:true bug with function, there are copied as undefined @bug
 x 2014-11-04 +extend document 'deepFunc' option @doc
+x 2014-12-23 +extend finish the 'descriptor' option: what to do with 'deep' when a property is a getter/setter? @code
