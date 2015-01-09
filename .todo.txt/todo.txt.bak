@@ -1,4 +1,4 @@
-+extend options 'all': get non-enumerable properties as well, using Object.getOwnPropertyNames() @code
-+extend options 'descriptor': copy property descriptor as well, using Object.getOwnPropertyDescriptor() & Object.defineProperty() @code
+x 2015-01-09 +extend options 'nonEnum': get non-enumerable properties as well, using Object.getOwnPropertyNames() @code
 +defineLazyProperty document it @doc
-x 2014-12-23 +extend finish the 'descriptor' option: what to do with 'deep' when a property is a getter/setter? @code
+(A) +extend still trouble with getter: direct access rather than descriptor.value on the /!\ mark @bug
+(A) +extend document 'circular' option @doc

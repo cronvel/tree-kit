@@ -866,6 +866,34 @@ describe( "extend()" , function() {
 		
 	} ) ;
 	
+	it( "circular references test" , function() {
+		
+		var o = {
+			a: 'a',
+			sub: {
+				b: 'b'
+			},
+			sub2: {
+				c: 'c'
+			}
+		} ;
+		
+		o.loop = o ;
+		o.sub.loop = o ;
+		o.subcopy = o.sub ;
+		o.sub.link = o.sub2 ;
+		o.sub2.link = o.sub ;
+		
+		var c = tree.extend( { deep: true , circular: true } , null , o ) ;
+		
+		expect( c.loop ).to.be( c ) ;
+		expect( c.sub ).to.be( c.subcopy ) ;
+		expect( c.sub.loop ).to.be( c ) ;
+		expect( c.subcopy.loop ).to.be( c ) ;
+		expect( c.sub.link ).to.be( c.sub2 ) ;
+		expect( c.sub2.link ).to.be( c.sub ) ;
+	} ) ;
+	
 	it( "with 'skipRoot' option" ) ;
 } ) ;
 
