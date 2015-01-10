@@ -868,7 +868,7 @@ describe( "extend()" , function() {
 	
 	it( "circular references test" , function() {
 		
-		var o = {
+		var c , o = {
 			a: 'a',
 			sub: {
 				b: 'b'
@@ -884,7 +884,15 @@ describe( "extend()" , function() {
 		o.sub.link = o.sub2 ;
 		o.sub2.link = o.sub ;
 		
-		var c = tree.extend( { deep: true , circular: true } , null , o ) ;
+		
+		try {
+			c = tree.extend( { deep: true } , null , o ) ;
+			throw new Error( 'Should throw an error: max depth reached' ) ;
+		}
+		catch ( error ) {
+		}
+		
+		c = tree.extend( { deep: true , circular: true } , null , o ) ;
 		
 		expect( c.loop ).to.be( c ) ;
 		expect( c.sub ).to.be( c.subcopy ) ;
