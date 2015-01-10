@@ -39,9 +39,13 @@ var tree = require( 'tree-kit' ) ;
 
 * options `Object` extend options, it supports the properties:
 	* own `boolean` only copy enumerable own properties from the sources
-    * nonEnum: copy non-enumerable properties as well, works only with own:true
-    * descriptor: preserve property's descriptor (i.e. writable, enumerable, configurable, get & set)
+    * nonEnum `boolean` copy non-enumerable properties as well, works only with own:true
+    * descriptor `boolean` preserve property's descriptor (i.e. writable, enumerable, configurable, get & set)
 	* deep `boolean` perform a deep (recursive) extend
+	* circular `boolean` (default to false) if true then circular references are checked and each identical objects are reconnected
+		(referenced), if false then nested object are blindly cloned
+	* maxDepth `integer` used in conjunction with deep, when the max depth is reached an exception is raised, it defaults to 100
+		when the 'circular' option is off, or defaults to null if 'circular' is on
 	* move `boolean` move properties from the sources object to the target object (delete properties from the sources object)
 	* preserve `boolean` existing properties in the target object will not be overwritten
 	* nofunc `boolean` skip properties that are functions
@@ -100,14 +104,8 @@ In case of a *getter* properties:
 * with the *descriptor* option, the getter & setter function of the source object will be copied (but not called) into the target
   property: the getter/setter behaviour is preserved
 
-You can also clone an object as close as it is possible to do in javascript by doing this:
-```js
-var clone = tree.extend( { deep: true, own: true, nonEnum: true, descriptor: true, proto: true } , null , original ) ;
-```
-**Also please note that design pattern emulating private members using a closure's scope cannot be truly cloned**
-(e.g. the *revealing pattern*).
-This is not possible to mutate a function's scope.
-So the clone's methods will continue to inherit the parent's scope of the original function.
+If *circular* is on, the lib will detect when the source's data structure reuses the same object multiple time and will preserve it.
+We can see this *circular* feature in action in [this example](#example.circular).
 
 Mixing *inherit* and *deep* provides a nice multi-level inheritance.
 
@@ -157,19 +155,67 @@ Doing this, we have `o.buf === extended1.buf === extended2.buf`, and `o.subtree 
 
 
 <a name="ref.clone"></a>
-## .clone( original )
+## .clone( original , [circular] )
 
 * original `Object` the source object to clone
+* circular `boolean` (default to false) if true then circular references are checked and each identical objects are reconnected
+	(referenced), if false then nested object are blindly cloned
 
 It returns a clone of the *original* object, providing the best object-cloning facility that this lib can offer.
-
-Behind the scene, this method uses `extend()` with the current options on: *deep, own, nonEnum, descriptor & proto*.
 
 The clone produced are perfect independant copy **in 99% of use case**, but there is one big limitation:
 method that access variables in the parent's scope.
 
 The clone will share those variables with the *original* object, so they are not totally independant entity.
 Design pattern using closure to emulate *private member* (e.g. the revealing pattern) can cause trouble.
+
+If *circular* is on, the lib will detect when the source's data structure reuses the same object multiple time and will preserve it.
+
+<a name="example.circular"></a>
+Here is an example of this *circular* feature:
+```js
+var o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+var c = tree.clone( o , true ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
+```
+
+... without *circular* on, the `clone()` method would run forever, creating a new object independant nested object each time
+it reaches the *loop* property.
+We can see that the *subcopy* property remains a reference of *sub* even in the clone, thanks to the *circular* option.
+
+However, if we are sure that there isn't multiple reference to the same object or circular references, we can gain a lot of
+performances by leaving that options off.
+It can save a lot of `.indexOf()` call on big data structure.
+
+This method does not uses `extend()` anymore like in version 0.3.x, it now uses its own optimized code.
+However it is equivalent to an `extend()` with those options turned on: *deep, own, nonEnum, descriptor & proto*.
+If *circular* is on, it has the same effect than the `extend()`'s *circular* option.
+
+**Also please note that design pattern emulating private members using a closure's scope cannot be truly cloned**
+(e.g. the *revealing pattern*).
+This is not possible to mutate a function's scope.
+So the clone's methods will continue to inherit the parent's scope of the original function.
 
 
 

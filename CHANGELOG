@@ -1,4 +1,16 @@
 
+v0.4.0
+------
+
+extend():
+	* 'circular' & 'maxDepth' options finished, 'descriptor' option bugfix
+
+clone():
+	* does not depend upon extend() anymore, it has been fully rewritten with optimization in mind
+	* it does not use recursive function call but loops, which is super-efficient ;)
+	* it now accepts a *circular* boolean argument, just like extend(), see the doc!
+
+
 v0.3.5
 ------
 

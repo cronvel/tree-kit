@@ -754,6 +754,43 @@ expect( e ).to.eql( {
 } ) ;
 ```
 
+circular references test.
+
+```js
+var c , o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+
+try {
+	c = tree.extend( { deep: true } , null , o ) ;
+	throw new Error( 'Should throw an error: max depth reached' ) ;
+}
+catch ( error ) {
+}
+
+c = tree.extend( { deep: true , circular: true } , null , o ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
+```
+
 <a name="clone"></a>
 # clone()
 basic incomplete test.
@@ -783,27 +820,65 @@ Object.defineProperties( o , {
 	getterAndSetter: { get: getter , set: setter }
 } ) ;
 
-var r = tree.clone( o ) ;
+var i , r ;
 
-expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
-expect( r.nested ).not.to.be( o.nested ) ;
-expect( r.nested ).to.eql( o.nested ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
-expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
-expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 
-expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
-expect( r.proto1 ).to.be( 'proto1' ) ;
-expect( r.proto2 ).to.be( 'proto2' ) ;
-expect( typeof r.hello ).to.equal( 'function' ) ;
+// Basic tests with and without circular checks
+for ( i = 0 ; i <= 1 ; i ++ )
+{
+	if ( i === 0 ) { r = tree.clone( o ) ;}
+	else { r = tree.clone( o , true ) ; }
+	
+	expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+	expect( r.nested ).not.to.be( o.nested ) ;
+	expect( r.nested ).to.eql( o.nested ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+	expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
+	expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+	
+	expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
+	expect( r.proto1 ).to.be( 'proto1' ) ;
+	expect( r.proto2 ).to.be( 'proto2' ) ;
+	expect( typeof r.hello ).to.equal( 'function' ) ;
+}
+```
+
+circular references test.
+
+```js
+var c , o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+
+c = tree.clone( o , true ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
 ```
 
 <a name="definelazyproperty"></a>

@@ -39,9 +39,13 @@ var tree = require( 'tree-kit' ) ;
 
 * options `Object` extend options, it supports the properties:
 	* own `boolean` only copy enumerable own properties from the sources
-    * nonEnum: copy non-enumerable properties as well, works only with own:true
-    * descriptor: preserve property's descriptor (i.e. writable, enumerable, configurable, get & set)
+    * nonEnum `boolean` copy non-enumerable properties as well, works only with own:true
+    * descriptor `boolean` preserve property's descriptor (i.e. writable, enumerable, configurable, get & set)
 	* deep `boolean` perform a deep (recursive) extend
+	* circular `boolean` (default to false) if true then circular references are checked and each identical objects are reconnected
+		(referenced), if false then nested object are blindly cloned
+	* maxDepth `integer` used in conjunction with deep, when the max depth is reached an exception is raised, it defaults to 100
+		when the 'circular' option is off, or defaults to null if 'circular' is on
 	* move `boolean` move properties from the sources object to the target object (delete properties from the sources object)
 	* preserve `boolean` existing properties in the target object will not be overwritten
 	* nofunc `boolean` skip properties that are functions
@@ -100,14 +104,8 @@ In case of a *getter* properties:
 * with the *descriptor* option, the getter & setter function of the source object will be copied (but not called) into the target
   property: the getter/setter behaviour is preserved
 
-You can also clone an object as close as it is possible to do in javascript by doing this:
-```js
-var clone = tree.extend( { deep: true, own: true, nonEnum: true, descriptor: true, proto: true } , null , original ) ;
-```
-**Also please note that design pattern emulating private members using a closure's scope cannot be truly cloned**
-(e.g. the *revealing pattern*).
-This is not possible to mutate a function's scope.
-So the clone's methods will continue to inherit the parent's scope of the original function.
+If *circular* is on, the lib will detect when the source's data structure reuses the same object multiple time and will preserve it.
+We can see this *circular* feature in action in [this example](#example.circular).
 
 Mixing *inherit* and *deep* provides a nice multi-level inheritance.
 
@@ -157,19 +155,67 @@ Doing this, we have `o.buf === extended1.buf === extended2.buf`, and `o.subtree 
 
 
 <a name="ref.clone"></a>
-## .clone( original )
+## .clone( original , [circular] )
 
 * original `Object` the source object to clone
+* circular `boolean` (default to false) if true then circular references are checked and each identical objects are reconnected
+	(referenced), if false then nested object are blindly cloned
 
 It returns a clone of the *original* object, providing the best object-cloning facility that this lib can offer.
-
-Behind the scene, this method uses `extend()` with the current options on: *deep, own, nonEnum, descriptor & proto*.
 
 The clone produced are perfect independant copy **in 99% of use case**, but there is one big limitation:
 method that access variables in the parent's scope.
 
 The clone will share those variables with the *original* object, so they are not totally independant entity.
 Design pattern using closure to emulate *private member* (e.g. the revealing pattern) can cause trouble.
+
+If *circular* is on, the lib will detect when the source's data structure reuses the same object multiple time and will preserve it.
+
+<a name="example.circular"></a>
+Here is an example of this *circular* feature:
+```js
+var o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+var c = tree.clone( o , true ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
+```
+
+... without *circular* on, the `clone()` method would run forever, creating a new object independant nested object each time
+it reaches the *loop* property.
+We can see that the *subcopy* property remains a reference of *sub* even in the clone, thanks to the *circular* option.
+
+However, if we are sure that there isn't multiple reference to the same object or circular references, we can gain a lot of
+performances by leaving that options off.
+It can save a lot of `.indexOf()` call on big data structure.
+
+This method does not uses `extend()` anymore like in version 0.3.x, it now uses its own optimized code.
+However it is equivalent to an `extend()` with those options turned on: *deep, own, nonEnum, descriptor & proto*.
+If *circular* is on, it has the same effect than the `extend()`'s *circular* option.
+
+**Also please note that design pattern emulating private members using a closure's scope cannot be truly cloned**
+(e.g. the *revealing pattern*).
+This is not possible to mutate a function's scope.
+So the clone's methods will continue to inherit the parent's scope of the original function.
 
 
 
@@ -981,6 +1027,43 @@ expect( e ).to.eql( {
 } ) ;
 ```
 
+circular references test.
+
+```js
+var c , o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+
+try {
+	c = tree.extend( { deep: true } , null , o ) ;
+	throw new Error( 'Should throw an error: max depth reached' ) ;
+}
+catch ( error ) {
+}
+
+c = tree.extend( { deep: true , circular: true } , null , o ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
+```
+
 <a name="clone"></a>
 # clone()
 basic incomplete test.
@@ -1010,27 +1093,65 @@ Object.defineProperties( o , {
 	getterAndSetter: { get: getter , set: setter }
 } ) ;
 
-var r = tree.clone( o ) ;
+var i , r ;
 
-expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
-expect( r.nested ).not.to.be( o.nested ) ;
-expect( r.nested ).to.eql( o.nested ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
-expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
-expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
-expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 
-expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
-expect( r.proto1 ).to.be( 'proto1' ) ;
-expect( r.proto2 ).to.be( 'proto2' ) ;
-expect( typeof r.hello ).to.equal( 'function' ) ;
+// Basic tests with and without circular checks
+for ( i = 0 ; i <= 1 ; i ++ )
+{
+	if ( i === 0 ) { r = tree.clone( o ) ;}
+	else { r = tree.clone( o , true ) ; }
+	
+	expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+	expect( r.nested ).not.to.be( o.nested ) ;
+	expect( r.nested ).to.eql( o.nested ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+	expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
+	expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+	
+	expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
+	expect( r.proto1 ).to.be( 'proto1' ) ;
+	expect( r.proto2 ).to.be( 'proto2' ) ;
+	expect( typeof r.hello ).to.equal( 'function' ) ;
+}
+```
+
+circular references test.
+
+```js
+var c , o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+
+c = tree.clone( o , true ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
 ```
 
 <a name="definelazyproperty"></a>
