@@ -1,4 +1,10 @@
 
+v0.4.1
+------
+
+clone() have now its own module/file: clone.js.
+
+
 v0.4.0
 ------
 
