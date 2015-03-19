@@ -1,12 +1,170 @@
 # TOC
-   - [extend()](#extend)
    - [clone()](#clone)
-   - [defineLazyProperty()](#definelazyproperty)
    - [Diff](#diff)
+   - [extend()](#extend)
+   - [defineLazyProperty()](#definelazyproperty)
    - [Masks](#masks)
    - [Inverse masks](#inverse-masks)
 <a name=""></a>
  
+<a name="clone"></a>
+# clone()
+basic incomplete test.
+
+```js
+var proto = {
+	proto1: 'proto1' ,
+	proto2: 'proto2' ,
+	hello: function() { console.log( "Hello!" ) ; }
+} ;
+
+var o = Object.create( proto ) ;
+
+o.own1 = 'own1' ;
+o.own2 = 'own2' ;
+o.nested = { a: 1 , b: 2 } ;
+
+var getter = function() { return 5 ; } ;
+var setter = function( value ) {} ;
+
+Object.defineProperties( o , {
+	nonEnum1: { value: 'nonEnum1' } ,
+	nonEnum2: { value: 'nonEnum2' , writable: true } ,
+	nonEnum3: { value: 'nonEnum3' , configurable: true } ,
+	nonEnumNested: { value: { c: 3 , d: 4 } } ,
+	getter: { get: getter } ,
+	getterAndSetter: { get: getter , set: setter }
+} ) ;
+
+var i , r ;
+
+
+// Basic tests with and without circular checks
+for ( i = 0 ; i <= 1 ; i ++ )
+{
+	if ( i === 0 ) { r = tree.clone( o ) ;}
+	else { r = tree.clone( o , true ) ; }
+	
+	expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+	expect( r.nested ).not.to.be( o.nested ) ;
+	expect( r.nested ).to.eql( o.nested ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+	expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
+	expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+	expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+	
+	expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
+	expect( r.proto1 ).to.be( 'proto1' ) ;
+	expect( r.proto2 ).to.be( 'proto2' ) ;
+	expect( typeof r.hello ).to.equal( 'function' ) ;
+}
+```
+
+circular references test.
+
+```js
+var c , o = {
+	a: 'a',
+	sub: {
+		b: 'b'
+	},
+	sub2: {
+		c: 'c'
+	}
+} ;
+
+o.loop = o ;
+o.sub.loop = o ;
+o.subcopy = o.sub ;
+o.sub.link = o.sub2 ;
+o.sub2.link = o.sub ;
+
+
+c = tree.clone( o , true ) ;
+
+expect( c.loop ).to.be( c ) ;
+expect( c.sub ).to.be( c.subcopy ) ;
+expect( c.sub.loop ).to.be( c ) ;
+expect( c.subcopy.loop ).to.be( c ) ;
+expect( c.sub.link ).to.be( c.sub2 ) ;
+expect( c.sub2.link ).to.be( c.sub ) ;
+```
+
+<a name="diff"></a>
+# Diff
+should return an array of differences for two objects without nested object.
+
+```js
+var a = {
+	a: 'a',
+	b: 2,
+	c: 'three'
+} ;
+
+var b = {
+	b: 2,
+	c: 3,
+	d: 'dee'
+} ;
+
+var diff = tree.diff( a , b ) ;
+
+//console.log( diff ) ;
+expect( diff ).not.to.be( null ) ;
+expect( diff ).to.only.have.keys( '.a', '.c', '.d' ) ;
+```
+
+should return an array of differences for two objects with nested objects.
+
+```js
+var a = {
+	a: 'a',
+	b: 2,
+	c: 'three',
+	sub: {
+		e: 5,
+		f: 'six',
+		subsub: {
+			g: 'gee',
+			h: 'h'
+		}
+	},
+	suba: {
+		j: 'djay'
+	}
+} ;
+
+var b = {
+	b: 2,
+	c: 3,
+	d: 'dee',
+	sub: {
+		e: 5,
+		f: 6,
+		subsub: {
+			g: 'gee',
+			i: 'I'
+		}
+	},
+	subb: {
+		k: 'k'
+	}
+} ;
+
+var diff = tree.diff( a , b ) ;
+
+//console.log( diff ) ;
+expect( diff ).not.to.be( null ) ;
+expect( diff ).to.only.have.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
+```
+
 <a name="extend"></a>
 # extend()
 should extend correctly an empty Object with a flat Object without depth (with or without the 'deep' option).
@@ -791,96 +949,6 @@ expect( c.sub.link ).to.be( c.sub2 ) ;
 expect( c.sub2.link ).to.be( c.sub ) ;
 ```
 
-<a name="clone"></a>
-# clone()
-basic incomplete test.
-
-```js
-var proto = {
-	proto1: 'proto1' ,
-	proto2: 'proto2' ,
-	hello: function() { console.log( "Hello!" ) ; }
-} ;
-
-var o = Object.create( proto ) ;
-
-o.own1 = 'own1' ;
-o.own2 = 'own2' ;
-o.nested = { a: 1 , b: 2 } ;
-
-var getter = function() { return 5 ; } ;
-var setter = function( value ) {} ;
-
-Object.defineProperties( o , {
-	nonEnum1: { value: 'nonEnum1' } ,
-	nonEnum2: { value: 'nonEnum2' , writable: true } ,
-	nonEnum3: { value: 'nonEnum3' , configurable: true } ,
-	nonEnumNested: { value: { c: 3 , d: 4 } } ,
-	getter: { get: getter } ,
-	getterAndSetter: { get: getter , set: setter }
-} ) ;
-
-var i , r ;
-
-
-// Basic tests with and without circular checks
-for ( i = 0 ; i <= 1 ; i ++ )
-{
-	if ( i === 0 ) { r = tree.clone( o ) ;}
-	else { r = tree.clone( o , true ) ; }
-	
-	expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
-	expect( r.nested ).not.to.be( o.nested ) ;
-	expect( r.nested ).to.eql( o.nested ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
-	expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
-	expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
-	expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
-	
-	expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
-	expect( r.proto1 ).to.be( 'proto1' ) ;
-	expect( r.proto2 ).to.be( 'proto2' ) ;
-	expect( typeof r.hello ).to.equal( 'function' ) ;
-}
-```
-
-circular references test.
-
-```js
-var c , o = {
-	a: 'a',
-	sub: {
-		b: 'b'
-	},
-	sub2: {
-		c: 'c'
-	}
-} ;
-
-o.loop = o ;
-o.sub.loop = o ;
-o.subcopy = o.sub ;
-o.sub.link = o.sub2 ;
-o.sub2.link = o.sub ;
-
-
-c = tree.clone( o , true ) ;
-
-expect( c.loop ).to.be( c ) ;
-expect( c.sub ).to.be( c.subcopy ) ;
-expect( c.sub.loop ).to.be( c ) ;
-expect( c.subcopy.loop ).to.be( c ) ;
-expect( c.sub.link ).to.be( c.sub2 ) ;
-expect( c.sub2.link ).to.be( c.sub ) ;
-```
-
 <a name="definelazyproperty"></a>
 # defineLazyProperty()
 should define property using a getter that after its first execution is reconfigured as its return-value and is not writable.
@@ -900,74 +968,6 @@ expect( object.myprop ).to.be( 1 ) ;
 expect( counter ).to.be( 1 ) ;
 object.myprop ++ ;
 expect( object.myprop ).to.be( 1 ) ;
-```
-
-<a name="diff"></a>
-# Diff
-should return an array of differences for two objects without nested object.
-
-```js
-var a = {
-	a: 'a',
-	b: 2,
-	c: 'three'
-} ;
-
-var b = {
-	b: 2,
-	c: 3,
-	d: 'dee'
-} ;
-
-var diff = tree.diff( a , b ) ;
-
-//console.log( diff ) ;
-expect( diff ).not.to.be( null ) ;
-expect( diff ).to.only.have.keys( '.a', '.c', '.d' ) ;
-```
-
-should return an array of differences for two objects with nested objects.
-
-```js
-var a = {
-	a: 'a',
-	b: 2,
-	c: 'three',
-	sub: {
-		e: 5,
-		f: 'six',
-		subsub: {
-			g: 'gee',
-			h: 'h'
-		}
-	},
-	suba: {
-		j: 'djay'
-	}
-} ;
-
-var b = {
-	b: 2,
-	c: 3,
-	d: 'dee',
-	sub: {
-		e: 5,
-		f: 6,
-		subsub: {
-			g: 'gee',
-			i: 'I'
-		}
-	},
-	subb: {
-		k: 'k'
-	}
-} ;
-
-var diff = tree.diff( a , b ) ;
-
-//console.log( diff ) ;
-expect( diff ).not.to.be( null ) ;
-expect( diff ).to.only.have.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
 ```
 
 <a name="masks"></a>
