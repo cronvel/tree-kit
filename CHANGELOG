@@ -1,4 +1,11 @@
 
+v0.4.2
+------
+
+New: path submodule featuring path.get(), path.set() and path.delete(). It allows setting, getting deleting by a
+	dot-separated path scheme.
+
+
 v0.4.1
 ------
 
