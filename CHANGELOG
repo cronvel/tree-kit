@@ -1,4 +1,10 @@
 
+v0.4.3
+------
+
+path.*() now support a semi-colon syntax for accessing arrays, featuring pseudo-element like :last and :next, etc.
+
+
 v0.4.2
 ------
 
