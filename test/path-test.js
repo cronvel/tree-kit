@@ -201,16 +201,18 @@ describe( "Tree's path on arrays" , function() {
 		expect( tree.path.get( a , ':length' ) ).to.be( 4 ) ;
 	} ) ;
 	
-	it( "path.set() using multiple :next" , function() {
+	it( "path.set() using multiple :next and :insert" , function() {
 		
 		var a = [ 'a' , 'b' , 'c' ] ;
 		
 		tree.path.set( a , ':next' , 'D' ) ;
-		tree.path.set( a , ':next:next:next' , 'E' ) ;
 		tree.path.set( a , ':next.f:next' , 'g' ) ;
+		tree.path.set( a , ':next:next:next' , 'E' ) ;
+		tree.path.set( a , ':insert' , '@' ) ;
+		tree.path.set( a , ':last:insert' , '@' ) ;
 		
-		expect( a ).to.eql( [ 'a' , 'b' , 'c' , 'D' , [ [ 'E' ] ] , { f: [ 'g' ] } ] ) ;
-		expect( tree.path.get( a , ':length' ) ).to.be( 6 ) ;
+		expect( a ).to.eql( [ '@' , 'a' , 'b' , 'c' , 'D' ,  { f: [ 'g' ] } , [ '@' , [ 'E' ] ] ] ) ;
+		expect( tree.path.get( a , ':length' ) ).to.be( 7 ) ;
 	} ) ;
 	
 	it( "path.delete() on a simple array" , function() {
