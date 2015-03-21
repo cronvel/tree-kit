@@ -1282,18 +1282,18 @@ expect( tree.path.get( a , '0' ) ).to.be( 'a' ) ;
 expect( tree.path.get( a , '1' ) ).to.be( 'b' ) ;
 expect( tree.path.get( a , '2' ) ).to.be( 'c' ) ;
 expect( tree.path.get( a , '3' ) ).to.be( undefined ) ;
-expect( tree.path.get( a , ':0' ) ).to.be( 'a' ) ;
-expect( tree.path.get( a , ':1' ) ).to.be( 'b' ) ;
-expect( tree.path.get( a , ':2' ) ).to.be( 'c' ) ;
-expect( tree.path.get( a , ':3' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '#0' ) ).to.be( 'a' ) ;
+expect( tree.path.get( a , '#1' ) ).to.be( 'b' ) ;
+expect( tree.path.get( a , '#2' ) ).to.be( 'c' ) ;
+expect( tree.path.get( a , '#3' ) ).to.be( undefined ) ;
 expect( tree.path.get( a , 'length' ) ).to.be( 3 ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 3 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 3 ) ;
 expect( tree.path.get( a , 'first' ) ).to.be( undefined ) ;
-expect( tree.path.get( a , ':first' ) ).to.be( 'a' ) ;
+expect( tree.path.get( a , '#first' ) ).to.be( 'a' ) ;
 expect( tree.path.get( a , 'last' ) ).to.be( undefined ) ;
-expect( tree.path.get( a , ':last' ) ).to.be( 'c' ) ;
+expect( tree.path.get( a , '#last' ) ).to.be( 'c' ) ;
 expect( tree.path.get( a , 'next' ) ).to.be( undefined ) ;
-expect( tree.path.get( a , ':next' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '#next' ) ).to.be( undefined ) ;
 ```
 
 path.get() on nested arrays.
@@ -1301,24 +1301,24 @@ path.get() on nested arrays.
 ```js
 var a = [ 'a' , [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ] ;
 
-expect( tree.path.get( a , ':0' ) ).to.be( 'a' ) ;
-expect( tree.path.get( a , ':1' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
-expect( tree.path.get( a , ':2' ) ).to.be( undefined ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 2 ) ;
-expect( tree.path.get( a , ':first' ) ).to.be( 'a' ) ;
-expect( tree.path.get( a , ':last' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
-expect( tree.path.get( a , ':next' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '#0' ) ).to.be( 'a' ) ;
+expect( tree.path.get( a , '#1' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
+expect( tree.path.get( a , '#2' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
+expect( tree.path.get( a , '#first' ) ).to.be( 'a' ) ;
+expect( tree.path.get( a , '#last' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
+expect( tree.path.get( a , '#next' ) ).to.be( undefined ) ;
 
-expect( tree.path.get( a , '1:0' ) ).to.eql( [ 'b' , 'c' ] ) ;
-expect( tree.path.get( a , '1:1' ) ).to.eql( 'd' ) ;
-expect( tree.path.get( a , '1:2' ) ).to.eql( [ 'e' , 'f' ] ) ;
-expect( tree.path.get( a , '1:3' ) ).to.be( undefined ) ;
-expect( tree.path.get( a , '1:length' ) ).to.be( 3 ) ;
-expect( tree.path.get( a , '1:first' ) ).to.eql( [ 'b' , 'c' ] ) ;
-expect( tree.path.get( a , '1:last' ) ).to.eql( [ 'e' , 'f' ] ) ;
-expect( tree.path.get( a , '1:next' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '1#0' ) ).to.eql( [ 'b' , 'c' ] ) ;
+expect( tree.path.get( a , '1#1' ) ).to.eql( 'd' ) ;
+expect( tree.path.get( a , '1#2' ) ).to.eql( [ 'e' , 'f' ] ) ;
+expect( tree.path.get( a , '1#3' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '1#length' ) ).to.be( 3 ) ;
+expect( tree.path.get( a , '1#first' ) ).to.eql( [ 'b' , 'c' ] ) ;
+expect( tree.path.get( a , '1#last' ) ).to.eql( [ 'e' , 'f' ] ) ;
+expect( tree.path.get( a , '1#next' ) ).to.be( undefined ) ;
 
-expect( tree.path.get( a , '1:2:last' ) ).to.eql( 'f' ) ;
+expect( tree.path.get( a , '1#2#last' ) ).to.eql( 'f' ) ;
 ```
 
 path.set() on a simple array.
@@ -1327,27 +1327,27 @@ path.set() on a simple array.
 var a = [ 'a' , 'b' , 'c' ] ;
 
 tree.path.set( a , '1' , 'B' ) ;
-tree.path.set( a , ':last' , 3 ) ;
-tree.path.set( a , ':next' , 'D' ) ;
-tree.path.set( a , ':first' , 1 ) ;
+tree.path.set( a , '#last' , 3 ) ;
+tree.path.set( a , '#next' , 'D' ) ;
+tree.path.set( a , '#first' , 1 ) ;
 
 expect( a ).to.eql( [ 1 , 'B' , 3 , 'D' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 4 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 4 ) ;
 ```
 
-path.set() using multiple :next and :insert.
+path.set() using multiple #next and #insert.
 
 ```js
 var a = [ 'a' , 'b' , 'c' ] ;
 
-tree.path.set( a , ':next' , 'D' ) ;
-tree.path.set( a , ':next.f:next' , 'g' ) ;
-tree.path.set( a , ':next:next:next' , 'E' ) ;
-tree.path.set( a , ':insert' , '@' ) ;
-tree.path.set( a , ':last:insert' , '@' ) ;
+tree.path.set( a , '#next' , 'D' ) ;
+tree.path.set( a , '#next.f#next' , 'g' ) ;
+tree.path.set( a , '#next#next#next' , 'E' ) ;
+tree.path.set( a , '#insert' , '@' ) ;
+tree.path.set( a , '#last#insert' , '@' ) ;
 
 expect( a ).to.eql( [ '@' , 'a' , 'b' , 'c' , 'D' ,  { f: [ 'g' ] } , [ '@' , [ 'E' ] ] ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 7 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 7 ) ;
 ```
 
 path.delete() on a simple array.
@@ -1358,38 +1358,38 @@ var a ;
 a = [ 'a' , 'b' , 'c' ] ;
 tree.path.delete( a , '1' ) ;
 //expect( a ).to.eql( [ 'a' , undefined , 'c' ] ) ;	// expect() bug here...
-expect( tree.path.get( a , ':length' ) ).to.be( 3 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 3 ) ;
 
 a = [ 'a' , 'b' , 'c' ] ;
-tree.path.delete( a , ':1' ) ;
+tree.path.delete( a , '#1' ) ;
 expect( a ).to.eql( [ 'a' , 'c' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 2 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
 
 a = [ 'a' , 'b' , 'c' ] ;
-tree.path.delete( a , ':2' ) ;
+tree.path.delete( a , '#2' ) ;
 expect( a ).to.eql( [ 'a' , 'b' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 2 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
 
 a = [ 'a' , 'b' , 'c' ] ;
-tree.path.delete( a , ':last' ) ;
+tree.path.delete( a , '#last' ) ;
 expect( a ).to.eql( [ 'a' , 'b' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 2 ) ;
-tree.path.delete( a , ':last' ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
+tree.path.delete( a , '#last' ) ;
 expect( a ).to.eql( [ 'a' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 1 ) ;
-tree.path.delete( a , ':last' ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 1 ) ;
+tree.path.delete( a , '#last' ) ;
 expect( a ).to.eql( [] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 0 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 0 ) ;
 
 a = [ 'a' , 'b' , 'c' ] ;
-tree.path.delete( a , ':first' ) ;
+tree.path.delete( a , '#first' ) ;
 expect( a ).to.eql( [ 'b' , 'c' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 2 ) ;
-tree.path.delete( a , ':first' ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
+tree.path.delete( a , '#first' ) ;
 expect( a ).to.eql( [ 'c' ] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 1 ) ;
-tree.path.delete( a , ':first' ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 1 ) ;
+tree.path.delete( a , '#first' ) ;
 expect( a ).to.eql( [] ) ;
-expect( tree.path.get( a , ':length' ) ).to.be( 0 ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 0 ) ;
 ```
 
