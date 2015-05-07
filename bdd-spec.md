@@ -1273,6 +1273,44 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
+path.define() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null
+} ;
+
+tree.path.define( o , 'a' , "8" ) ;
+tree.path.define( o , 'sub.b' , false ) ;
+tree.path.define( o , 'unexistant' , '!' ) ;
+tree.path.define( o , 'sub.sub' , { x: 18 , y: 27 } ) ;
+tree.path.define( o , 'non.existant.path' , 'new' ) ;
+
+expect( o ).to.eql( {
+	a: 5 ,
+	unexistant: '!' ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null ,
+	non: {
+		existant: {
+			path: 'new'
+		}
+	}
+} ) ;
+```
+
 path.inc() and path.dec() on object structure.
 
 ```js
@@ -1472,6 +1510,35 @@ expect( o.get( 'sub.nothing' ) ).to.be( undefined ) ;
 expect( o.get( 'nothing.nothing' ) ).to.be( undefined ) ;
 ```
 
+.delete().
+
+```js
+var o = Object.create( tree.path.prototype ) ;
+
+o.a = 5 ;
+o.sub = {
+	b: "toto" ,
+	sub: {
+		c: true ,
+		sub: {
+			f: ''
+		}
+	}
+} ;
+o.d = null ;
+
+o.delete( 'a' ) ;
+o.delete( 'sub.sub' ) ;
+o.delete( 'non.existant.path' ) ;
+
+expect( o ).to.eql( {
+	sub: {
+		b: "toto" ,
+	} ,
+	d: null
+} ) ;
+```
+
 .set().
 
 ```js
@@ -1509,7 +1576,7 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
-.delete().
+.define().
 
 ```js
 var o = Object.create( tree.path.prototype ) ;
@@ -1518,23 +1585,32 @@ o.a = 5 ;
 o.sub = {
 	b: "toto" ,
 	sub: {
-		c: true ,
-		sub: {
-			f: ''
-		}
+		c: true
 	}
 } ;
 o.d = null ;
 
-o.delete( 'a' ) ;
-o.delete( 'sub.sub' ) ;
-o.delete( 'non.existant.path' ) ;
+o.define( 'a' , "8" ) ;
+o.define( 'sub.b' , false ) ;
+o.define( 'unexistant' , '!' ) ;
+o.define( 'sub.sub' , { x: 18 , y: 27 } ) ;
+o.define( 'non.existant.path' , 'new' ) ;
 
 expect( o ).to.eql( {
+	a: 5 ,
+	unexistant: '!' ,
 	sub: {
 		b: "toto" ,
+		sub: {
+			c: true
+		}
 	} ,
-	d: null
+	d: null ,
+	non: {
+		existant: {
+			path: 'new'
+		}
+	}
 } ) ;
 ```
 
@@ -1616,6 +1692,35 @@ expect( tree.path.get( o , [ 'sub' , 'nothing' ] ) ).to.be( undefined ) ;
 expect( tree.path.get( o , [ 'nothing' , 'nothing' ] ) ).to.be( undefined ) ;
 ```
 
+path.delete() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true ,
+			sub: {
+				f: ''
+			}
+		}
+	} ,
+	d: null
+} ;
+
+tree.path.delete( o , [ 'a' ] ) ;
+tree.path.delete( o , [ 'sub' , 'sub' ] ) ;
+tree.path.delete( o , [ 'non' , 'existant' , 'path' ] ) ;
+
+expect( o ).to.eql( {
+	sub: {
+		b: "toto" ,
+	} ,
+	d: null
+} ) ;
+```
+
 path.set() on object structure.
 
 ```js
@@ -1653,7 +1758,7 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
-path.delete() on object structure.
+path.define() on object structure.
 
 ```js
 var o = {
@@ -1661,24 +1766,33 @@ var o = {
 	sub: {
 		b: "toto" ,
 		sub: {
-			c: true ,
-			sub: {
-				f: ''
-			}
+			c: true
 		}
 	} ,
 	d: null
 } ;
 
-tree.path.delete( o , [ 'a' ] ) ;
-tree.path.delete( o , [ 'sub' , 'sub' ] ) ;
-tree.path.delete( o , [ 'non' , 'existant' , 'path' ] ) ;
+tree.path.define( o , [ 'a' ] , "8" ) ;
+tree.path.define( o , [ 'sub' , 'b' ] , false ) ;
+tree.path.define( o , [ 'unexistant' ] , '!' ) ;
+tree.path.define( o , [ 'sub' , 'sub' ] , { x: 18 , y: 27 } ) ;
+tree.path.define( o , [ 'non' , 'existant' , 'path' ] , 'new' ) ;
 
 expect( o ).to.eql( {
+	a: 5 ,
+	unexistant: '!' ,
 	sub: {
 		b: "toto" ,
+		sub: {
+			c: true
+		}
 	} ,
-	d: null
+	d: null ,
+	non: {
+		existant: {
+			path: 'new'
+		}
+	}
 } ) ;
 ```
 
