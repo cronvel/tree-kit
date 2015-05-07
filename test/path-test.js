@@ -215,6 +215,8 @@ describe( "Tree's path on objects" , function() {
 		} ) ;
 	} ) ;
 	
+	it( "all method should return the targeted item, like path.get() does" ) ;
+	
 } ) ;
 
 
