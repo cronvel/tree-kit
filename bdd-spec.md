@@ -1207,6 +1207,35 @@ expect( tree.path.get( o , 'sub.nothing' ) ).to.be( undefined ) ;
 expect( tree.path.get( o , 'nothing.nothing' ) ).to.be( undefined ) ;
 ```
 
+path.delete() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true ,
+			sub: {
+				f: ''
+			}
+		}
+	} ,
+	d: null
+} ;
+
+tree.path.delete( o , 'a' ) ;
+tree.path.delete( o , 'sub.sub' ) ;
+tree.path.delete( o , 'non.existant.path' ) ;
+
+expect( o ).to.eql( {
+	sub: {
+		b: "toto" ,
+	} ,
+	d: null
+} ) ;
+```
+
 path.set() on object structure.
 
 ```js
@@ -1244,32 +1273,48 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
-path.delete() on object structure.
+path.inc() and path.dec() on object structure.
 
 ```js
 var o = {
 	a: 5 ,
 	sub: {
-		b: "toto" ,
+		b: 10 ,
 		sub: {
-			c: true ,
-			sub: {
-				f: ''
-			}
+			c: true
 		}
 	} ,
 	d: null
 } ;
 
-tree.path.delete( o , 'a' ) ;
-tree.path.delete( o , 'sub.sub' ) ;
-tree.path.delete( o , 'non.existant.path' ) ;
+tree.path.inc( o , 'a' ) ;
+tree.path.dec( o , 'sub.b' ) ;
+tree.path.inc( o , 'sub' ) ;
+tree.path.dec( o , 'sub.sub' ) ;
+tree.path.inc( o , 'non.existant.path' ) ;
+tree.path.dec( o , 'another.non.existant.path' ) ;
 
 expect( o ).to.eql( {
+	a: 6 ,
 	sub: {
-		b: "toto" ,
+		b: 9 ,
+		sub: {
+			c: true
+		}
 	} ,
-	d: null
+	d: null ,
+	non: {
+		existant: {
+			path: 1
+		}
+	} ,
+	another: {
+		non: {
+			existant: {
+				path: -1
+			}
+		}
+	}
 } ) ;
 ```
 
@@ -1493,6 +1538,51 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
+.inc() and .dec().
+
+```js
+var o = Object.create( tree.path.prototype ) ;
+
+o.a = 5 ;
+o.sub = {
+	b: 10 ,
+	sub: {
+		c: true
+	}
+} ;
+o.d = null ;
+
+o.inc( 'a' ) ;
+o.dec( 'sub.b' ) ;
+o.inc( 'sub' ) ;
+o.dec( 'sub.sub' ) ;
+o.inc( 'non.existant.path' ) ;
+o.dec( 'another.non.existant.path' ) ;
+
+expect( o ).to.eql( {
+	a: 6 ,
+	sub: {
+		b: 9 ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null ,
+	non: {
+		existant: {
+			path: 1
+		}
+	} ,
+	another: {
+		non: {
+			existant: {
+				path: -1
+			}
+		}
+	}
+} ) ;
+```
+
 <a name="trees-array-path-on-objects"></a>
 # Tree's array path on objects
 path.get() on object structure.
@@ -1589,6 +1679,51 @@ expect( o ).to.eql( {
 		b: "toto" ,
 	} ,
 	d: null
+} ) ;
+```
+
+path.inc() and path.dec() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: 10 ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null
+} ;
+
+tree.path.inc( o , [ 'a' ] ) ;
+tree.path.dec( o , [ 'sub' , 'b' ] ) ;
+tree.path.inc( o , [ 'sub' ] ) ;
+tree.path.dec( o , [ 'sub' , 'sub' ] ) ;
+tree.path.inc( o , [ 'non' , 'existant' , 'path' ] ) ;
+tree.path.dec( o , [ 'another' , 'non' , 'existant' , 'path' ] ) ;
+
+expect( o ).to.eql( {
+	a: 6 ,
+	sub: {
+		b: 9 ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null ,
+	non: {
+		existant: {
+			path: 1
+		}
+	} ,
+	another: {
+		non: {
+			existant: {
+				path: -1
+			}
+		}
+	}
 } ) ;
 ```
 

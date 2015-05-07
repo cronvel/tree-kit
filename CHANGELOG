@@ -1,4 +1,10 @@
 
+v0.5.2
+------
+
+New path.*() method: path.inc() & path.dec(), that increment and decrement values
+
+
 v0.5.1
 ------
 
