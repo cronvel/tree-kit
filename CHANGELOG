@@ -1,4 +1,12 @@
 
+v0.5.1
+------
+
+path.*():
+	* tree.path.prototype can be used for inheritance, using Object.create( tree.path.prototype )
+	* path.*() now supports path as array too (but it's still not done for array walking)
+
+
 v0.5.0
 ------
 

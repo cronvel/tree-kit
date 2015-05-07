@@ -7,6 +7,8 @@
    - [Inverse masks](#inverse-masks)
    - [Tree's path on objects](#trees-path-on-objects)
    - [Tree's path on arrays](#trees-path-on-arrays)
+   - [Inheritance, using Object.create( tree.path.prototype )](#inheritance-using-objectcreate-treepathprototype-)
+   - [Tree's array path on objects](#trees-array-path-on-objects)
 <a name=""></a>
  
 <a name="clone"></a>
@@ -1391,5 +1393,202 @@ expect( tree.path.get( a , '#length' ) ).to.be( 1 ) ;
 tree.path.delete( a , '#first' ) ;
 expect( a ).to.eql( [] ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 0 ) ;
+```
+
+<a name="inheritance-using-objectcreate-treepathprototype-"></a>
+# Inheritance, using Object.create( tree.path.prototype )
+.get().
+
+```js
+var o = Object.create( tree.path.prototype ) ;
+
+o.a = 5 ;
+o.sub = {
+	b: "toto" ,
+	sub: {
+		c: true
+	}
+} ;
+o.d = null ;
+
+expect( o.get( 'a' ) ).to.be( 5 ) ;
+expect( o.get( 'sub' ) ).to.eql( {
+	b: "toto" ,
+	sub: {
+		c: true
+	}
+} ) ;
+expect( o.get( 'sub.b' ) ).to.be( "toto" ) ;
+expect( o.get( 'sub.sub' ) ).to.eql( { c: true } ) ;
+expect( o.get( 'sub.sub.c' ) ).to.be( true ) ;
+expect( o.get( 'd' ) ).to.be( null ) ;
+expect( o.get( 'nothing' ) ).to.be( undefined ) ;
+expect( o.get( 'sub.nothing' ) ).to.be( undefined ) ;
+expect( o.get( 'nothing.nothing' ) ).to.be( undefined ) ;
+```
+
+.set().
+
+```js
+var o = Object.create( tree.path.prototype ) ;
+
+o.a = 5 ;
+o.sub = {
+	b: "toto" ,
+	sub: {
+		c: true
+	}
+} ;
+o.d = null ;
+
+o.set( 'a' , "8" ) ;
+o.set( 'sub.b' , false ) ;
+o.set( 'sub.sub' , { x: 18 , y: 27 } ) ;
+o.set( 'non.existant.path' , 'new' ) ;
+
+expect( o ).to.eql( {
+	a: "8" ,
+	sub: {
+		b: false ,
+		sub: {
+			x: 18 ,
+			y: 27
+		}
+	} ,
+	d: null ,
+	non: {
+		existant: {
+			path: 'new'
+		}
+	}
+} ) ;
+```
+
+.delete().
+
+```js
+var o = Object.create( tree.path.prototype ) ;
+
+o.a = 5 ;
+o.sub = {
+	b: "toto" ,
+	sub: {
+		c: true ,
+		sub: {
+			f: ''
+		}
+	}
+} ;
+o.d = null ;
+
+o.delete( 'a' ) ;
+o.delete( 'sub.sub' ) ;
+o.delete( 'non.existant.path' ) ;
+
+expect( o ).to.eql( {
+	sub: {
+		b: "toto" ,
+	} ,
+	d: null
+} ) ;
+```
+
+<a name="trees-array-path-on-objects"></a>
+# Tree's array path on objects
+path.get() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null
+} ;
+
+expect( tree.path.get( o , [ 'a' ] ) ).to.be( 5 ) ;
+expect( tree.path.get( o , [ 'sub' ] ) ).to.eql( {
+	b: "toto" ,
+	sub: {
+		c: true
+	}
+} ) ;
+
+expect( tree.path.get( o , [ 'sub' , 'b' ] ) ).to.be( "toto" ) ;
+expect( tree.path.get( o , [ 'sub' , 'sub' ] ) ).to.eql( { c: true } ) ;
+expect( tree.path.get( o , [ 'sub' , 'sub' , 'c' ] ) ).to.be( true ) ;
+expect( tree.path.get( o , [ 'd' ] ) ).to.be( null ) ;
+expect( tree.path.get( o , [ 'nothing' ] ) ).to.be( undefined ) ;
+expect( tree.path.get( o , [ 'sub' , 'nothing' ] ) ).to.be( undefined ) ;
+expect( tree.path.get( o , [ 'nothing' , 'nothing' ] ) ).to.be( undefined ) ;
+```
+
+path.set() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null
+} ;
+
+tree.path.set( o , [ 'a' ] , "8" ) ;
+tree.path.set( o , [ 'sub' , 'b' ] , false ) ;
+tree.path.set( o , [ 'sub' , 'sub' ] , { x: 18 , y: 27 } ) ;
+tree.path.set( o , [ 'non' , 'existant' , 'path' ] , 'new' ) ;
+
+expect( o ).to.eql( {
+	a: "8" ,
+	sub: {
+		b: false ,
+		sub: {
+			x: 18 ,
+			y: 27
+		}
+	} ,
+	d: null ,
+	non: {
+		existant: {
+			path: 'new'
+		}
+	}
+} ) ;
+```
+
+path.delete() on object structure.
+
+```js
+var o = {
+	a: 5 ,
+	sub: {
+		b: "toto" ,
+		sub: {
+			c: true ,
+			sub: {
+				f: ''
+			}
+		}
+	} ,
+	d: null
+} ;
+
+tree.path.delete( o , [ 'a' ] ) ;
+tree.path.delete( o , [ 'sub' , 'sub' ] ) ;
+tree.path.delete( o , [ 'non' , 'existant' , 'path' ] ) ;
+
+expect( o ).to.eql( {
+	sub: {
+		b: "toto" ,
+	} ,
+	d: null
+} ) ;
 ```
 
