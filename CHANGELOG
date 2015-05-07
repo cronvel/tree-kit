@@ -1,4 +1,10 @@
 
+v0.5.4
+------
+
+path: all methods return the targeted object like path.get() does.
+
+
 v0.5.3
 ------
 
