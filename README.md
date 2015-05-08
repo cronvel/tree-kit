@@ -9,6 +9,8 @@ It features the best `.extend()` method, providing dozen of options that all oth
 * Current status: release candidate
 * Platform: Node.js only (browser support is planned)
 
+Some tutorials are available at [blog.soulserv.net/tag/tree-kit](http://blog.soulserv.net/tag/tree-kit/).
+
 
 
 # Install
