@@ -7,6 +7,7 @@
    - [Inverse masks](#inverse-masks)
    - [Tree's path on objects](#trees-path-on-objects)
    - [Tree's path on arrays](#trees-path-on-arrays)
+   - [Tree's path on mixed object and arrays](#trees-path-on-mixed-object-and-arrays)
    - [Inheritance, using Object.create( tree.path.prototype )](#inheritance-using-objectcreate-treepathprototype-)
    - [Tree's array path on objects](#trees-array-path-on-objects)
 <a name=""></a>
@@ -1356,6 +1357,50 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
+path.append() and path.prepend() on object structure.
+
+```js
+var o = {
+	a: null ,
+	sub: {
+		b: [ 'some' ] ,
+		sub: {
+			c: [ 'value' ]
+		}
+	} ,
+} ;
+
+tree.path.append( o , 'a' , 'hello' ) ;
+tree.path.append( o , 'sub.b' , 'value' ) ;
+tree.path.prepend( o , 'sub.sub.c' , 'other' ) ;
+tree.path.prepend( o , 'sub.sub.c' , 'some' ) ;
+tree.path.append( o , 'sub.sub.c' , '!' ) ;
+tree.path.append( o , 'non.existant.path' , '!' ) ;
+tree.path.prepend( o , 'another.non.existant.path' , '!' ) ;
+
+expect( o ).to.eql( {
+	a: [ 'hello' ] ,
+	sub: {
+		b: [ 'some' , 'value' ] ,
+		sub: {
+			c: [ 'some' , 'other' , 'value' , '!' ]
+		}
+	} ,
+	non: {
+		existant: {
+			path: [ '!' ]
+		}
+	} ,
+	another: {
+		non: {
+			existant: {
+				path: [ '!' ]
+			}
+		}
+	}
+} ) ;
+```
+
 <a name="trees-path-on-arrays"></a>
 # Tree's path on arrays
 path.get() on a simple array.
@@ -1371,6 +1416,10 @@ expect( tree.path.get( a , '#0' ) ).to.be( 'a' ) ;
 expect( tree.path.get( a , '#1' ) ).to.be( 'b' ) ;
 expect( tree.path.get( a , '#2' ) ).to.be( 'c' ) ;
 expect( tree.path.get( a , '#3' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '[0]' ) ).to.be( 'a' ) ;
+expect( tree.path.get( a , '[1]' ) ).to.be( 'b' ) ;
+expect( tree.path.get( a , '[2]' ) ).to.be( 'c' ) ;
+expect( tree.path.get( a , '[3]' ) ).to.be( undefined ) ;
 expect( tree.path.get( a , 'length' ) ).to.be( 3 ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 3 ) ;
 expect( tree.path.get( a , 'first' ) ).to.be( undefined ) ;
@@ -1389,6 +1438,9 @@ var a = [ 'a' , [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ] ;
 expect( tree.path.get( a , '#0' ) ).to.be( 'a' ) ;
 expect( tree.path.get( a , '#1' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
 expect( tree.path.get( a , '#2' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '[0]' ) ).to.be( 'a' ) ;
+expect( tree.path.get( a , '[1]' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
+expect( tree.path.get( a , '[2]' ) ).to.be( undefined ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
 expect( tree.path.get( a , '#first' ) ).to.be( 'a' ) ;
 expect( tree.path.get( a , '#last' ) ).to.eql( [ [ 'b' , 'c' ] , 'd' , [ 'e' , 'f' ] ] ) ;
@@ -1398,6 +1450,10 @@ expect( tree.path.get( a , '1#0' ) ).to.eql( [ 'b' , 'c' ] ) ;
 expect( tree.path.get( a , '1#1' ) ).to.eql( 'd' ) ;
 expect( tree.path.get( a , '1#2' ) ).to.eql( [ 'e' , 'f' ] ) ;
 expect( tree.path.get( a , '1#3' ) ).to.be( undefined ) ;
+expect( tree.path.get( a , '[1][0]' ) ).to.eql( [ 'b' , 'c' ] ) ;
+expect( tree.path.get( a , '[1][1]' ) ).to.eql( 'd' ) ;
+expect( tree.path.get( a , '[1][2]' ) ).to.eql( [ 'e' , 'f' ] ) ;
+expect( tree.path.get( a , '[1][3]' ) ).to.be( undefined ) ;
 expect( tree.path.get( a , '1#length' ) ).to.be( 3 ) ;
 expect( tree.path.get( a , '1#first' ) ).to.eql( [ 'b' , 'c' ] ) ;
 expect( tree.path.get( a , '1#last' ) ).to.eql( [ 'e' , 'f' ] ) ;
@@ -1409,7 +1465,9 @@ expect( tree.path.get( a , '1#2#last' ) ).to.eql( 'f' ) ;
 path.set() on a simple array.
 
 ```js
-var a = [ 'a' , 'b' , 'c' ] ;
+var a ;
+
+a = [ 'a' , 'b' , 'c' ] ;
 
 tree.path.set( a , '1' , 'B' ) ;
 tree.path.set( a , '#last' , 3 ) ;
@@ -1417,6 +1475,16 @@ tree.path.set( a , '#next' , 'D' ) ;
 tree.path.set( a , '#first' , 1 ) ;
 
 expect( a ).to.eql( [ 1 , 'B' , 3 , 'D' ] ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 4 ) ;
+
+a = [ 'a' , 'b' , 'c' ] ;
+
+tree.path.set( a , '[1]' , 'BBB' ) ;
+tree.path.set( a , '#last' , 3 ) ;
+tree.path.set( a , '#next' , 'D' ) ;
+tree.path.set( a , '#first' , 1 ) ;
+
+expect( a ).to.eql( [ 1 , 'BBB' , 3 , 'D' ] ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 4 ) ;
 ```
 
@@ -1451,7 +1519,17 @@ expect( a ).to.eql( [ 'a' , 'c' ] ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
 
 a = [ 'a' , 'b' , 'c' ] ;
+tree.path.delete( a , '[1]' ) ;
+expect( a ).to.eql( [ 'a' , 'c' ] ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
+
+a = [ 'a' , 'b' , 'c' ] ;
 tree.path.delete( a , '#2' ) ;
+expect( a ).to.eql( [ 'a' , 'b' ] ) ;
+expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
+
+a = [ 'a' , 'b' , 'c' ] ;
+tree.path.delete( a , '[2]' ) ;
 expect( a ).to.eql( [ 'a' , 'b' ] ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 2 ) ;
 
@@ -1476,6 +1554,39 @@ expect( tree.path.get( a , '#length' ) ).to.be( 1 ) ;
 tree.path.delete( a , '#first' ) ;
 expect( a ).to.eql( [] ) ;
 expect( tree.path.get( a , '#length' ) ).to.be( 0 ) ;
+```
+
+<a name="trees-path-on-mixed-object-and-arrays"></a>
+# Tree's path on mixed object and arrays
+path.get() on a simple array.
+
+```js
+var a = {
+	method: 'get' ,
+	populate: [ 'parents', 'godfather' ]
+} ;
+
+expect( tree.path.get( a , 'method' ) ).to.be( 'get' ) ;
+expect( tree.path.get( a , 'populate' ) ).to.eql( [ 'parents', 'godfather' ] ) ;
+expect( tree.path.get( a , 'populate[0]' ) ).to.be( 'parents' ) ;
+expect( tree.path.get( a , 'populate[1]' ) ).to.be( 'godfather' ) ;
+expect( tree.path.get( a , 'populate[2]' ) ).to.be( undefined ) ;
+```
+
+path.set() on a simple array.
+
+```js
+var a = {
+	method: 'get' ,
+	populate: [ 'parent', 'godfather' ]
+} ;
+
+tree.path.set( a , 'method' , 'post' ) ;
+tree.path.set( a , 'populate[0]' , 'friends' ) ;
+expect( a ).to.eql( {
+	method: 'post' ,
+	populate: [ 'friends', 'godfather' ]
+} ) ;
 ```
 
 <a name="inheritance-using-objectcreate-treepathprototype-"></a>

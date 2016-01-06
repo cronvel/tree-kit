@@ -215,6 +215,49 @@ describe( "Tree's path on objects" , function() {
 		} ) ;
 	} ) ;
 	
+	it( "path.append() and path.prepend() on object structure" , function() {
+		
+		var o = {
+			a: null ,
+			sub: {
+				b: [ 'some' ] ,
+				sub: {
+					c: [ 'value' ]
+				}
+			} ,
+		} ;
+		
+		tree.path.append( o , 'a' , 'hello' ) ;
+		tree.path.append( o , 'sub.b' , 'value' ) ;
+		tree.path.prepend( o , 'sub.sub.c' , 'other' ) ;
+		tree.path.prepend( o , 'sub.sub.c' , 'some' ) ;
+		tree.path.append( o , 'sub.sub.c' , '!' ) ;
+		tree.path.append( o , 'non.existant.path' , '!' ) ;
+		tree.path.prepend( o , 'another.non.existant.path' , '!' ) ;
+		
+		expect( o ).to.eql( {
+			a: [ 'hello' ] ,
+			sub: {
+				b: [ 'some' , 'value' ] ,
+				sub: {
+					c: [ 'some' , 'other' , 'value' , '!' ]
+				}
+			} ,
+			non: {
+				existant: {
+					path: [ '!' ]
+				}
+			} ,
+			another: {
+				non: {
+					existant: {
+						path: [ '!' ]
+					}
+				}
+			}
+		} ) ;
+	} ) ;
+	
 	it( "all method should return the targeted item, like path.get() does" ) ;
 	
 } ) ;
