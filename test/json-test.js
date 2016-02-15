@@ -1,5 +1,5 @@
 /*
-	The Cedric's Swiss Knife (CSK) - CSK object tree toolbox
+	The Cedric's Swiss Knife (CSK) - CSK object tree toolbox test suite
 
 	Copyright (c) 2014, 2015 Cédric Ronvel 
 	
@@ -24,31 +24,67 @@
 	SOFTWARE.
 */
 
+/* jshint unused:false */
+/* global describe, it, before, after */
 
 
-// Create and export
-var tree = {} ;
-module.exports = tree ;
-
-
-// Tier 0: extend() is even used to build the module
-tree.extend = require( './extend.js' ) ;
+var tree = require( '../lib/tree.js' ) ;
+var json = tree.json ;
+var expect = require( 'expect.js' ) ;
 
 
 
-tree.extend( null , tree ,
+
+
+			/* Helpers */
+
+
+
+function testEq( v )
+{
+	expect( json.stringify( v ) ).to.be( JSON.stringify( v ) ) ;
+}
+
+
+
+
+			/* Tests */
+
+
+
+describe( "JSON" , function() {
 	
-	// Tier 1
-	require( './lazy.js' ) ,
-	
-	// Tier 2
-	require( './clone.js' ) ,
-	
-	// Tier 3
-	require( './path.js' ) ,
-	{ json: require( './json.js' ) } ,
-	require( './diff.js' ) ,
-	require( './mask.js' )
-) ;
-
+	it( "Basic tests" , function() {
+		testEq( undefined ) ;
+		testEq( null ) ;
+		testEq( true ) ;
+		testEq( false ) ;
+		
+		testEq( 0 ) ;
+		testEq( 0.0000000123 ) ;
+		testEq( -0.0000000123 ) ;
+		testEq( 1234 ) ;
+		testEq( -1234 ) ;
+		testEq( NaN ) ;
+		testEq( Infinity ) ;
+		testEq( - Infinity ) ;
+		
+		testEq( '' ) ;
+		testEq( '0' ) ;
+		testEq( '1' ) ;
+		testEq( '123' ) ;
+		testEq( 'A' ) ;
+		testEq( 'ABC' ) ;
+		testEq( '\tabc\n\rAB\tC\né~#&|_-ł»¢' ) ;
+		
+		testEq( {} ) ;
+		testEq( {a:1,b:'2'} ) ;
+		testEq( {a:1,b:'2',c:true,d:null,e:undefined} ) ;
+		testEq( {a:1,b:'2',sub:{c:true,d:null,e:undefined,sub:{f:''}}} ) ;
+		
+		testEq( [] ) ;
+		testEq( [1,'2'] ) ;
+		testEq( [1,'2',[null,undefined,true]] ) ;
+	} ) ;
+} ) ;
 
