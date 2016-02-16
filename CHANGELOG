@@ -1,4 +1,10 @@
 
+v0.5.9
+------
+
+json.stringify() is now on par with native JSON.stringify()!
+
+
 v0.5.8
 ------
 
