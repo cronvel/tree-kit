@@ -75,7 +75,7 @@ describe( "JSON" , function() {
 		testEq( '123' ) ;
 		testEq( 'A' ) ;
 		testEq( 'ABC' ) ;
-		testEq( '\tabc\n\rAB\tC\né~#&|_-ł»¢' ) ;
+		testEq( '\ta"b"c\n\rAB\tC\né~\'#&|_\\-ł"»¢/æ//nĸ^' ) ;
 		
 		testEq( {} ) ;
 		testEq( {a:1,b:'2'} ) ;
