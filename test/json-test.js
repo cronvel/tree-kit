@@ -58,6 +58,8 @@ function testEq( v )
 describe( "JSON" , function() {
 	
 	it( "Basic tests" , function() {
+		require( '../sample/sample1.json' ) ;
+		
 		testEq( undefined ) ;
 		testEq( null ) ;
 		testEq( true ) ;
@@ -89,6 +91,8 @@ describe( "JSON" , function() {
 		testEq( [] ) ;
 		testEq( [1,'2'] ) ;
 		testEq( [1,'2',[null,undefined,true]] ) ;
+		
+		testEq( require( '../sample/sample1.json' ) ) ;
 	} ) ;
 } ) ;
 
