@@ -27,6 +27,9 @@
 /* jshint unused:false */
 /* global describe, it, before, after */
 
+"use strict" ;
+
+
 
 var tree = require( '../lib/tree.js' ) ;
 var expect = require( 'expect.js' ) ;
@@ -50,7 +53,7 @@ describe( "defineLazyProperty()" , function() {
 		expect( object.myprop ).to.be( 1 ) ;
 		expect( object.myprop ).to.be( 1 ) ;
 		expect( counter ).to.be( 1 ) ;
-		object.myprop ++ ;
+		expect( function() { object.myprop ++ ; } ).to.throwError() ;
 		expect( object.myprop ).to.be( 1 ) ;
 	} ) ;
 } ) ;

@@ -1009,7 +1009,7 @@ expect( object.myprop ).to.be( 1 ) ;
 expect( object.myprop ).to.be( 1 ) ;
 expect( object.myprop ).to.be( 1 ) ;
 expect( counter ).to.be( 1 ) ;
-object.myprop ++ ;
+expect( function() { object.myprop ++ ; } ).to.throwError() ;
 expect( object.myprop ).to.be( 1 ) ;
 ```
 

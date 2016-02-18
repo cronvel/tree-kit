@@ -27,6 +27,9 @@
 /* jshint unused:false */
 /* global describe, it, before, after */
 
+"use strict" ;
+
+
 
 var tree = require( '../lib/tree.js' ) ;
 var json = tree.json ;
