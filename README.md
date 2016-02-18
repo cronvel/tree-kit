@@ -1256,6 +1256,7 @@ testEq( '123' ) ;
 testEq( 'A' ) ;
 testEq( 'ABC' ) ;
 testEq( '\ta"b"c\n\rAB\tC\né~\'#&|_\\-ł"»¢/æ//nĸ^' ) ;
+testEq( '\t\v\x00\x01\x1f' ) ;
 
 testEq( {} ) ;
 testEq( {a:1,b:'2'} ) ;
