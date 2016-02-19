@@ -43,9 +43,20 @@ var expect = require( 'expect.js' ) ;
 
 
 
-function testEq( v )
+function testStringifyEq( v )
 {
-	expect( json.stringify( v ) ).to.be( JSON.stringify( v ) ) ;
+	expect( json.stringify( v ) )
+		.to.be( JSON.stringify( v ) ) ;
+}
+
+function testParseEq( s )
+{
+	expect( JSON.stringify(
+			json.parse( s )
+		) )
+		.to.be( JSON.stringify(
+			JSON.parse( s )
+		) ) ;
 }
 
 
@@ -57,42 +68,66 @@ function testEq( v )
 
 describe( "JSON" , function() {
 	
-	it( "Basic tests" , function() {
-		require( '../sample/sample1.json' ) ;
+	it( "stringify()" , function() {
 		
-		testEq( undefined ) ;
-		testEq( null ) ;
-		testEq( true ) ;
-		testEq( false ) ;
+		testStringifyEq( undefined ) ;
+		testStringifyEq( null ) ;
+		testStringifyEq( true ) ;
+		testStringifyEq( false ) ;
 		
-		testEq( 0 ) ;
-		testEq( 0.0000000123 ) ;
-		testEq( -0.0000000123 ) ;
-		testEq( 1234 ) ;
-		testEq( -1234 ) ;
-		testEq( NaN ) ;
-		testEq( Infinity ) ;
-		testEq( - Infinity ) ;
+		testStringifyEq( 0 ) ;
+		testStringifyEq( 0.0000000123 ) ;
+		testStringifyEq( -0.0000000123 ) ;
+		testStringifyEq( 1234 ) ;
+		testStringifyEq( -1234 ) ;
+		testStringifyEq( NaN ) ;
+		testStringifyEq( Infinity ) ;
+		testStringifyEq( - Infinity ) ;
 		
-		testEq( '' ) ;
-		testEq( '0' ) ;
-		testEq( '1' ) ;
-		testEq( '123' ) ;
-		testEq( 'A' ) ;
-		testEq( 'ABC' ) ;
-		testEq( '\ta"b"c\n\rAB\tC\né~\'#&|_\\-ł"»¢/æ//nĸ^' ) ;
-		testEq( '\t\v\x00\x01\x1f' ) ;
+		testStringifyEq( '' ) ;
+		testStringifyEq( '0' ) ;
+		testStringifyEq( '1' ) ;
+		testStringifyEq( '123' ) ;
+		testStringifyEq( 'A' ) ;
+		testStringifyEq( 'ABC' ) ;
+		testStringifyEq( '\ta"b"c\n\rAB\tC\né~\'#&|_\\-ł"»¢/æ//nĸ^' ) ;
+		testStringifyEq( '\t\v\x00\x01\x7f\x1fa\x7fa' ) ;
 		
-		testEq( {} ) ;
-		testEq( {a:1,b:'2'} ) ;
-		testEq( {a:1,b:'2',c:true,d:null,e:undefined} ) ;
-		testEq( {a:1,b:'2',sub:{c:true,d:null,e:undefined,sub:{f:''}}} ) ;
+		testStringifyEq( {} ) ;
+		testStringifyEq( {a:1,b:'2'} ) ;
+		testStringifyEq( {a:1,b:'2',c:true,d:null,e:undefined} ) ;
+		testStringifyEq( {a:1,b:'2',sub:{c:true,d:null,e:undefined,sub:{f:''}}} ) ;
 		
-		testEq( [] ) ;
-		testEq( [1,'2'] ) ;
-		testEq( [1,'2',[null,undefined,true]] ) ;
+		testStringifyEq( [] ) ;
+		testStringifyEq( [1,'2'] ) ;
+		testStringifyEq( [1,'2',[null,undefined,true]] ) ;
 		
-		testEq( require( '../sample/sample1.json' ) ) ;
+		testStringifyEq( require( '../sample/sample1.json' ) ) ;
+		testStringifyEq( require( '../sample/stringFlatObject.js' ) ) ;
+		//testStringifyEq( require( '../sample/garbageStringObject.js' ) ) ;
+	} ) ;
+	
+	it( "parse()" , function() {
+		
+		testParseEq( 'null' ) ;
+		testParseEq( 'true' ) ;
+		testParseEq( 'false' ) ;
+		
+		testParseEq( '0' ) ;
+		testParseEq( '1' ) ;
+		testParseEq( '123' ) ;
+		testParseEq( '-123' ) ;
+		testParseEq( '123.456' ) ;
+		testParseEq( '-123.456' ) ;
+		testParseEq( '0.123' ) ;
+		testParseEq( '-0.123' ) ;
+		testParseEq( '0.00123' ) ;
+		testParseEq( '-0.00123' ) ;
+		
+		testParseEq( '""' ) ;
+		testParseEq( '"abc"' ) ;
+		testParseEq( '"abc\\ndef\\tghi\\rjkl"' ) ;
+		testParseEq( '"abc\\u0000def"' ) ;
 	} ) ;
 } ) ;
 

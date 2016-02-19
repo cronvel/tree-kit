@@ -1,40 +1,13 @@
 
 
 var json = require( '../lib/json.js' ) ;
-var sample = require( '../sample/sample1.json' ) ;
 
-var garbageJson = {} ;
 
-function init()
-{
-	var i , j , l , k , v ;
+
+
+benchmark( 'JSON stringify(), real-world JSON' , function() {
 	
-	for ( i = 0 ; i < 100 ; i ++ )
-	{
-		k = '' ;
-		v = '' ;
-		
-		for ( j = 0 , l = 1 + Math.floor( Math.random() * 30 ) ; j < l ; j ++ )
-		{
-			k += String.fromCharCode( 0x20 + Math.floor( Math.random() * 128 ) ) ;
-		}
-		
-		for ( j = 0 , l = 1 + Math.floor( Math.random() * 200 ) ; j < l ; j ++ )
-		{
-			v += String.fromCharCode( 0x20 + Math.floor( Math.random() * 128 ) ) ;
-		}
-		
-		garbageJson[ k ] = v ;
-	}
-	
-	//console.log( JSON.stringify( garbageJson ) ) ;
-}
-
-init() ;
-
-
-
-benchmark( 'JSON stringify(), sample JSON' , function() {
+	var sample = require( '../sample/sample1.json' ) ;
 	
 	competitor( 'Native JSON.stringify()' , function() {
 		JSON.stringify( sample ) ;
@@ -47,14 +20,61 @@ benchmark( 'JSON stringify(), sample JSON' , function() {
 
 
 
-benchmark( 'JSON stringify(), garbage JSON' , function() {
+benchmark( 'JSON stringify(), flat object with big strings' , function() {
+	
+	var sample = require( '../sample/stringFlatObject.js' ) ;
 	
 	competitor( 'Native JSON.stringify()' , function() {
-		JSON.stringify( garbageJson ) ;
+		JSON.stringify( sample ) ;
 	} ) ;
 	
 	competitor( 'tree.json.stringify()' , function() {
-		json.stringify( garbageJson ) ;
+		json.stringify( sample ) ;
+	} ) ;
+} ) ;
+
+
+
+benchmark( 'JSON stringify(), flat object with big strings and full of bad chars' , function() {
+	
+	var sample = require( '../sample/garbageStringObject.js' ) ;
+	
+	competitor( 'Native JSON.stringify()' , function() {
+		JSON.stringify( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.stringify()' , function() {
+		json.stringify( sample ) ;
+	} ) ;
+} ) ;
+
+
+
+benchmark( 'JSON stringify(), big flat object' , function() {
+	
+	var sample = require( '../sample/bigFlatObject.js' ) ;
+	
+	competitor( 'Native JSON.stringify()' , function() {
+		JSON.stringify( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.stringify()' , function() {
+		json.stringify( sample ) ;
+	} ) ;
+} ) ;
+
+
+
+benchmark( 'JSON stringify(), big deep object' , function() {
+	
+	var sample = require( '../sample/bigDeepObject.js' ) ;
+	
+	competitor( 'Native JSON.stringify()' , function() {
+		JSON.stringify( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.stringify()' , function() {
+		json.stringify( sample ) ;
 	} ) ;
 } ) ;
 
