@@ -16,12 +16,12 @@ function init()
 		
 		for ( j = 0 , l = 1 + Math.floor( Math.random() * 30 ) ; j < l ; j ++ )
 		{
-			k += String.fromCharCode( Math.floor( Math.random() * 128 ) ) ;
+			k += String.fromCharCode( 0x20 + Math.floor( Math.random() * 128 ) ) ;
 		}
 		
-		for ( j = 0 , l = 1 + Math.floor( Math.random() * 30 ) ; j < l ; j ++ )
+		for ( j = 0 , l = 1 + Math.floor( Math.random() * 200 ) ; j < l ; j ++ )
 		{
-			v += String.fromCharCode( Math.floor( Math.random() * 128 ) ) ;
+			v += String.fromCharCode( 0x20 + Math.floor( Math.random() * 128 ) ) ;
 		}
 		
 		garbageJson[ k ] = v ;
