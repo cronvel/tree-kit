@@ -1,7 +1,24 @@
 
 
 var json = require( '../lib/json.js' ) ;
+var fs = require( 'fs' ) ;
 
+
+
+
+
+benchmark( 'JSON parse(), real-world JSON' , function() {
+	
+	var sample = fs.readFileSync( __dirname + '/../sample/sample1.json' ).toString() ;
+	
+	competitor( 'Native JSON.parse()' , function() {
+		JSON.parse( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.parse()' , function() {
+		json.parse( sample ) ;
+	} ) ;
+} ) ;
 
 
 
