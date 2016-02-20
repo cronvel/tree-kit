@@ -129,8 +129,9 @@ describe( "JSON" , function() {
 		
 		testParseEq( '""' ) ;
 		testParseEq( '"abc"' ) ;
+		testParseEq( '"abc\\"def"' ) ;
 		testParseEq( '"abc\\ndef\\tghi\\rjkl"' ) ;
-		testParseEq( '"abc\\u0000\\u007f\\u0061def"' ) ;
+		testParseEq( '"abc\\u0000\\u007f\\u0061def\\"\\"jj"' ) ;
 		
 		testParseEq( '{}' ) ;
 		testParseEq( '{"a":1}' ) ;
