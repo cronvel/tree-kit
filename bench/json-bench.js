@@ -99,6 +99,21 @@ benchmark( 'JSON parse(), real-world JSON' , function() {
 
 
 
+benchmark( 'JSON parse(), dummy false' , function() {
+	
+	var sample = "false" ;
+	
+	competitor( 'Native JSON.parse()' , function() {
+		JSON.parse( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.parse()' , function() {
+		json.parse( sample ) ;
+	} ) ;
+} ) ;
+
+
+
 benchmark( 'JSON parse(), dummy number' , function() {
 	
 	var sample = "123456789.123456789" ;
@@ -129,7 +144,7 @@ benchmark( 'JSON parse(), dummy string' , function() {
 
 
 
-benchmark( 'JSON parse(), dummy string one backslashes' , function() {
+benchmark( 'JSON parse(), dummy string one backslash' , function() {
 	
 	var sample = '"What a wonderful\\nstring!"' ;
 	
@@ -192,7 +207,22 @@ benchmark( 'JSON parse(), flat object with big strings and full of bad chars' , 
 benchmark( 'JSON parse(), big flat object' , function() {
 	
 	var sample = JSON.stringify( require( '../sample/bigFlatObject.js' ) ) ;
+	
+	competitor( 'Native JSON.parse()' , function() {
+		JSON.parse( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.parse()' , function() {
+		json.parse( sample ) ;
+	} ) ;
+} ) ;
 
+
+
+benchmark( 'JSON parse(), big flat object, prettyfied' , function() {
+	
+	var sample = JSON.stringify( require( '../sample/bigFlatObject.js' ) , null , '        ' ) ;
+	
 	competitor( 'Native JSON.parse()' , function() {
 		JSON.parse( sample ) ;
 	} ) ;
@@ -207,7 +237,22 @@ benchmark( 'JSON parse(), big flat object' , function() {
 benchmark( 'JSON parse(), big deep object' , function() {
 	
 	var sample = JSON.stringify( require( '../sample/bigDeepObject.js' ) ) ;
+	
+	competitor( 'Native JSON.parse()' , function() {
+		JSON.parse( sample ) ;
+	} ) ;
+	
+	competitor( 'tree.json.parse()' , function() {
+		json.parse( sample ) ;
+	} ) ;
+} ) ;
 
+
+
+benchmark( 'JSON parse(), big deep object, prettyfied' , function() {
+	
+	var sample = JSON.stringify( require( '../sample/bigDeepObject.js' ) , null , '        ' ) ;
+	
 	competitor( 'Native JSON.parse()' , function() {
 		JSON.parse( sample ) ;
 	} ) ;
