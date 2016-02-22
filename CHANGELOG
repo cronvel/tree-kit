@@ -1,4 +1,10 @@
 
+v0.5.18
+-------
+
+tree.json was removed (get its own module: json-kit)
+
+
 v0.5.17
 -------
 
