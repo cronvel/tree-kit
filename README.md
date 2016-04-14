@@ -1676,6 +1676,42 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
+path.autoPush().
+
+```js
+var o = {
+	a: 1 ,
+	sub: {
+		b: [ 'some' ] ,
+		sub: {
+			c: [ 'some' , 'other' , 'value' ]
+		}
+	} ,
+} ;
+
+tree.path.autoPush( o , 'a' , 'hello' ) ;
+tree.path.autoPush( o , 'd' , 'D' ) ;
+tree.path.autoPush( o , 'sub.b' , 'value' ) ;
+tree.path.autoPush( o , 'sub.sub.c' , '!' ) ;
+tree.path.autoPush( o , 'non.existant.path' , '!' ) ;
+
+expect( o ).to.eql( {
+	a: [ 1 , 'hello' ] ,
+	d: 'D' ,
+	sub: {
+		b: [ 'some' , 'value' ] ,
+		sub: {
+			c: [ 'some' , 'other' , 'value' , '!' ]
+		}
+	} ,
+	non: {
+		existant: {
+			path: '!'
+		}
+	}
+} ) ;
+```
+
 <a name="trees-path-on-arrays"></a>
 # Tree's path on arrays
 path.get() on a simple array.

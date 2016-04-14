@@ -261,6 +261,41 @@ describe( "Tree's path on objects" , function() {
 		} ) ;
 	} ) ;
 	
+	it( "path.autoPush()" , function() {
+		
+		var o = {
+			a: 1 ,
+			sub: {
+				b: [ 'some' ] ,
+				sub: {
+					c: [ 'some' , 'other' , 'value' ]
+				}
+			} ,
+		} ;
+		
+		tree.path.autoPush( o , 'a' , 'hello' ) ;
+		tree.path.autoPush( o , 'd' , 'D' ) ;
+		tree.path.autoPush( o , 'sub.b' , 'value' ) ;
+		tree.path.autoPush( o , 'sub.sub.c' , '!' ) ;
+		tree.path.autoPush( o , 'non.existant.path' , '!' ) ;
+		
+		expect( o ).to.eql( {
+			a: [ 1 , 'hello' ] ,
+			d: 'D' ,
+			sub: {
+				b: [ 'some' , 'value' ] ,
+				sub: {
+					c: [ 'some' , 'other' , 'value' , '!' ]
+				}
+			} ,
+			non: {
+				existant: {
+					path: '!'
+				}
+			}
+		} ) ;
+	} ) ;
+	
 	it( "all method should return the targeted item, like path.get() does" ) ;
 	
 } ) ;
