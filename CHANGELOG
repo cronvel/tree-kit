@@ -1,4 +1,10 @@
 
+v0.5.20
+-------
+
+Bugfix: make require( 'tree-kit/lib/path.js' ) works as expected (was encapsulating everything in a 'path' sub-object)
+
+
 v0.5.19
 -------
 
