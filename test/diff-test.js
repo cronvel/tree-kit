@@ -59,7 +59,7 @@ describe( "Diff" , function() {
 		
 		var diff = tree.diff( a , b ) ;
 		
-		//console.log( diff ) ;
+		//console.log( JSON.stringify( diff , null , '  ' ) ) ;
 		expect( diff ).not.to.be( null ) ;
 		expect( diff ).to.only.have.keys( '.a', '.c', '.d' ) ;
 	} ) ;
@@ -101,7 +101,7 @@ describe( "Diff" , function() {
 		
 		var diff = tree.diff( a , b ) ;
 		
-		//console.log( diff ) ;
+		//console.log( JSON.stringify( diff , null , '  ' ) ) ;
 		expect( diff ).not.to.be( null ) ;
 		expect( diff ).to.only.have.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
 	} ) ;
