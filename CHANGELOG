@@ -1,4 +1,10 @@
 
+v0.5.21
+-------
+
+tree.path() now return undefined if the source object, well, is not an object (instead of throwing)
+
+
 v0.5.20
 -------
 
