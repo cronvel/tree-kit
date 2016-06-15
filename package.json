@@ -1,6 +1,6 @@
 {
   "name": "tree-kit",
-  "version": "0.5.21",
+  "version": "0.5.22",
   "description": "Tree utilities which provides a full-featured extend and object-cloning facility, and various tools to deal with nested object structures.",
   "main": "lib/tree.js",
   "directories": {
@@ -34,5 +34,13 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cronvel/tree-kit/issues"
+  },
+  "copyright": {
+    "title": "Tree Kit",
+    "years": [
+      2014,
+      2016
+    ],
+    "owner": "Cédric Ronvel"
   }
 }

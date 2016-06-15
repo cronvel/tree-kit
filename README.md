@@ -1712,6 +1712,45 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
+empty keys.
+
+```js
+var o ;
+
+o = {
+	a: 5 ,
+	"": {
+		b: "toto" ,
+		sub: {
+			c: true
+		}
+	} ,
+	d: null
+} ;
+
+expect( tree.path.get( o , 'a' ) ).to.be( 5 ) ;
+expect( tree.path.get( o , '' ) ).to.eql( { b: "toto" , sub: { c: true } } ) ;
+expect( tree.path.get( o , '.b' ) ).to.be( "toto" ) ;
+expect( tree.path.get( o , '.sub' ) ).to.eql( { c: true } ) ;
+expect( tree.path.get( o , '.sub.c' ) ).to.be( true ) ;
+
+o = {
+	"": {
+		"": {
+			"": {
+				a: 1 ,
+				b: 2
+			}
+		}
+	} ,
+} ;
+
+expect( tree.path.get( o , '' ) ).to.eql( { "": { "": { a: 1 , b: 2 } } } ) ;
+expect( tree.path.get( o , '.' ) ).to.eql( { "": { a: 1 , b: 2 } } ) ;
+expect( tree.path.get( o , '..' ) ).to.eql( { a: 1 , b: 2 } ) ;
+expect( tree.path.get( o , '...a' ) ).to.eql( 1 ) ;
+```
+
 <a name="trees-path-on-arrays"></a>
 # Tree's path on arrays
 path.get() on a simple array.
