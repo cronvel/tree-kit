@@ -102,6 +102,23 @@ expect( c.sub.link ).to.be( c.sub2 ) ;
 expect( c.sub2.link ).to.be( c.sub ) ;
 ```
 
+cloning an array.
+
+```js
+var a , c ;
+
+a = [ 'one' , 'two' , 'three' ] ;
+c = tree.clone( a ) ;
+expect( c ).to.eql( a ) ;
+expect( Array.isArray( c ) ).to.be.ok() ;
+
+a = [ 'one' , [ 'two' , 'three' ] ] ;
+c = tree.clone( a ) ;
+expect( c ).to.eql( a ) ;
+expect( Array.isArray( c ) ).to.be.ok() ;
+expect( Array.isArray( c[ 1 ] ) ).to.be.ok() ;
+```
+
 <a name="diff"></a>
 # Diff
 should return an array of differences for two objects without nested object.

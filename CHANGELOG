@@ -1,4 +1,10 @@
 
+v0.5.24
+-------
+
+IMPORTANT BUGFIX: clone was not working well with arrays
+
+
 v0.5.23
 -------
 

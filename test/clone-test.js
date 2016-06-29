@@ -130,6 +130,22 @@ describe( "clone()" , function() {
 		expect( c.sub2.link ).to.be( c.sub ) ;
 	} ) ;
 	
+	it( "cloning an array" , function() {
+		
+		var a , c ;
+		
+		a = [ 'one' , 'two' , 'three' ] ;
+		c = tree.clone( a ) ;
+		expect( c ).to.eql( a ) ;
+		expect( Array.isArray( c ) ).to.be.ok() ;
+		
+		a = [ 'one' , [ 'two' , 'three' ] ] ;
+		c = tree.clone( a ) ;
+		expect( c ).to.eql( a ) ;
+		expect( Array.isArray( c ) ).to.be.ok() ;
+		expect( Array.isArray( c[ 1 ] ) ).to.be.ok() ;
+	} ) ;
+		
 	it( "better test suit for clone()" ) ;
 } ) ;
 
