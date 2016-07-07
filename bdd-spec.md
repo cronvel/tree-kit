@@ -1418,6 +1418,34 @@ expect( o ).to.eql( {
 } ) ;
 ```
 
+path.concat() and path.insert() on object structure.
+
+```js
+var o = {
+	a: null ,
+	sub: {
+		b: [ 'hi' ] ,
+		sub: {
+			c: [ 'again' ]
+		}
+	} ,
+} ;
+
+tree.path.concat( o , 'a' , [ 'hello' , 'world' ] ) ;
+tree.path.concat( o , 'sub.b' , [ 'hello' , 'world' ] ) ;
+tree.path.insert( o , 'sub.sub.c' , [ 'hello' , 'world' ] ) ;
+
+expect( o ).to.eql( {
+	a: [ 'hello' , 'world' ] ,
+	sub: {
+		b: [ 'hi' , 'hello' , 'world' ] ,
+		sub: {
+			c: [ 'hello' , 'world' , 'again' ]
+		}
+	}
+} ) ;
+```
+
 path.autoPush().
 
 ```js
