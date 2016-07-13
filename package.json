@@ -1,6 +1,6 @@
 {
   "name": "tree-kit",
-  "version": "0.5.25",
+  "version": "0.5.26",
   "description": "Tree utilities which provides a full-featured extend and object-cloning facility, and various tools to deal with nested object structures.",
   "main": "lib/tree.js",
   "directories": {
@@ -9,9 +9,11 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "browserify": "^13.0.1",
     "expect.js": "^0.3.1",
     "jshint": "^2.5.6",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "uglify-js": "^2.7.0"
   },
   "scripts": {
     "test": "mocha -R dot"

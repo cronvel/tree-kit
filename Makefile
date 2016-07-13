@@ -5,13 +5,19 @@
 
 # The first rule is the default rule, when invoking "make" without argument...
 # Build every buildable things
-all: install doc
+all: install doc browser
 
 # Just install things so it works, basicaly: it just performs a "npm install --production" ATM
 install: log/npm-install.log
 
 # Just install things so it works, basicaly: it just performs a "npm install" ATM
 dev-install: log/npm-dev-install.log
+
+# Build
+build: browser
+
+# Build the browser lib
+browser: browser/tree-kit.js browser/tree-kit.min.js
 
 # This run the JsHint & Mocha BDD test, display it to STDOUT & save it to log/mocha.log and log/jshint.log
 test: log/jshint.log log/mocha.log
@@ -21,6 +27,9 @@ lint: log/jshint.log
 
 # This run the Mocha BDD test, display it to STDOUT & save it to log/mocha.log
 unit: log/mocha.log
+
+# Performs the browser tests
+browser-test: log/testling.log
 
 # This build the doc and README.md
 doc: README.md
@@ -37,10 +46,20 @@ clean: clean-all
 
 MOCHA=./node_modules/mocha/bin/mocha
 JSHINT=./node_modules/jshint/bin/jshint --verbose
+BROWSERIFY=./node_modules/.bin/browserify
+UGLIFY=./node_modules/.bin/uglifyjs
 
 
 
 # Files rules
+
+# Build the browser lib
+browser/tree-kit.js: lib/*.js
+	${BROWSERIFY} lib/browser.js -s treeKit -o browser/tree-kit.js
+
+# Build the browser minified lib
+browser/tree-kit.min.js: browser/tree-kit.js
+	${UGLIFY} browser/tree-kit.js -o browser/tree-kit.min.js -m
 
 # JsHint STDOUT test
 log/jshint.log: log/npm-dev-install.log lib/*.js test/*.js
