@@ -73,6 +73,25 @@ describe( "Tree's path on objects" , function() {
 		expect( tree.path.get( o , 'nothing.nothing' ) ).to.be( undefined ) ;
 	} ) ;
 	
+	/*
+	it( "bracket notation on object" , function() {
+		
+		var o = {
+			a: 5 ,
+			sub: {
+				b: "toto" ,
+				sub: {
+					c: true
+				}
+			} ,
+			d: null
+		} ;
+		
+		expect( tree.path.get( o , '[a]' ) ).to.be( 5 ) ;
+		expect( tree.path.get( o , '[sub][sub][c]' ) ).to.be( true ) ;
+	} ) ;
+	*/
+	
 	it( "path.delete() on object structure" , function() {
 		
 		var o = {

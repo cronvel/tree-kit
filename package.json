@@ -37,6 +37,13 @@
   "bugs": {
     "url": "https://github.com/cronvel/tree-kit/issues"
   },
+  "config": {
+    "tea-time": {
+      "coverDir": [
+        "lib"
+      ]
+    }
+  },
   "copyright": {
     "title": "Tree Kit",
     "years": [
