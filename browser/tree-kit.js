@@ -1,21 +1,21 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.treeKit = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.treeKit = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,21 +42,21 @@ tree.path = require( './path.js' ) ;
 },{"./clone.js":2,"./extend.js":3,"./path.js":4}],2:[function(require,module,exports){
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -74,11 +74,10 @@ tree.path = require( './path.js' ) ;
 	Stand-alone fork of extend.js, without options.
 */
 
-module.exports = function clone( originalObject , circular )
-{
+module.exports = function clone( originalObject , circular ) {
 	// First create an empty object with
 	// same prototype of our original source
-	
+
 	var propertyIndex , descriptor , keys , current , nextSource , indexOf ,
 		copies = [ {
 			source: originalObject ,
@@ -87,69 +86,64 @@ module.exports = function clone( originalObject , circular )
 		cloneObject = copies[ 0 ].target ,
 		sourceReferences = [ originalObject ] ,
 		targetReferences = [ cloneObject ] ;
-	
+
 	// First in, first out
-	while ( current = copies.shift() )	// jshint ignore:line
-	{
+	while ( ( current = copies.shift() ) ) {
 		keys = Object.getOwnPropertyNames( current.source ) ;
 
-		for ( propertyIndex = 0 ; propertyIndex < keys.length ; propertyIndex ++ )
-		{
+		for ( propertyIndex = 0 ; propertyIndex < keys.length ; propertyIndex ++ ) {
 			// Save the source's descriptor
 			descriptor = Object.getOwnPropertyDescriptor( current.source , keys[ propertyIndex ] ) ;
-			
-			if ( ! descriptor.value || typeof descriptor.value !== 'object' )
-			{
+
+			if ( ! descriptor.value || typeof descriptor.value !== 'object' ) {
 				Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
 				continue ;
 			}
-			
+
 			nextSource = descriptor.value ;
 			descriptor.value = Array.isArray( nextSource ) ? [] : Object.create( Object.getPrototypeOf( nextSource ) ) ;
-			
-			if ( circular )
-			{
+
+			if ( circular ) {
 				indexOf = sourceReferences.indexOf( nextSource ) ;
-				
-				if ( indexOf !== -1 )
-				{
+
+				if ( indexOf !== -1 ) {
 					// The source is already referenced, just assign reference
 					descriptor.value = targetReferences[ indexOf ] ;
 					Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
 					continue ;
 				}
-				
+
 				sourceReferences.push( nextSource ) ;
 				targetReferences.push( descriptor.value ) ;
 			}
-			
+
 			Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
-			
+
 			copies.push( { source: nextSource , target: descriptor.value } ) ;
 		}
 	}
-	
+
 	return cloneObject ;
 } ;
 
 },{}],3:[function(require,module,exports){
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -194,95 +188,80 @@ module.exports = function clone( originalObject , circular )
 				for object whose prototype is listed
 			* whitelist: the opposite of blacklist
 */
-function extend( options , target )
-{
+function extend( options , target , ... sources ) {
 	//console.log( "\nextend():\n" , arguments ) ;
-	var i , source , newTarget = false , length = arguments.length ;
-	
-	if ( length < 3 ) { return target ; }
-	
-	var sources = Array.prototype.slice.call( arguments , 2 ) ;
-	length = sources.length ;
-	
+	var i , source , newTarget = false , length = sources.length ;
+
+	if ( ! length ) { return target ; }
+
 	if ( ! options || typeof options !== 'object' ) { options = {} ; }
-	
+
 	var runtime = { depth: 0 , prefix: '' } ;
-	
+
 	if ( ! options.maxDepth && options.deep && ! options.circular ) { options.maxDepth = 100 ; }
-	
+
 	if ( options.deepFunc ) { options.deep = true ; }
-	
-	if ( options.deepFilter && typeof options.deepFilter === 'object' )
-	{
+
+	if ( options.deepFilter && typeof options.deepFilter === 'object' ) {
 		if ( options.deepFilter.whitelist && ( ! Array.isArray( options.deepFilter.whitelist ) || ! options.deepFilter.whitelist.length ) ) { delete options.deepFilter.whitelist ; }
 		if ( options.deepFilter.blacklist && ( ! Array.isArray( options.deepFilter.blacklist ) || ! options.deepFilter.blacklist.length ) ) { delete options.deepFilter.blacklist ; }
 		if ( ! options.deepFilter.whitelist && ! options.deepFilter.blacklist ) { delete options.deepFilter ; }
 	}
-	
+
 	// 'flat' option force 'deep'
-	if ( options.flat )
-	{
+	if ( options.flat ) {
 		options.deep = true ;
 		options.proto = false ;
 		options.inherit = false ;
 		options.unflat = false ;
 		if ( typeof options.flat !== 'string' ) { options.flat = '.' ; }
 	}
-	
-	if ( options.unflat )
-	{
+
+	if ( options.unflat ) {
 		options.deep = false ;
 		options.proto = false ;
 		options.inherit = false ;
 		options.flat = false ;
 		if ( typeof options.unflat !== 'string' ) { options.unflat = '.' ; }
 	}
-	
+
 	// If the prototype is applied, only owned properties should be copied
 	if ( options.inherit ) { options.own = true ; options.proto = false ; }
 	else if ( options.proto ) { options.own = true ; }
-	
-	if ( ! target || ( typeof target !== 'object' && typeof target !== 'function' ) )
-	{
+
+	if ( ! target || ( typeof target !== 'object' && typeof target !== 'function' ) ) {
 		newTarget = true ;
 	}
-	
-	if ( ! options.skipRoot && ( options.inherit || options.proto ) )
-	{
-		for ( i = length - 1 ; i >= 0 ; i -- )
-		{
+
+	if ( ! options.skipRoot && ( options.inherit || options.proto ) ) {
+		for ( i = length - 1 ; i >= 0 ; i -- ) {
 			source = sources[ i ] ;
-			if ( source && ( typeof source === 'object' || typeof source === 'function' ) )
-			{
-				if ( options.inherit )
-				{
+			if ( source && ( typeof source === 'object' || typeof source === 'function' ) ) {
+				if ( options.inherit ) {
 					if ( newTarget ) { target = Object.create( source ) ; }
 					else { Object.setPrototypeOf( target , source ) ; }
 				}
-				else if ( options.proto )
-				{
+				else if ( options.proto ) {
 					if ( newTarget ) { target = Object.create( Object.getPrototypeOf( source ) ) ; }
 					else { Object.setPrototypeOf( target , Object.getPrototypeOf( source ) ) ; }
 				}
-				
+
 				break ;
 			}
 		}
 	}
-	else if ( newTarget )
-	{
+	else if ( newTarget ) {
 		target = {} ;
 	}
-	
+
 	runtime.references = { sources: [] , targets: [] } ;
-	
-	for ( i = 0 ; i < length ; i ++ )
-	{
+
+	for ( i = 0 ; i < length ; i ++ ) {
 		source = sources[ i ] ;
 		if ( ! source || ( typeof source !== 'object' && typeof source !== 'function' ) ) { continue ; }
 		extendOne( runtime , options , target , source ) ;
 	}
-	
+
 	return target ;
 }
 
@@ -290,114 +269,100 @@ module.exports = extend ;
 
 
 
-function extendOne( runtime , options , target , source )
-{
+function extendOne( runtime , options , target , source ) {
 	//console.log( "\nextendOne():\n" , arguments ) ;
 	//process.exit() ;
-	
+
 	var j , jmax , sourceKeys , sourceKey , sourceValue , sourceValueProto ,
 		value , sourceDescriptor , targetKey , targetPointer , path ,
 		indexOfSource = -1 ;
-	
+
 	// Max depth check
-	if ( options.maxDepth && runtime.depth > options.maxDepth )
-	{
+	if ( options.maxDepth && runtime.depth > options.maxDepth ) {
 		throw new Error( '[tree] extend(): max depth reached(' + options.maxDepth + ')' ) ;
 	}
-	
-		
-	if ( options.circular )
-	{
+
+
+	if ( options.circular ) {
 		runtime.references.sources.push( source ) ;
 		runtime.references.targets.push( target ) ;
 	}
-	
-	if ( options.own )
-	{
+
+	if ( options.own ) {
 		if ( options.nonEnum ) { sourceKeys = Object.getOwnPropertyNames( source ) ; }
 		else { sourceKeys = Object.keys( source ) ; }
 	}
 	else { sourceKeys = source ; }
-	
-	for ( sourceKey in sourceKeys )
-	{
+
+	for ( sourceKey in sourceKeys ) {
 		if ( options.own ) { sourceKey = sourceKeys[ sourceKey ] ; }
-		
+
+		// OMG, this DEPRECATED __proto__ shit is still alive and can be used to hack anything ><
+		if ( sourceKey === '__proto__' ) { continue ; }
+
 		// If descriptor is on, get it now
-		if ( options.descriptor )
-		{
+		if ( options.descriptor ) {
 			sourceDescriptor = Object.getOwnPropertyDescriptor( source , sourceKey ) ;
 			sourceValue = sourceDescriptor.value ;
 		}
-		else
-		{
+		else {
 			// We have to trigger an eventual getter only once
 			sourceValue = source[ sourceKey ] ;
 		}
-		
+
 		targetPointer = target ;
 		targetKey = runtime.prefix + sourceKey ;
-		
+
 		// Do not copy if property is a function and we don't want them
-		if ( options.nofunc && typeof sourceValue === 'function' ) { continue; }
-		
+		if ( options.nofunc && typeof sourceValue === 'function' ) { continue ; }
+
 		// 'unflat' mode computing
-		if ( options.unflat && runtime.depth === 0 )
-		{
+		if ( options.unflat && runtime.depth === 0 ) {
 			path = sourceKey.split( options.unflat ) ;
 			jmax = path.length - 1 ;
-			
-			if ( jmax )
-			{
-				for ( j = 0 ; j < jmax ; j ++ )
-				{
+
+			if ( jmax ) {
+				for ( j = 0 ; j < jmax ; j ++ ) {
 					if ( ! targetPointer[ path[ j ] ] ||
 						( typeof targetPointer[ path[ j ] ] !== 'object' &&
-							typeof targetPointer[ path[ j ] ] !== 'function' ) )
-					{
+							typeof targetPointer[ path[ j ] ] !== 'function' ) ) {
 						targetPointer[ path[ j ] ] = {} ;
 					}
-					
+
 					targetPointer = targetPointer[ path[ j ] ] ;
 				}
-				
+
 				targetKey = runtime.prefix + path[ jmax ] ;
 			}
 		}
-		
-		
-		if ( options.deep &&
+
+
+		if ( options.deep &&	// eslint-disable-line no-constant-condition
 			sourceValue &&
 			( typeof sourceValue === 'object' || ( options.deepFunc && typeof sourceValue === 'function' ) ) &&
 			( ! options.descriptor || ! sourceDescriptor.get ) &&
-			// not a condition we just cache sourceValueProto now
+			// not a condition we just cache sourceValueProto now... ok it's trashy ><
 			( ( sourceValueProto = Object.getPrototypeOf( sourceValue ) ) || true ) &&
 			( ! options.deepFilter ||
 				( ( ! options.deepFilter.whitelist || options.deepFilter.whitelist.indexOf( sourceValueProto ) !== -1 ) &&
-					( ! options.deepFilter.blacklist || options.deepFilter.blacklist.indexOf( sourceValueProto ) === -1 ) ) ) )
-		{
-			if ( options.circular )
-			{
+					( ! options.deepFilter.blacklist || options.deepFilter.blacklist.indexOf( sourceValueProto ) === -1 ) ) ) ) {
+			if ( options.circular ) {
 				indexOfSource = runtime.references.sources.indexOf( sourceValue ) ;
 			}
-			
-			if ( options.flat )
-			{
+
+			if ( options.flat ) {
 				// No circular references reconnection when in 'flat' mode
 				if ( indexOfSource >= 0 ) { continue ; }
-				
+
 				extendOne(
 					{ depth: runtime.depth + 1 , prefix: runtime.prefix + sourceKey + options.flat , references: runtime.references } ,
 					options , targetPointer , sourceValue
 				) ;
 			}
-			else
-			{
-				if ( indexOfSource >= 0 )
-				{
+			else {
+				if ( indexOfSource >= 0 ) {
 					// Circular references reconnection...
-					if ( options.descriptor )
-					{
+					if ( options.descriptor ) {
 						Object.defineProperty( targetPointer , targetKey , {
 							value: runtime.references.targets[ indexOfSource ] ,
 							enumerable: sourceDescriptor.enumerable ,
@@ -405,23 +370,20 @@ function extendOne( runtime , options , target , source )
 							configurable: sourceDescriptor.configurable
 						} ) ;
 					}
-					else
-					{
+					else {
 						targetPointer[ targetKey ] = runtime.references.targets[ indexOfSource ] ;
 					}
-					
+
 					continue ;
 				}
-				
-				if ( ! targetPointer[ targetKey ] || ! targetPointer.hasOwnProperty( targetKey ) || ( typeof targetPointer[ targetKey ] !== 'object' && typeof targetPointer[ targetKey ] !== 'function' ) )
-				{
+
+				if ( ! targetPointer[ targetKey ] || ! targetPointer.hasOwnProperty( targetKey ) || ( typeof targetPointer[ targetKey ] !== 'object' && typeof targetPointer[ targetKey ] !== 'function' ) ) {
 					if ( Array.isArray( sourceValue ) ) { value = [] ; }
 					else if ( options.proto ) { value = Object.create( sourceValueProto ) ; }	// jshint ignore:line
 					else if ( options.inherit ) { value = Object.create( sourceValue ) ; }
 					else { value = {} ; }
-					
-					if ( options.descriptor )
-					{
+
+					if ( options.descriptor ) {
 						Object.defineProperty( targetPointer , targetKey , {
 							value: value ,
 							enumerable: sourceDescriptor.enumerable ,
@@ -429,26 +391,22 @@ function extendOne( runtime , options , target , source )
 							configurable: sourceDescriptor.configurable
 						} ) ;
 					}
-					else
-					{
+					else {
 						targetPointer[ targetKey ] = value ;
 					}
 				}
-				else if ( options.proto && Object.getPrototypeOf( targetPointer[ targetKey ] ) !== sourceValueProto )
-				{
+				else if ( options.proto && Object.getPrototypeOf( targetPointer[ targetKey ] ) !== sourceValueProto ) {
 					Object.setPrototypeOf( targetPointer[ targetKey ] , sourceValueProto ) ;
 				}
-				else if ( options.inherit && Object.getPrototypeOf( targetPointer[ targetKey ] ) !== sourceValue )
-				{
+				else if ( options.inherit && Object.getPrototypeOf( targetPointer[ targetKey ] ) !== sourceValue ) {
 					Object.setPrototypeOf( targetPointer[ targetKey ] , sourceValue ) ;
 				}
-				
-				if ( options.circular )
-				{
+
+				if ( options.circular ) {
 					runtime.references.sources.push( sourceValue ) ;
 					runtime.references.targets.push( targetPointer[ targetKey ] ) ;
 				}
-				
+
 				// Recursively extends sub-object
 				extendOne(
 					{ depth: runtime.depth + 1 , prefix: '' , references: runtime.references } ,
@@ -456,17 +414,15 @@ function extendOne( runtime , options , target , source )
 				) ;
 			}
 		}
-		else if ( options.preserve && targetPointer[ targetKey ] !== undefined )
-		{
+		else if ( options.preserve && targetPointer[ targetKey ] !== undefined ) {
 			// Do not overwrite, and so do not delete source's properties that were not moved
 			continue ;
 		}
-		else if ( ! options.inherit )
-		{
+		else if ( ! options.inherit ) {
 			if ( options.descriptor ) { Object.defineProperty( targetPointer , targetKey , sourceDescriptor ) ; }
 			else { targetPointer[ targetKey ] = sourceValue ; }
 		}
-		
+
 		// Delete owned property of the source object
 		if ( options.move ) { delete source[ sourceKey ] ; }
 	}
@@ -476,21 +432,21 @@ function extendOne( runtime , options , target , source )
 },{}],4:[function(require,module,exports){
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -509,36 +465,30 @@ module.exports = treePath ;
 
 
 
-treePath.op = function op( type , object , path , value )
-{
+treePath.op = function op( type , object , path , value ) {
 	var i , parts , last , pointer , key , isArray = false , pathArrayMode = false , isGenericSet , canBeEmpty = true ;
-	
-	if ( ! object || ( typeof object !== 'object' && typeof object !== 'function' ) )
-	{
+
+	if ( ! object || ( typeof object !== 'object' && typeof object !== 'function' ) ) {
 		return ;
 	}
-	
-	if ( typeof path === 'string' )
-	{
+
+	if ( typeof path === 'string' ) {
 		// Split the path into parts
-		if ( path ) { parts = path.match( /([.#\[\]]|[^.#\[\]]+)/g ) ; }
+		if ( path ) { parts = path.match( /([.#[\]]|[^.#[\]]+)/g ) ; }
 		else { parts = [ '' ] ; }
-		
+
 		if ( parts[ 0 ] === '.' ) { parts.unshift( '' ) ; }
 		if ( parts[ parts.length - 1 ] === '.' ) { parts.push( '' ) ; }
 	}
-	else if ( Array.isArray( path ) )
-	{
+	else if ( Array.isArray( path ) ) {
 		parts = path ;
 		pathArrayMode = true ;
 	}
-	else
-	{
+	else {
 		throw new TypeError( '[tree.path] .' + type + '(): the path argument should be a string or an array' ) ;
 	}
-	
-	switch ( type )
-	{
+
+	switch ( type ) {
 		case 'get' :
 		case 'delete' :
 			isGenericSet = false ;
@@ -557,99 +507,86 @@ treePath.op = function op( type , object , path , value )
 		default :
 			throw new TypeError( "[tree.path] .op(): wrong type of operation '" + type + "'" ) ;
 	}
-	
+
 	//console.log( parts ) ;
 	// The pointer start at the object's root
 	pointer = object ;
-	
+
 	last = parts.length - 1 ;
-	
-	for ( i = 0 ; i <= last ; i ++ )
-	{
-		if ( pathArrayMode )
-		{
-			if ( key === undefined )
-			{
+
+	for ( i = 0 ; i <= last ; i ++ ) {
+		if ( pathArrayMode ) {
+			if ( key === undefined ) {
 				key = parts[ i ] ;
 				continue ;
 			}
-			
-			if ( ! pointer[ key ] || ( typeof pointer[ key ] !== 'object' && typeof pointer[ key ] !== 'function' ) )
-			{
+
+			if ( ! pointer[ key ] || ( typeof pointer[ key ] !== 'object' && typeof pointer[ key ] !== 'function' ) ) {
 				if ( ! isGenericSet ) { return undefined ; }
 				pointer[ key ] = {} ;
 			}
-			
+
 			pointer = pointer[ key ] ;
 			key = parts[ i ] ;
-			
+
 			continue ;
 		}
-		else if ( parts[ i ] === '.' )
-		{
+		else if ( parts[ i ] === '.' ) {
 			isArray = false ;
-			
-			if ( key === undefined )
-			{
-				if ( ! canBeEmpty )
-				{
+
+			if ( key === undefined ) {
+				if ( ! canBeEmpty ) {
 					canBeEmpty = true ;
 					continue ;
 				}
-				
+
 				key = '' ;
 			}
-			
-			if ( ! pointer[ key ] || ( typeof pointer[ key ] !== 'object' && typeof pointer[ key ] !== 'function' ) )
-			{
+
+			if ( ! pointer[ key ] || ( typeof pointer[ key ] !== 'object' && typeof pointer[ key ] !== 'function' ) ) {
 				if ( ! isGenericSet ) { return undefined ; }
 				pointer[ key ] = {} ;
 			}
-			
+
 			pointer = pointer[ key ] ;
 			canBeEmpty = true ;
-			
+
 			continue ;
 		}
-		else if ( parts[ i ] === '#' || parts[ i ] === '[' )
-		{
+		else if ( parts[ i ] === '#' || parts[ i ] === '[' ) {
 			isArray = true ;
 			canBeEmpty = false ;
-			
-			if ( key === undefined )
-			{
+
+			if ( key === undefined ) {
 				// The root element cannot be altered, we are in trouble if an array is expected but we have only a regular object.
 				if ( ! Array.isArray( pointer ) ) { return undefined ; }
 				continue ;
 			}
-			
-			if ( ! pointer[ key ] || ! Array.isArray( pointer[ key ] ) )
-			{
+
+			if ( ! pointer[ key ] || ! Array.isArray( pointer[ key ] ) ) {
 				if ( ! isGenericSet ) { return undefined ; }
 				pointer[ key ] = [] ;
 			}
-			
+
 			pointer = pointer[ key ] ;
-			
+
 			continue ;
 		}
-		else if ( parts[ i ] === ']' )
-		{
+		else if ( parts[ i ] === ']' ) {
 			// Closing bracket: do nothing
 			canBeEmpty = false ;
 			continue ;
 		}
-		
+
 		canBeEmpty = false ;
-		
+
 		if ( ! isArray ) { key = parts[ i ] ; continue ; }
-		
-		switch ( parts[ i ] )
-		{
+
+		switch ( parts[ i ] ) {
 			case 'length' :
 				key = parts[ i ] ;
 				break ;
-			
+
 			// Pseudo-key
 			case 'first' :
 				key = 0 ;
@@ -667,16 +604,15 @@ treePath.op = function op( type , object , path , value )
 				pointer.unshift( undefined ) ;
 				key = 0 ;
 				break ;
-			
+
 			// default = number
-			default:
+			default :
 				// Convert the string key to a numerical index
 				key = parseInt( parts[ i ] , 10 ) ;
 		}
 	}
-	
-	switch ( type )
-	{
+
+	switch ( type ) {
 		case 'get' :
 			return pointer[ key ] ;
 		case 'delete' :
@@ -710,16 +646,14 @@ treePath.op = function op( type , object , path , value )
 			return pointer[ key ] ;
 		case 'concat' :
 			if ( ! pointer[ key ] ) { pointer[ key ] = value ; }
-			else if ( Array.isArray( pointer[ key ] ) && Array.isArray( value ) )
-			{
+			else if ( Array.isArray( pointer[ key ] ) && Array.isArray( value ) ) {
 				pointer[ key ] = pointer[ key ].concat( value ) ;
 			}
 			//else ? do nothing???
 			return pointer[ key ] ;
 		case 'insert' :
 			if ( ! pointer[ key ] ) { pointer[ key ] = value ; }
-			else if ( Array.isArray( pointer[ key ] ) && Array.isArray( value ) )
-			{
+			else if ( Array.isArray( pointer[ key ] ) && Array.isArray( value ) ) {
 				pointer[ key ] = value.concat( pointer[ key ] ) ;
 			}
 			//else ? do nothing???
@@ -767,8 +701,7 @@ treePath.prototype = {
 
 
 // Upgrade an object so it can support get, set and delete at its root
-treePath.upgrade = function upgrade( object )
-{
+treePath.upgrade = function upgrade( object ) {
 	Object.defineProperties( object , {
 		get: { value: treePath.op.bind( undefined , 'get' , object ) } ,
 		delete: { value: treePath.op.bind( undefined , 'delete' , object ) } ,
