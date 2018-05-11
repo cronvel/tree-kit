@@ -1,20 +1,20 @@
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,15 +24,11 @@
 	SOFTWARE.
 */
 
-/* jshint unused:false */
-/* global describe, it, before, after */
-
 "use strict" ;
 
 
 
 var tree = require( '../lib/tree.js' ) ;
-var expect = require( 'expect.js' ) ;
 
 
 
@@ -79,20 +75,20 @@ describe( "clone()" , function() {
 			if ( i === 0 ) { r = tree.clone( o ) ;}
 			else { r = tree.clone( o , true ) ; }
 			
-			expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+			expect( Object.getOwnPropertyNames( r ) ).to.equal( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.equal( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.equal( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
 			expect( r.nested ).not.to.be( o.nested ) ;
-			expect( r.nested ).to.eql( o.nested ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+			expect( r.nested ).to.equal( o.nested ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.equal( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.equal( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.equal( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.equal( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
 			expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
-			expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
-			expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+			expect( r.nonEnumNested ).to.equal( o.nonEnumNested ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.equal( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.equal( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+			expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.equal( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 			
 			expect( r.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
 			expect( r.proto1 ).to.be( 'proto1' ) ;
@@ -136,12 +132,12 @@ describe( "clone()" , function() {
 		
 		a = [ 'one' , 'two' , 'three' ] ;
 		c = tree.clone( a ) ;
-		expect( c ).to.eql( a ) ;
+		expect( c ).to.equal( a ) ;
 		expect( Array.isArray( c ) ).to.be.ok() ;
 		
 		a = [ 'one' , [ 'two' , 'three' ] ] ;
 		c = tree.clone( a ) ;
-		expect( c ).to.eql( a ) ;
+		expect( c ).to.equal( a ) ;
 		expect( Array.isArray( c ) ).to.be.ok() ;
 		expect( Array.isArray( c[ 1 ] ) ).to.be.ok() ;
 	} ) ;

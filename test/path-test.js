@@ -1,20 +1,20 @@
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,15 +24,11 @@
 	SOFTWARE.
 */
 
-/* jshint unused:false */
-/* global describe, it, before, after */
-
 "use strict" ;
 
 
 
 var tree = require( '../lib/tree.js' ) ;
-var expect = require( 'expect.js' ) ;
 
 
 
@@ -627,7 +623,7 @@ describe( "Inheritance, using Object.create( tree.path.prototype )" , function()
 		o.delete( 'sub.sub' ) ;
 		o.delete( 'non.existant.path' ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			sub: {
 				b: "toto" ,
 			} ,
@@ -654,7 +650,7 @@ describe( "Inheritance, using Object.create( tree.path.prototype )" , function()
 		o.set( 'sub.sub' , { x: 18 , y: 27 } ) ;
 		o.set( 'non.existant.path' , 'new' ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			a: "8" ,
 			sub: {
 				b: false ,
@@ -692,7 +688,7 @@ describe( "Inheritance, using Object.create( tree.path.prototype )" , function()
 		o.define( 'sub.sub' , { x: 18 , y: 27 } ) ;
 		o.define( 'non.existant.path' , 'new' ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			a: 5 ,
 			unexistant: '!' ,
 			sub: {
@@ -730,7 +726,7 @@ describe( "Inheritance, using Object.create( tree.path.prototype )" , function()
 		o.inc( 'non.existant.path' ) ;
 		o.dec( 'another.non.existant.path' ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			a: 6 ,
 			sub: {
 				b: 9 ,
@@ -774,7 +770,7 @@ describe( "Tree's array path on objects" , function() {
 		} ;
 		
 		expect( tree.path.get( o , [ 'a' ] ) ).to.be( 5 ) ;
-		expect( tree.path.get( o , [ 'sub' ] ) ).to.eql( {
+		expect( tree.path.get( o , [ 'sub' ] ) ).to.be.like( {
 			b: "toto" ,
 			sub: {
 				c: true
@@ -782,7 +778,7 @@ describe( "Tree's array path on objects" , function() {
 		} ) ;
 		
 		expect( tree.path.get( o , [ 'sub' , 'b' ] ) ).to.be( "toto" ) ;
-		expect( tree.path.get( o , [ 'sub' , 'sub' ] ) ).to.eql( { c: true } ) ;
+		expect( tree.path.get( o , [ 'sub' , 'sub' ] ) ).to.be.like( { c: true } ) ;
 		expect( tree.path.get( o , [ 'sub' , 'sub' , 'c' ] ) ).to.be( true ) ;
 		expect( tree.path.get( o , [ 'd' ] ) ).to.be( null ) ;
 		expect( tree.path.get( o , [ 'nothing' ] ) ).to.be( undefined ) ;
@@ -810,7 +806,7 @@ describe( "Tree's array path on objects" , function() {
 		tree.path.delete( o , [ 'sub' , 'sub' ] ) ;
 		tree.path.delete( o , [ 'non' , 'existant' , 'path' ] ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			sub: {
 				b: "toto" ,
 			} ,
@@ -837,7 +833,7 @@ describe( "Tree's array path on objects" , function() {
 		tree.path.set( o , [ 'sub' , 'sub' ] , { x: 18 , y: 27 } ) ;
 		tree.path.set( o , [ 'non' , 'existant' , 'path' ] , 'new' ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			a: "8" ,
 			sub: {
 				b: false ,
@@ -875,7 +871,7 @@ describe( "Tree's array path on objects" , function() {
 		tree.path.define( o , [ 'sub' , 'sub' ] , { x: 18 , y: 27 } ) ;
 		tree.path.define( o , [ 'non' , 'existant' , 'path' ] , 'new' ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			a: 5 ,
 			unexistant: '!' ,
 			sub: {
@@ -913,7 +909,7 @@ describe( "Tree's array path on objects" , function() {
 		tree.path.inc( o , [ 'non' , 'existant' , 'path' ] ) ;
 		tree.path.dec( o , [ 'another' , 'non' , 'existant' , 'path' ] ) ;
 		
-		expect( o ).to.eql( {
+		expect( o ).to.be.like( {
 			a: 6 ,
 			sub: {
 				b: 9 ,

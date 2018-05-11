@@ -1,20 +1,20 @@
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,15 +24,11 @@
 	SOFTWARE.
 */
 
-/* jshint unused:false */
-/* global describe, it, before, after */
-
 "use strict" ;
 
 
 
 var tree = require( '../lib/tree.js' ) ;
-var expect = require( 'expect.js' ) ;
 
 
 
@@ -61,7 +57,7 @@ describe( "Diff" , function() {
 		
 		//console.log( JSON.stringify( diff , null , '  ' ) ) ;
 		expect( diff ).not.to.be( null ) ;
-		expect( diff ).to.only.have.keys( '.a', '.c', '.d' ) ;
+		expect( diff ).to.only.have.own.keys( '.a', '.c', '.d' ) ;
 	} ) ;
 	
 	it( "should return an array of differences for two objects with nested objects" , function() {
@@ -103,7 +99,7 @@ describe( "Diff" , function() {
 		
 		//console.log( JSON.stringify( diff , null , '  ' ) ) ;
 		expect( diff ).not.to.be( null ) ;
-		expect( diff ).to.only.have.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
+		expect( diff ).to.only.have.own.keys( '.a', '.c', '.d', '.sub.f', '.sub.subsub.h', '.sub.subsub.i', '.suba', '.subb' ) ;
 	} ) ;
 } ) ;
 

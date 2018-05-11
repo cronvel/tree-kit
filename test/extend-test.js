@@ -1,20 +1,20 @@
 /*
 	Tree Kit
-	
-	Copyright (c) 2014 - 2016 Cédric Ronvel
-	
+
+	Copyright (c) 2014 - 2018 Cédric Ronvel
+
 	The MIT License (MIT)
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,15 +24,11 @@
 	SOFTWARE.
 */
 
-/* jshint unused:false */
-/* global describe, it, before, after */
-
 "use strict" ;
 
 
 
 var extend = require( '../lib/extend.js' ) ;
-var expect = require( 'expect.js' ) ;
 
 
 
@@ -169,30 +165,28 @@ describe( "extend()" , function() {
 	
 	it( "should extend an empty Object with a deep Object performing a SHALLOW copy, the result should be equal to the deep Object, nested object MUST be equal AND identical" , function() {
 		var copy = extend( null , {} , input.subtree ) ;
-		expect( copy ).to.eql( input.subtree ) ;
-		expect( copy ).not.to.equal( input.subtree ) ;
-		expect( copy.subtree2 ).to.equal( input.subtree.subtree2 ) ;
+		expect( copy ).to.be.a.shallow.clone.of( input.subtree ) ;
+		expect( copy ).to.equal( input.subtree ) ;
 	} ) ;
 		
 	it( "with the 'deep' option should extend an empty Object with a deep Object performing a DEEP copy, the result should be equal to the deep Object, nested object MUST be equal BUT NOT identical" , function() {
 		var copy = extend( { deep: true } , {} , input.subtree ) ;
-		expect( copy ).to.eql( input.subtree ) ;
-		expect( copy ).not.to.equal( input.subtree ) ;
-		expect( copy.subtree2 ).not.to.equal( input.subtree.subtree2 ) ;
+		expect( copy ).to.equal( input.subtree ) ;
+		expect( copy ).not.to.be.a.shallow.clone.of( input.subtree ) ;
+		expect( copy.subtree2 ).not.to.be.a.shallow.clone.of( input.subtree.subtree2 ) ;
 	} ) ;
 		
 	it( "with the 'deep' option, sources functions are still simply copied/referenced into target" , function() {
 		var copy = extend( { deep: true } , {} , input.subtreeWithFunction ) ;
 		//console.log( copy ) ;
-		expect( copy ).to.eql( input.subtreeWithFunction ) ;
-		expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
-		expect( copy.Func.prototype ).to.equal( input.subtreeWithFunction.Func.prototype ) ;
+		expect( copy ).to.equal( input.subtreeWithFunction ) ;
+		expect( copy.Func.prototype ).to.be( input.subtreeWithFunction.Func.prototype ) ;
 	} ) ;
 	
 	it( "with the 'deep' & 'deepFunc' options, sources functions are treated like regular objects, creating an object rather than a function in the target location, and performing a deep copy of them" , function() {
 		var copy = extend( { deep: true, deepFunc: true } , {} , input.subtreeWithFunction ) ;
-		expect( copy ).not.to.eql( input.subtreeWithFunction ) ;
-		expect( copy ).to.eql( { z: 'Zee' , Func: { prop: 'property' } } ) ;
+		expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
+		expect( copy ).to.equal( { z: 'Zee' , Func: { prop: 'property' } } ) ;
 	} ) ;
 	
 	it( "should extend (by default) properties of the prototype chain" , function() {
@@ -207,14 +201,14 @@ describe( "extend()" , function() {
 		o.own1 = 'own1' ;
 		o.own2 = 'own2' ;
 		
-		expect( extend( null , {} , o ) ).to.eql( {
+		expect( extend( null , {} , o ) ).to.equal( {
 			proto1: 'proto1' ,
 			proto2: 'proto2' ,
 			own1: 'own1' ,
 			own2: 'own2'
 		} ) ;
 		
-		expect( extend( { deep: true } , {} , o ) ).to.eql( {
+		expect( extend( { deep: true } , {} , o ) ).to.equal( {
 			proto1: 'proto1' ,
 			proto2: 'proto2' ,
 			own1: 'own1' ,
@@ -239,12 +233,12 @@ describe( "extend()" , function() {
 			nonEnum2: { value: 'nonEnum2' }
 		} ) ;
 		
-		expect( extend( { own: true } , {} , o ) ).to.eql( {
+		expect( extend( { own: true } , {} , o ) ).to.equal( {
 			own1: 'own1' ,
 			own2: 'own2'
 		} ) ;
 		
-		expect( extend( { deep: true, own: true } , {} , o ) ).to.eql( {
+		expect( extend( { deep: true, own: true } , {} , o ) ).to.equal( {
 			own1: 'own1' ,
 			own2: 'own2'
 		} ) ;
@@ -267,14 +261,14 @@ describe( "extend()" , function() {
 			nonEnum2: { value: 'nonEnum2' }
 		} ) ;
 		
-		expect( extend( { own: true , nonEnum: true } , {} , o ) ).to.eql( {
+		expect( extend( { own: true , nonEnum: true } , {} , o ) ).to.equal( {
 			own1: 'own1' ,
 			own2: 'own2' ,
 			nonEnum1: 'nonEnum1' ,
 			nonEnum2: 'nonEnum2'
 		} ) ;
 		
-		expect( extend( { deep: true, own: true , nonEnum: true } , {} , o ) ).to.eql( {
+		expect( extend( { deep: true, own: true , nonEnum: true } , {} , o ) ).to.equal( {
 			own1: 'own1' ,
 			own2: 'own2' ,
 			nonEnum1: 'nonEnum1' ,
@@ -312,35 +306,35 @@ describe( "extend()" , function() {
 		
 		r = extend( { own: true , nonEnum: true , descriptor: true } , {} , o ) ;
 		
-		expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+		expect( Object.getOwnPropertyNames( r ) ).to.equal( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.equal( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.equal( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
 		expect( r.nested ).to.be( o.nested ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.equal( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.equal( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.equal( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.equal( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
 		expect( r.nonEnumNested ).to.be( o.nonEnumNested ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.equal( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.equal( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.equal( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 		
 		r = extend( { deep: true , own: true , nonEnum: true , descriptor: true } , {} , o ) ;
 		
-		expect( Object.getOwnPropertyNames( r ) ).to.eql( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.eql( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.eql( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
+		expect( Object.getOwnPropertyNames( r ) ).to.equal( [ 'own1' , 'own2' , 'nested' , 'nonEnum1' , 'nonEnum2' , 'nonEnum3' , 'nonEnumNested' , 'getter' , 'getterAndSetter' ] ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'own1' ) ).to.equal( { value: 'own1' , enumerable: true , writable: true , configurable: true } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'own2' ) ).to.equal( { value: 'own2' , enumerable: true , writable: true , configurable: true } ) ;
 		expect( r.nested ).not.to.be( o.nested ) ;
-		expect( r.nested ).to.eql( o.nested ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.eql( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.eql( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.eql( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.eql( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
+		expect( r.nested ).to.equal( o.nested ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nested' ) ).to.equal( { value: o.nested , enumerable: true , writable: true , configurable: true } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum1' ) ).to.equal( { value: 'nonEnum1' , enumerable: false , writable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum2' ) ).to.equal( { value: 'nonEnum2' , enumerable: false , writable: true , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnum3' ) ).to.equal( { value: 'nonEnum3' , enumerable: false , writable: false , configurable: true } ) ;
 		expect( r.nonEnumNested ).not.to.be( o.nonEnumNested ) ;
-		expect( r.nonEnumNested ).to.eql( o.nonEnumNested ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.eql( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.eql( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
-		expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.eql( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
+		expect( r.nonEnumNested ).to.equal( o.nonEnumNested ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'nonEnumNested' ) ).to.equal( { value: o.nonEnumNested , enumerable: false , writable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'getter' ) ).to.equal( { get: getter , set: undefined , enumerable: false , configurable: false } ) ;
+		expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.equal( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 	} ) ;
 	
 	it( "with the 'deep' option should extend a deep Object into another deep Object correctly" , function() {
@@ -348,7 +342,7 @@ describe( "extend()" , function() {
 		var copy ;
 		
 		copy = extend( { deep: true } , {} , input.subtree ) ;
-		expect( extend( null , copy , input.anotherSubtree ) ).to.eql( {
+		expect( extend( null , copy , input.anotherSubtree ) ).to.equal( {
 			a : 'A' ,
 			b : 2 ,
 			subtree: {
@@ -368,7 +362,7 @@ describe( "extend()" , function() {
 		} ) ;
 		
 		copy = extend( { deep: true } , {} , input.subtree ) ;
-		expect( extend( { deep: true } , copy , input.anotherSubtree ) ).to.eql( {
+		expect( extend( { deep: true } , copy , input.anotherSubtree ) ).to.equal( {
 			a : 'A' ,
 			b : 2 ,
 			subtree: {
@@ -411,11 +405,11 @@ describe( "extend()" , function() {
 		e = extend( { proto: true } , null , o ) ;
 		
 		expect( e ).not.to.be( o ) ;
-		expect( e.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
-		expect( e ).to.eql( { own1: 'own1' , own2: 'own2' } ) ;
+		expect( e.__proto__ ).to.be( proto ) ;
+		expect( e ).to.be.like( { own1: 'own1' , own2: 'own2' } ) ;
 		expect( e.proto1 ).to.be( 'proto1' ) ;
 		expect( e.proto2 ).to.be( 'proto2' ) ;
-		expect( typeof e.hello ).to.equal( 'function' ) ;
+		expect( e.hello ).to.be.a( 'function' ) ;
 	} ) ;
 	
 	it( "with the 'proto' option should change the prototype of each target properties for the prototype of the related source properties, if 'deep' is enabled it does so recursively" , function() {
@@ -441,8 +435,8 @@ describe( "extend()" , function() {
 		
 		e = extend( { proto: true } , {} , o ) ;
 		
-		expect( e ).not.to.be( o ) ;
-		expect( e ).to.eql( {
+		expect( e ).to.be.a.shallow.clone.of( o ) ;
+		expect( e ).to.be.like( {
 			own1: 'own1' ,
 			own2: 'own2' ,
 			embed1: { a: 'a' } ,
@@ -452,14 +446,14 @@ describe( "extend()" , function() {
 		expect( e.embed2 ).to.be( o.embed2 ) ;
 		expect( e.embed1.proto1 ).to.be( 'proto1' ) ;
 		expect( e.embed2.proto2 ).to.be( 'proto2' ) ;
-		expect( typeof e.embed1.hello ).to.equal( 'function' ) ;
-		expect( typeof e.embed2.world ).to.equal( 'function' ) ;
+		expect( e.embed1.hello ).to.be.a( 'function' ) ;
+		expect( e.embed2.world ).to.be.a( 'function' ) ;
 		
 		
 		e = extend( { proto: true, deep: true } , {} , o ) ;
 		
 		expect( e ).not.to.be( o ) ;
-		expect( e ).to.eql( {
+		expect( e ).to.be.like( {
 			own1: 'own1' ,
 			own2: 'own2' ,
 			embed1: { a: 'a' } ,
@@ -469,8 +463,8 @@ describe( "extend()" , function() {
 		expect( e.embed2 ).not.to.be( o.embed2 ) ;
 		expect( e.embed1.proto1 ).to.be( 'proto1' ) ;
 		expect( e.embed2.proto2 ).to.be( 'proto2' ) ;
-		expect( typeof e.embed1.hello ).to.equal( 'function' ) ;
-		expect( typeof e.embed2.world ).to.equal( 'function' ) ;
+		expect( e.embed1.hello ).to.be.a( 'function' ) ;
+		expect( e.embed2.world ).to.be.a( 'function' ) ;
 	} ) ;
 	
 	it( "with 'nofunc' option should skip function" , function() {
@@ -491,21 +485,21 @@ describe( "extend()" , function() {
 		// default behaviour
 		e = extend( { nofunc: true } , null , o ) ;
 		expect( e ).not.to.be( o ) ;
-		expect( e ).to.eql( { own1: 'own1' , own2: 'own2' , proto1: 'proto1' , proto2: 'proto2' } ) ;
+		expect( e ).to.be.like( { own1: 'own1' , own2: 'own2' , proto1: 'proto1' , proto2: 'proto2' } ) ;
 		
 		// with 'own'
 		e = extend( { nofunc: true , own: true } , null , o ) ;
 		expect( e ).not.to.be( o ) ;
-		expect( e ).to.eql( { own1: 'own1' , own2: 'own2' } ) ;
+		expect( e ).to.be.like( { own1: 'own1' , own2: 'own2' } ) ;
 		
 		// with 'proto', function exists if there are in the prototype
 		e = extend( { nofunc: true , proto: true } , null , o ) ;
 		expect( e ).not.to.be( o ) ;
-		expect( e.__proto__ ).to.equal( proto ) ;	// jshint ignore:line
-		expect( e ).to.eql( { own1: 'own1' , own2: 'own2' } ) ;
+		expect( e.__proto__ ).to.be( proto ) ;
+		expect( e ).to.be.like( { own1: 'own1' , own2: 'own2' } ) ;
 		expect( e.proto1 ).to.be( 'proto1' ) ;
 		expect( e.proto2 ).to.be( 'proto2' ) ;
-		expect( typeof e.hello ).to.equal( 'function' ) ;
+		expect( e.hello ).to.be.a( 'function' ) ;
 	} ) ;
 	
 	it( "with 'preserve' option should not overwrite existing properties in the target" , function() {
@@ -524,8 +518,8 @@ describe( "extend()" , function() {
 		} ;
 		
 		extend( { preserve: true } , e , o ) ;
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
-		expect( o ).to.eql( { three: 3 , four: '4' } ) ;
+		expect( e ).to.equal( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
+		expect( o ).to.equal( { three: 3 , four: '4' } ) ;
 	} ) ;
 	
 	it( "with 'move' option should move source properties to target properties, i.e. delete them form the source" , function() {
@@ -544,8 +538,8 @@ describe( "extend()" , function() {
 		} ;
 		
 		extend( { move: true } , e , o ) ;
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 3 , four: '4' } ) ;
-		expect( o ).to.eql( {} ) ;
+		expect( e ).to.equal( { one: '1' , two: 2 , three: 3 , four: '4' } ) ;
+		expect( o ).to.equal( {} ) ;
 	} ) ;
 	
 	it( "with 'preserve' and 'move' option should not overwrite existing properties in the target, so it should not move/delete them from the source object" , function() {
@@ -564,8 +558,8 @@ describe( "extend()" , function() {
 		} ;
 		
 		extend( { preserve: true , move: true } , e , o ) ;
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
-		expect( o ).to.eql( { three: 3 } ) ;
+		expect( e ).to.equal( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
+		expect( o ).to.equal( { three: 3 } ) ;
 	} ) ;
 	
 	it( "with 'inherit' option should inherit rather than extend: each source property create a new Object or mutate existing Object into the related target property, using itself as the prototype" , function() {
@@ -585,11 +579,11 @@ describe( "extend()" , function() {
 		
 		extend( { inherit: true } , e , o ) ;
 		
-		expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
-		expect( e ).to.eql( {} ) ;
+		expect( e.__proto__ ).to.be( o ) ;
+		expect( e ).to.be.like( {} ) ;
 		expect( e.three ).to.be( 3 ) ;
 		expect( e.four ).to.be( '4' ) ;
-		expect( e.subtree ).to.equal( o.subtree ) ;
+		expect( e.subtree ).to.be.a.shallow.clone.of( o.subtree ) ;
 		
 		
 		e = {
@@ -600,12 +594,12 @@ describe( "extend()" , function() {
 		
 		extend( { inherit: true } , e , o ) ;
 		
-		expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' } ) ;
+		expect( e.__proto__ ).to.be( o ) ;
+		expect( e ).to.be.like( { one: '1' , two: 2 , three: 'THREE' } ) ;
 		expect( e.three ).to.be( 'THREE' ) ;
 		expect( e.four ).to.be( '4' ) ;
-		expect( e.subtree ).to.equal( o.subtree ) ;	// jshint ignore:line
-		expect( e.subtree ).to.eql( { five: 'FIVE' , six: 6 } ) ;
+		expect( e.subtree ).to.be.a.shallow.clone.of( o.subtree ) ;
+		expect( e.subtree ).to.be.like( { five: 'FIVE' , six: 6 } ) ;
 		
 		
 		e = {
@@ -620,12 +614,12 @@ describe( "extend()" , function() {
 		
 		extend( { inherit: true } , e , o ) ;
 		
-		expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , subtree: { six: 'SIX' , seven: 7 } } ) ;
+		expect( e.__proto__ ).to.be( o ) ;	
+		expect( e ).to.be.like( { one: '1' , two: 2 , three: 'THREE' , subtree: { six: 'SIX' , seven: 7 } } ) ;
 		expect( e.three ).to.be( 'THREE' ) ;
 		expect( e.four ).to.be( '4' ) ;
-		expect( e.subtree ).to.eql( { six: 'SIX' , seven: 7 } ) ;
-		expect( e.subtree.five ).to.equal( undefined ) ;
+		expect( e.subtree ).to.be.like( { six: 'SIX' , seven: 7 } ) ;
+		expect( e.subtree.five ).to.be( undefined ) ;
 	} ) ;
 	
 	it( "with 'inherit' and 'deep' option should inherit recursively" , function() {
@@ -645,13 +639,13 @@ describe( "extend()" , function() {
 		
 		extend( { inherit: true , deep: true } , e , o ) ;
 		
-		expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
-		expect( e ).to.eql( { subtree: {} } ) ;
+		expect( e.__proto__ ).to.be( o ) ;	
+		expect( e ).to.be.like( { subtree: {} } ) ;
 		expect( e.three ).to.be( 3 ) ;
 		expect( e.four ).to.be( '4' ) ;
-		expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
-		expect( e.subtree.five ).to.equal( 'FIVE' ) ;
-		expect( e.subtree.six ).to.equal( 6 ) ;
+		expect( e.subtree.__proto__ ).to.be( o.subtree ) ;	
+		expect( e.subtree.five ).to.be( 'FIVE' ) ;
+		expect( e.subtree.six ).to.be( 6 ) ;
 		
 		
 		e = {
@@ -662,14 +656,14 @@ describe( "extend()" , function() {
 		
 		extend( { inherit: true , deep: true } , e , o ) ;
 		
-		expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , subtree: {} } ) ;
+		expect( e.__proto__ ).to.be( o ) ;	
+		expect( e ).to.be.like( { one: '1' , two: 2 , three: 'THREE' , subtree: {} } ) ;
 		expect( e.three ).to.be( 'THREE' ) ;
 		expect( e.four ).to.be( '4' ) ;
-		expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
-		expect( e.subtree ).to.eql( {} ) ;
-		expect( e.subtree.five ).to.equal( 'FIVE' ) ;
-		expect( e.subtree.six ).to.equal( 6 ) ;
+		expect( e.subtree.__proto__ ).to.be( o.subtree ) ;	
+		expect( e.subtree ).to.be.like( {} ) ;
+		expect( e.subtree.five ).to.be( 'FIVE' ) ;
+		expect( e.subtree.six ).to.be( 6 ) ;
 		
 		
 		e = {
@@ -684,13 +678,13 @@ describe( "extend()" , function() {
 		
 		extend( { inherit: true , deep: true } , e , o ) ;
 		
-		expect( e.__proto__ ).to.equal( o ) ;	// jshint ignore:line
-		expect( e ).to.eql( { one: '1' , two: 2 , three: 'THREE' , subtree: { six: 'SIX' , seven: 7 } } ) ;
+		expect( e.__proto__ ).to.be( o ) ;	
+		expect( e ).to.be.like( { one: '1' , two: 2 , three: 'THREE' , subtree: { six: 'SIX' , seven: 7 } } ) ;
 		expect( e.three ).to.be( 'THREE' ) ;
 		expect( e.four ).to.be( '4' ) ;
-		expect( e.subtree.__proto__ ).to.equal( o.subtree ) ;	// jshint ignore:line
-		expect( e.subtree ).to.eql( { six: 'SIX' , seven: 7 } ) ;
-		expect( e.subtree.five ).to.equal( 'FIVE' ) ;
+		expect( e.subtree.__proto__ ).to.be( o.subtree ) ;	
+		expect( e.subtree ).to.be.like( { six: 'SIX' , seven: 7 } ) ;
+		expect( e.subtree.five ).to.be( 'FIVE' ) ;
 	} ) ;
 	
 	it( "with 'flat' option" , function() {
@@ -716,7 +710,7 @@ describe( "extend()" , function() {
 		} ;
 		
 		e = extend( { flat: true } , {} , o ) ;
-		expect( e ).to.eql( {
+		expect( e ).to.equal( {
 			three: 3 ,
 			four: '4' ,
 			'subtree.five': 'FIVE' ,
@@ -728,7 +722,7 @@ describe( "extend()" , function() {
 		} ) ;
 		
 		e = extend( { flat: '/' } , {} , o ) ;
-		expect( e ).to.eql( {
+		expect( e ).to.equal( {
 			three: 3 ,
 			four: '4' ,
 			'subtree/five': 'FIVE' ,
@@ -756,7 +750,7 @@ describe( "extend()" , function() {
 		} ;
 		
 		e = extend( { unflat: true } , {} , o ) ;
-		expect( e ).to.eql( {
+		expect( e ).to.equal( {
 			three: 3 ,
 			four: '4' ,
 			subtree: {
@@ -785,7 +779,7 @@ describe( "extend()" , function() {
 		} ;
 		
 		e = extend( { unflat: '/' } , {} , o ) ;
-		expect( e ).to.eql( {
+		expect( e ).to.equal( {
 			three: 3 ,
 			four: '4' ,
 			subtree: {
@@ -825,7 +819,7 @@ describe( "extend()" , function() {
 		expect( e.buf.toString() ).to.be( "my buffer" ) ;
 		expect( e.buf ).to.be( buf ) ;
 		
-		expect( e ).to.eql( {
+		expect( e ).to.equal( {
 			one: '1' ,
 			buf: buf ,
 			subtree: {
@@ -858,7 +852,7 @@ describe( "extend()" , function() {
 		expect( e.buf.toString() ).to.be( "my buffer" ) ;
 		expect( e.buf ).to.be( buf ) ;
 		
-		expect( e ).to.eql( {
+		expect( e ).to.equal( {
 			one: '1' ,
 			buf: buf ,
 			subtree: {
