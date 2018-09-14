@@ -42,7 +42,10 @@ var tree = require( 'tree-kit' ) ;
 	* own `boolean` only copy enumerable own properties from the sources
     * nonEnum `boolean` copy non-enumerable properties as well, works only with own:true
     * descriptor `boolean` preserve property's descriptor (i.e. writable, enumerable, configurable, get & set)
-	* deep `boolean` perform a deep (recursive) extend
+	* deep: `boolean` or `Array` or `Set`, if true perform a deep (recursive) extend, if it is an Array/Set of prototypes, only deep-copy
+	  objects of those prototypes (it is a replacement for deepFilter.whitelist which was removed in Tree Kit 0.6)
+	* immutables: an Array/Set of immutable object's prototypes that are filtered out for deep-copy (it is a replacement
+	  for deepFilter.blacklist which was removed in Tree Kit 0.6)
 	* circular `boolean` (default to false) if true then circular references are checked and each identical objects are reconnected
 		(referenced), if false then nested object are blindly cloned
 	* maxDepth `integer` used in conjunction with deep, when the max depth is reached an exception is raised, it defaults to 100
@@ -65,12 +68,6 @@ var tree = require( 'tree-kit' ) ;
 	* unflat `boolean|string` it is the opposite of 'flat': assuming that the sources are in the *flat* format,
 	  it expands all flat properties -- whose name are path with '.' as the separator -- deeply into the target, 
 	  also if a string is provided it will be used as the path separator
-	* deepFilter `Object` filter the recursiveness of the 'deep' option, filtered objects will be referenced
-	  just the way it would be if the 'deep' option was turned off, objects are filtered based upon their
-	  prototypes (only direct prototype match, for performance purpose the rest of the prototype chain will
-	  not be checked)
-		* blacklist `Array` list of black-listed prototype
-		* whitelist `Array` list of white-listed prototype
 * target `Object` the target of the extend, properties will be copied to this object
 * source1 `Object` the source of the extend, properties will be copied from this object
 * ...

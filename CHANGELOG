@@ -1,4 +1,10 @@
 
+v0.6.0
+------
+
+Breaking change: .extend() 'deepFilter' option is gone 'deepFilter.whitelist' has moved to 'deep' and 'deepFilter.blacklist' has moved to 'immutables'
+
+
 v0.5.27
 -------
 

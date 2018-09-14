@@ -797,11 +797,11 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with 'deepFilter' option, using blacklist" , function() {
+	it( "with 'deep' option as an Array/Set of eligible prototype for deep copy" , function() {
 		
-		var buf = new Buffer( "My buffer" ) ;
+		var o , e , buf = new Buffer( "My buffer" ) ;
 		
-		var o = {
+		o = {
 			one: '1' ,
 			buf: buf ,
 			subtree: {
@@ -810,7 +810,7 @@ describe( "extend()" , function() {
 			}
 		} ;
 		
-		var e = extend( { deep: true, deepFilter: { blacklist: [ Buffer.prototype ] } } , {} , o ) ;
+		e = extend( { deep: new Set( [ Object.prototype ] ) } , {} , o ) ;
 		
 		o.subtree.three = 3 ;
 		buf[ 0 ] = 'm'.charCodeAt() ;
@@ -825,16 +825,35 @@ describe( "extend()" , function() {
 			subtree: {
 				two: 2 ,
 				three: 'THREE'
+			}
+		} ) ;
+		
+		
+		e = extend( { deep: [ Object.prototype ] } , {} , o ) ;
+		
+		o.subtree.three = 'three' ;
+		buf[ 0 ] = 'y'.charCodeAt() ;
+		
+		expect( e.buf ).to.be.a( Buffer ) ;
+		expect( e.buf.toString() ).to.be( "yy buffer" ) ;
+		expect( e.buf ).to.be( buf ) ;
+		
+		expect( e ).to.equal( {
+			one: '1' ,
+			buf: buf ,
+			subtree: {
+				two: 2 ,
+				three: 3
 			}
 		} ) ;
 		
 	} ) ;
 	
-	it( "with 'deepFilter' option, using whitelist" , function() {
+	it( "with the 'immutables' options, an Array/Set of prototypes of object that are immutables, it should not deep-copy those object and treat them as opaque direct values" , function() {
 		
-		var buf = new Buffer( "My buffer" ) ;
+		var o , e , buf = new Buffer( "My buffer" ) ;
 		
-		var o = {
+		o = {
 			one: '1' ,
 			buf: buf ,
 			subtree: {
@@ -843,7 +862,7 @@ describe( "extend()" , function() {
 			}
 		} ;
 		
-		var e = extend( { deep: true, deepFilter: { whitelist: [ Object.prototype ] } } , {} , o ) ;
+		e = extend( { deep: true, immutables: new Set( [ Buffer.prototype ] ) } , {} , o ) ;
 		
 		o.subtree.three = 3 ;
 		buf[ 0 ] = 'm'.charCodeAt() ;
@@ -861,6 +880,24 @@ describe( "extend()" , function() {
 			}
 		} ) ;
 		
+		
+		e = extend( { deep: true, immutables: [ Buffer.prototype ] } , {} , o ) ;
+		
+		o.subtree.three = 'three' ;
+		buf[ 0 ] = 'y'.charCodeAt() ;
+		
+		expect( e.buf ).to.be.a( Buffer ) ;
+		expect( e.buf.toString() ).to.be( "yy buffer" ) ;
+		expect( e.buf ).to.be( buf ) ;
+		
+		expect( e ).to.equal( {
+			one: '1' ,
+			buf: buf ,
+			subtree: {
+				two: 2 ,
+				three: 3
+			}
+		} ) ;
 	} ) ;
 	
 	it( "circular references test" , function() {
