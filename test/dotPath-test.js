@@ -28,7 +28,7 @@
 
 
 
-const path = require( '../lib/path.js' ) ;
+const path = require( '../lib/dotPath.js' ) ;
 
 
 
@@ -68,25 +68,6 @@ describe( "Tree's path on objects" , function() {
 		expect( path.get( o , 'sub.nothing' ) ).to.be( undefined ) ;
 		expect( path.get( o , 'nothing.nothing' ) ).to.be( undefined ) ;
 	} ) ;
-	
-	/*
-	it( "bracket notation on object" , function() {
-		
-		var o = {
-			a: 5 ,
-			sub: {
-				b: "toto" ,
-				sub: {
-					c: true
-				}
-			} ,
-			d: null
-		} ;
-		
-		expect( path.get( o , '[a]' ) ).to.be( 5 ) ;
-		expect( path.get( o , '[sub][sub][c]' ) ).to.be( true ) ;
-	} ) ;
-	*/
 	
 	it( "path.delete() on object structure" , function() {
 		
@@ -392,22 +373,7 @@ describe( "Tree's path on arrays" , function() {
 		expect( path.get( a , '1' ) ).to.be( 'b' ) ;
 		expect( path.get( a , '2' ) ).to.be( 'c' ) ;
 		expect( path.get( a , '3' ) ).to.be( undefined ) ;
-		expect( path.get( a , '#0' ) ).to.be( 'a' ) ;
-		expect( path.get( a , '#1' ) ).to.be( 'b' ) ;
-		expect( path.get( a , '#2' ) ).to.be( 'c' ) ;
-		expect( path.get( a , '#3' ) ).to.be( undefined ) ;
-		expect( path.get( a , '[0]' ) ).to.be( 'a' ) ;
-		expect( path.get( a , '[1]' ) ).to.be( 'b' ) ;
-		expect( path.get( a , '[2]' ) ).to.be( 'c' ) ;
-		expect( path.get( a , '[3]' ) ).to.be( undefined ) ;
 		expect( path.get( a , 'length' ) ).to.be( 3 ) ;
-		expect( path.get( a , '#length' ) ).to.be( 3 ) ;
-		expect( path.get( a , 'first' ) ).to.be( undefined ) ;
-		expect( path.get( a , '#first' ) ).to.be( 'a' ) ;
-		expect( path.get( a , 'last' ) ).to.be( undefined ) ;
-		expect( path.get( a , '#last' ) ).to.be( 'c' ) ;
-		expect( path.get( a , 'next' ) ).to.be( undefined ) ;
-		expect( path.get( a , '#next' ) ).to.be( undefined ) ;
 	} ) ;
 	
 	it( "path.get() on nested arrays" , function() {
@@ -549,9 +515,9 @@ describe( "Tree's path on mixed object and arrays" , function() {
 		
 		expect( path.get( a , 'method' ) ).to.be( 'get' ) ;
 		expect( path.get( a , 'populate' ) ).to.eql( [ 'parents', 'godfather' ] ) ;
-		expect( path.get( a , 'populate[0]' ) ).to.be( 'parents' ) ;
-		expect( path.get( a , 'populate[1]' ) ).to.be( 'godfather' ) ;
-		expect( path.get( a , 'populate[2]' ) ).to.be( undefined ) ;
+		expect( path.get( a , 'populate.0' ) ).to.be( 'parents' ) ;
+		expect( path.get( a , 'populate.1' ) ).to.be( 'godfather' ) ;
+		expect( path.get( a , 'populate.2' ) ).to.be( undefined ) ;
 	} ) ;
 	
 	it( "path.set() on a simple array" , function() {
