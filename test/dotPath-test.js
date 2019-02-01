@@ -307,46 +307,6 @@ describe( "Tree's path on objects" , () => {
 			}
 		} ) ;
 	} ) ;
-
-	it( "empty keys" , () => {
-		var o ;
-
-		o = {
-			a: 5 ,
-			"": {
-				b: "toto" ,
-				sub: {
-					c: true
-				}
-			} ,
-			d: null
-		} ;
-
-		expect( path.get( o , 'a' ) ).to.be( 5 ) ;
-		expect( path.get( o , '' ) ).to.equal( { b: "toto" , sub: { c: true } } ) ;
-		expect( path.get( o , '.b' ) ).to.be( "toto" ) ;
-		expect( path.get( o , '.sub' ) ).to.equal( { c: true } ) ;
-		expect( path.get( o , '.sub.c' ) ).to.be( true ) ;
-
-		o = {
-			"": {
-				"": {
-					"": {
-						a: 1 ,
-						b: 2
-					}
-				}
-			}
-		} ;
-
-		expect( path.get( o , '' ) ).to.equal( { "": { "": { a: 1 , b: 2 } } } ) ;
-		expect( path.get( o , '.' ) ).to.equal( { "": { a: 1 , b: 2 } } ) ;
-		expect( path.get( o , '..' ) ).to.equal( { a: 1 , b: 2 } ) ;
-		expect( path.get( o , '...a' ) ).to.equal( 1 ) ;
-	} ) ;
-
-	it( "all method should return the targeted item, like path.get() does" ) ;
-
 } ) ;
 
 
@@ -384,15 +344,15 @@ describe( "Tree's path on arrays" , () => {
 
 		path.set( a , '1' , 'B' ) ;
 
-		expect( a ).to.equal( [ 1 , 'B' , 3 , 'D' ] ) ;
-		expect( path.get( a , 'length' ) ).to.be( 4 ) ;
+		expect( a ).to.equal( [ 'a' , 'B' , 'c' ] ) ;
+		expect( path.get( a , 'length' ) ).to.be( 3 ) ;
 
 		a = [ 'a' , 'b' , 'c' ] ;
 
 		path.set( a , '1' , 'BBB' ) ;
 
-		expect( a ).to.equal( [ 1 , 'BBB' , 3 , 'D' ] ) ;
-		expect( path.get( a , 'length' ) ).to.be( 4 ) ;
+		expect( a ).to.equal( [ 'a' , 'BBB' , 'c' ] ) ;
+		expect( path.get( a , 'length' ) ).to.be( 3 ) ;
 	} ) ;
 
 	it( "path.delete() on a simple array" , () => {
@@ -405,8 +365,8 @@ describe( "Tree's path on arrays" , () => {
 
 		a = [ 'a' , 'b' , 'c' ] ;
 		path.delete( a , '2' ) ;
-		expect( a ).to.equal( [ 'a' , 'b' ] ) ;
-		expect( path.get( a , 'length' ) ).to.be( 2 ) ;
+		expect( a ).to.equal( [ 'a' , 'b' , undefined ] ) ;
+		expect( path.get( a , 'length' ) ).to.be( 3 ) ;
 	} ) ;
 
 	it( "path.set() on structure mixing arrays and objects" ) ;
@@ -436,7 +396,8 @@ describe( "Tree's path on mixed object and arrays" , () => {
 		} ;
 
 		path.set( a , 'method' , 'post' ) ;
-		path.set( a , 'populate[0]' , 'friends' ) ;
+		path.set( a , 'populate.0' , 'friends' ) ;
+
 		expect( a ).to.equal( {
 			method: 'post' ,
 			populate: [ 'friends' , 'godfather' ]

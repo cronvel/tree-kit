@@ -1,4 +1,10 @@
 
+v0.6.1
+------
+
+New: .dotPath.*(): a faster alternative to .path.*(), supporting only dot-separated path
+
+
 v0.6.0
 ------
 
