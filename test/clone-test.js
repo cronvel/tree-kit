@@ -28,20 +28,13 @@
 
 
 
-var tree = require( '../lib/tree.js' ) ;
-
-
-
-
-
-			/* Tests */
+const tree = require( '../lib/tree.js' ) ;
 
 
 
 describe( "clone()" , function() {
 	
 	it( "basic incomplete test" , function() {
-		
 		var proto = {
 			proto1: 'proto1' ,
 			proto2: 'proto2' ,
@@ -98,7 +91,6 @@ describe( "clone()" , function() {
 	} ) ;
 	
 	it( "circular references test" , function() {
-		
 		var c , o = {
 			a: 'a',
 			sub: {
@@ -127,7 +119,6 @@ describe( "clone()" , function() {
 	} ) ;
 	
 	it( "cloning an array" , function() {
-		
 		var a , c ;
 		
 		a = [ 'one' , 'two' , 'three' ] ;
@@ -142,8 +133,21 @@ describe( "clone()" , function() {
 		expect( Array.isArray( c[ 1 ] ) ).to.be.ok() ;
 	} ) ;
 		
+	it( "cloning a Date instance" , function() {
+		var a , c ;
+		
+		a = new Date() ;
+		c = tree.clone( a ) ;
+		expect( c ).to.equal( a ) ;
+		expect( c ).not.to.be( a ) ;
+		
+		a = { d: new Date() } ;
+		c = tree.clone( a ) ;
+		expect( c ).to.equal( a ) ;
+		expect( c ).not.to.be( a ) ;
+		expect( c.d ).not.to.be( a.d ) ;
+	} ) ;
+		
 	it( "better test suit for clone()" ) ;
 } ) ;
-
-
 
