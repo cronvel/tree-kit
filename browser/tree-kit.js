@@ -2,7 +2,7 @@
 /*
 	Tree Kit
 
-	Copyright (c) 2014 - 2018 Cédric Ronvel
+	Copyright (c) 2014 - 2019 Cédric Ronvel
 
 	The MIT License (MIT)
 
@@ -43,7 +43,7 @@ tree.path = require( './path.js' ) ;
 /*
 	Tree Kit
 
-	Copyright (c) 2014 - 2018 Cédric Ronvel
+	Copyright (c) 2014 - 2019 Cédric Ronvel
 
 	The MIT License (MIT)
 
@@ -74,18 +74,25 @@ tree.path = require( './path.js' ) ;
 	Stand-alone fork of extend.js, without options.
 */
 
-module.exports = function clone( originalObject , circular ) {
+function clone( originalObject , circular ) {
 	// First create an empty object with
 	// same prototype of our original source
 
-	var propertyIndex , descriptor , keys , current , nextSource , indexOf ,
+	var originalProto = Object.getPrototypeOf( originalObject ) ;
+
+	// Opaque objects, like Date
+	if ( clone.opaque.has( originalProto ) ) { return clone.opaque.get( originalProto )( originalObject ) ; }
+
+	var propertyIndex , descriptor , keys , current , nextSource , proto ,
 		copies = [ {
 			source: originalObject ,
-			target: Array.isArray( originalObject ) ? [] : Object.create( Object.getPrototypeOf( originalObject ) )
+			target: Array.isArray( originalObject ) ? [] : Object.create( originalProto )
 		} ] ,
 		cloneObject = copies[ 0 ].target ,
-		sourceReferences = [ originalObject ] ,
-		targetReferences = [ cloneObject ] ;
+		refMap = new Map() ;
+
+	refMap.set( originalObject , cloneObject ) ;
+
 
 	// First in, first out
 	while ( ( current = copies.shift() ) ) {
@@ -95,42 +102,57 @@ module.exports = function clone( originalObject , circular ) {
 			// Save the source's descriptor
 			descriptor = Object.getOwnPropertyDescriptor( current.source , keys[ propertyIndex ] ) ;
 
+
 			if ( ! descriptor.value || typeof descriptor.value !== 'object' ) {
 				Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
 				continue ;
 			}
 
 			nextSource = descriptor.value ;
-			descriptor.value = Array.isArray( nextSource ) ? [] : Object.create( Object.getPrototypeOf( nextSource ) ) ;
 
 			if ( circular ) {
-				indexOf = sourceReferences.indexOf( nextSource ) ;
-
-				if ( indexOf !== -1 ) {
+				if ( refMap.has( nextSource ) ) {
 					// The source is already referenced, just assign reference
-					descriptor.value = targetReferences[ indexOf ] ;
+					descriptor.value = refMap.get( nextSource ) ;
 					Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
 					continue ;
 				}
-
-				sourceReferences.push( nextSource ) ;
-				targetReferences.push( descriptor.value ) ;
 			}
 
-			Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
+			proto = Object.getPrototypeOf( descriptor.value ) ;
 
+			// Opaque objects, like Date, not recursivity for them
+			if ( clone.opaque.has( proto ) ) {
+				descriptor.value = clone.opaque.get( proto )( descriptor.value ) ;
+				Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
+				continue ;
+			}
+
+			descriptor.value = Array.isArray( nextSource ) ? [] : Object.create( proto ) ;
+
+			if ( circular ) { refMap.set( nextSource , descriptor.value ) ; }
+
+			Object.defineProperty( current.target , keys[ propertyIndex ] , descriptor ) ;
 			copies.push( { source: nextSource , target: descriptor.value } ) ;
 		}
 	}
 
 	return cloneObject ;
-} ;
+}
+
+module.exports = clone ;
+
+
+
+clone.opaque = new Map() ;
+clone.opaque.set( Date.prototype , src => new Date( src ) ) ;
+
 
 },{}],3:[function(require,module,exports){
 /*
 	Tree Kit
 
-	Copyright (c) 2014 - 2018 Cédric Ronvel
+	Copyright (c) 2014 - 2019 Cédric Ronvel
 
 	The MIT License (MIT)
 
@@ -381,7 +403,7 @@ function extendOne( runtime , options , target , source ) {
 					continue ;
 				}
 
-				if ( ! targetPointer[ targetKey ] || ! targetPointer.hasOwnProperty( targetKey ) || ( typeof targetPointer[ targetKey ] !== 'object' && typeof targetPointer[ targetKey ] !== 'function' ) ) {
+				if ( ! targetPointer[ targetKey ] || ! Object.prototype.hasOwnProperty.call( targetPointer , targetKey ) || ( typeof targetPointer[ targetKey ] !== 'object' && typeof targetPointer[ targetKey ] !== 'function' ) ) {
 					if ( Array.isArray( sourceValue ) ) { value = [] ; }
 					else if ( options.proto ) { value = Object.create( sourceValueProto ) ; }	// jshint ignore:line
 					else if ( options.inherit ) { value = Object.create( sourceValue ) ; }
@@ -437,7 +459,7 @@ function extendOne( runtime , options , target , source ) {
 /*
 	Tree Kit
 
-	Copyright (c) 2014 - 2018 Cédric Ronvel
+	Copyright (c) 2014 - 2019 Cédric Ronvel
 
 	The MIT License (MIT)
 
