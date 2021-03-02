@@ -935,3 +935,38 @@ describe( "Tree's array path on objects" , function() {
 	} ) ;
 } ) ;
 
+
+
+describe( ".path() security issues" , () => {
+
+	it( "Prototype pollution using .__proto__" , () => {
+		expect( () => path.set( {} , '__proto__.hack' , 'hacked' ) ).to.throw() ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+		expect( () => path.set( {} , '__proto__' , 'hacked' ) ).to.throw() ;
+		expect( () => path.set( {a:{}} , 'a.__proto__' , 'hacked' ) ).to.throw() ;
+		expect( () => path.delete( {} , '__proto__' , 'hacked' ) ).to.throw() ;
+		expect( () => path.delete( {} , '__proto__.hack' , 'hacked' ) ).to.throw() ;
+	} ) ;
+
+	it( "Prototype pollution using .constructor" , () => {
+		expect( () => path.set( {} , 'constructor.prototype' , 'hacked' ) ).to.throw() ;
+		expect( () => path.set( {} , 'constructor.prototype.hack' , 'hacked' ) ).to.throw() ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+		expect( path.get( {} , 'constructor' ) ).to.be( Object ) ;
+		expect( () => path.get( {} , 'constructor.prototype' ) ).to.throw() ;
+		
+		// Check that we can still return a function, but not go inside of it
+		function fn() {}
+		fn.a = 'A' ;
+		expect( path.get( { fn } , 'fn' ) ).to.be( fn ) ;
+		expect( () => path.get( { fn } , 'fn.a' ) ).to.throw() ;
+		expect( () => path.get( { fn } , 'fn.prototype' ) ).to.throw() ;
+		expect( () => path.set( { fn } , 'fn.a' , 'B' ) ).to.throw() ;
+		expect( fn.a ).to.be( 'A' ) ;
+
+		var o = { fn } ;
+		path.set( o , 'fn' , 'notfn' ) ;
+		expect( o.fn ).to.be( 'notfn' ) ;
+	} ) ;
+} ) ;
+
