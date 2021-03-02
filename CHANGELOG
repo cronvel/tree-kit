@@ -1,4 +1,10 @@
 
+v0.7.0
+------
+
+BREAKING CHANGE -- .path()/.dotPath(): drop the function's subtree support, fix prototype pollution
+
+
 v0.6.2
 ------
 
