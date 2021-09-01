@@ -188,14 +188,23 @@ module.exports = dotPath ;
 
 
 const EMPTY_PATH = [] ;
-const PROTO_POLLUTION_MESSAGE = 'This would pollute prototype' ;
+const PROTO_POLLUTION_MESSAGE = 'This would cause prototype pollution' ;
 
 
 
 function toPathArray( path ) {
-	if ( Array.isArray( path ) ) { return path ; }
-	else if ( ! path ) { return EMPTY_PATH ; }
-	else if ( typeof path === 'string' ) { return path.split( '.' ) ; }
+	if ( Array.isArray( path ) ) {
+		/*
+		let i , iMax = path.length ;
+		for ( i = 0 ; i < iMax ; i ++ ) {
+			if ( typeof path[ i ] !== 'string' || typeof path[ i ] !== 'number' ) { path[ i ] = '' + path[ i ] ; }
+		}
+		//*/
+		return path ;
+	}
+
+	if ( ! path ) { return EMPTY_PATH ; }
+	if ( typeof path === 'string' ) { return path.split( '.' ) ; }
 
 	throw new TypeError( '[tree.dotPath]: the path argument should be a string or an array' ) ;
 }
@@ -210,7 +219,7 @@ function walk( object , pathArray , maxOffset = 0 ) {
 	for ( i = 0 , iMax = pathArray.length + maxOffset ; i < iMax ; i ++ ) {
 		key = pathArray[ i ] ;
 
-		if ( key === '__proto__' || typeof pointer === 'function' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+		if ( typeof key === 'object' || key === '__proto__' || typeof pointer === 'function' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 		if ( ! pointer || typeof pointer !== 'object' ) { return undefined ; }
 
 		pointer = pointer[ key ] ;
@@ -231,7 +240,7 @@ function pave( object , pathArray ) {
 	for ( i = 0 , iMax = pathArray.length - 1 ; i < iMax ; i ++ ) {
 		key = pathArray[ i ] ;
 
-		if ( key === '__proto__' || typeof pointer[ key ] === 'function' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+		if ( typeof key === 'object' || key === '__proto__' || typeof pointer[ key ] === 'function' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 		if ( ! pointer[ key ] || typeof pointer[ key ] !== 'object' ) { pointer[ key ] = {} ; }
 
 		pointer = pointer[ key ] ;
@@ -255,7 +264,7 @@ dotPath.set = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -275,7 +284,7 @@ dotPath.define = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -295,7 +304,7 @@ dotPath.inc = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -316,7 +325,7 @@ dotPath.dec = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -337,7 +346,7 @@ dotPath.concat = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -361,7 +370,7 @@ dotPath.insert = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -380,7 +389,7 @@ dotPath.delete = ( object , path ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = walk( object , pathArray , -1 ) ;
 
@@ -400,7 +409,7 @@ dotPath.autoPush = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -422,7 +431,7 @@ dotPath.append = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -444,7 +453,7 @@ dotPath.prepend = ( object , path , value ) => {
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
 
-	if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+	if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 
 	var pointer = pave( object , pathArray ) ;
 
@@ -799,7 +808,7 @@ module.exports = treePath ;
 
 
 
-const PROTO_POLLUTION_MESSAGE = 'This would pollute prototype' ;
+const PROTO_POLLUTION_MESSAGE = 'This would cause prototype pollution' ;
 
 
 
@@ -819,6 +828,11 @@ treePath.op = function( type , object , path , value ) {
 	else if ( Array.isArray( path ) ) {
 		parts = path ;
 		pathArrayMode = true ;
+		/*
+		for ( i = 0 ; i < parts.length ; i ++ ) {
+			if ( typeof parts[ i ] !== 'string' || typeof parts[ i ] !== 'number' ) { parts[ i ] = '' + parts[ i ] ; }
+		}
+		//*/
 	}
 	else {
 		throw new TypeError( '[tree.path] .' + type + '(): the path argument should be a string or an array' ) ;
@@ -854,7 +868,7 @@ treePath.op = function( type , object , path , value ) {
 		if ( pathArrayMode ) {
 			if ( key === undefined ) {
 				key = parts[ i ] ;
-				if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+				if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 				continue ;
 			}
 
@@ -866,7 +880,7 @@ treePath.op = function( type , object , path , value ) {
 
 			pointer = pointer[ key ] ;
 			key = parts[ i ] ;
-			if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+			if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 			continue ;
 		}
 		else if ( parts[ i ] === '.' ) {
@@ -922,7 +936,7 @@ treePath.op = function( type , object , path , value ) {
 
 		if ( ! isArray ) {
 			key = parts[ i ] ;
-			if ( key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+			if ( typeof key === 'object' || key === '__proto__' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
 			continue ;
 		}
 

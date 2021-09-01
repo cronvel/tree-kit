@@ -1,4 +1,10 @@
 
+v0.7.1
+------
+
+path/dotPath with path in array mode now checks that there is no object in the array
+
+
 v0.7.0
 ------
 

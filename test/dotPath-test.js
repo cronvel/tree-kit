@@ -594,6 +594,15 @@ describe( ".dotPath() security issues" , () => {
 		expect( () => path.delete( {} , '__proto__.hack' , 'hacked' ) ).to.throw() ;
 	} ) ;
 
+	it( "Prototype pollution using a path array: [['__proto__']]" , () => {
+		expect( () => path.set( {} , [['__proto__'],'hack'] , 'hacked' ) ).to.throw() ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+		expect( () => path.set( {} , '__proto__' , 'hacked' ) ).to.throw() ;
+		expect( () => path.set( {a:{}} , 'a.__proto__' , 'hacked' ) ).to.throw() ;
+		expect( () => path.delete( {} , '__proto__' , 'hacked' ) ).to.throw() ;
+		expect( () => path.delete( {} , '__proto__.hack' , 'hacked' ) ).to.throw() ;
+	} ) ;
+
 	it( "Prototype pollution using .constructor" , () => {
 		expect( () => path.set( {} , 'constructor.prototype' , 'hacked' ) ).to.throw() ;
 		expect( () => path.set( {} , 'constructor.prototype.hack' , 'hacked' ) ).to.throw() ;
