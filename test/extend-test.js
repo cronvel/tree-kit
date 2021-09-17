@@ -28,7 +28,7 @@
 
 
 
-var extend = require( '../lib/extend.js' ) ;
+const extend = require( '../lib/extend.js' ) ;
 
 
 
@@ -47,7 +47,7 @@ Func.prop = 'property' ;
 
 
 
-var input = {
+const input = {
 	'undefined' : undefined ,
 	'null' : null ,
 	'bool' : true ,
@@ -142,9 +142,9 @@ var input = {
 
 
 
-describe( "extend()" , function() {
+describe( "extend()" , () => {
 	
-	it( "should extend correctly an empty Object with a flat Object without depth (with or without the 'deep' option)" , function() {
+	it( "should extend correctly an empty Object with a flat Object without depth (with or without the 'deep' option)" , () => {
 		var copy ;
 		
 		var expected = {
@@ -163,34 +163,33 @@ describe( "extend()" , function() {
 		expect( extend( { deep: true } , copy , input.subtree.subtree2 ) ).to.eql( expected ) ;
 	} ) ;
 	
-	it( "should extend an empty Object with a deep Object performing a SHALLOW copy, the result should be equal to the deep Object, nested object MUST be equal AND identical" , function() {
+	it( "should extend an empty Object with a deep Object performing a SHALLOW copy, the result should be equal to the deep Object, nested object MUST be equal AND identical" , () => {
 		var copy = extend( null , {} , input.subtree ) ;
 		expect( copy ).to.be.a.shallow.clone.of( input.subtree ) ;
 		expect( copy ).to.equal( input.subtree ) ;
 	} ) ;
 		
-	it( "with the 'deep' option should extend an empty Object with a deep Object performing a DEEP copy, the result should be equal to the deep Object, nested object MUST be equal BUT NOT identical" , function() {
+	it( "with the 'deep' option should extend an empty Object with a deep Object performing a DEEP copy, the result should be equal to the deep Object, nested object MUST be equal BUT NOT identical" , () => {
 		var copy = extend( { deep: true } , {} , input.subtree ) ;
 		expect( copy ).to.equal( input.subtree ) ;
 		expect( copy ).not.to.be.a.shallow.clone.of( input.subtree ) ;
 		expect( copy.subtree2 ).not.to.be.a.shallow.clone.of( input.subtree.subtree2 ) ;
 	} ) ;
 		
-	it( "with the 'deep' option, sources functions are still simply copied/referenced into target" , function() {
+	it( "with the 'deep' option, sources functions are still simply copied/referenced into target" , () => {
 		var copy = extend( { deep: true } , {} , input.subtreeWithFunction ) ;
 		//console.log( copy ) ;
 		expect( copy ).to.equal( input.subtreeWithFunction ) ;
 		expect( copy.Func.prototype ).to.be( input.subtreeWithFunction.Func.prototype ) ;
 	} ) ;
 	
-	it( "with the 'deep' & 'deepFunc' options, sources functions are treated like regular objects, creating an object rather than a function in the target location, and performing a deep copy of them" , function() {
+	it( "with the 'deep' & 'deepFunc' options, sources functions are treated like regular objects, creating an object rather than a function in the target location, and performing a deep copy of them" , () => {
 		var copy = extend( { deep: true, deepFunc: true } , {} , input.subtreeWithFunction ) ;
 		expect( copy ).not.to.equal( input.subtreeWithFunction ) ;
 		expect( copy ).to.equal( { z: 'Zee' , Func: { prop: 'property' } } ) ;
 	} ) ;
 	
-	it( "should extend (by default) properties of the prototype chain" , function() {
-		
+	it( "should extend (by default) properties of the prototype chain" , () => {
 		var proto = {
 			proto1: 'proto1' ,
 			proto2: 'proto2' ,
@@ -216,8 +215,7 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with the 'own' option, it should ONLY extend OWNED properties, non-enumerable properties and properties of the prototype chain are SKIPPED" , function() {
-		
+	it( "with the 'own' option, it should ONLY extend OWNED properties, non-enumerable properties and properties of the prototype chain are SKIPPED" , () => {
 		var proto = {
 			proto1: 'proto1' ,
 			proto2: 'proto2' ,
@@ -244,8 +242,7 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with the 'own' & 'nonEnum' option, it should ONLY extend OWNED properties, enumerable or not, but properties of the prototype chain are SKIPPED" , function() {
-		
+	it( "with the 'own' & 'nonEnum' option, it should ONLY extend OWNED properties, enumerable or not, but properties of the prototype chain are SKIPPED" , () => {
 		var proto = {
 			proto1: 'proto1' ,
 			proto2: 'proto2' ,
@@ -277,8 +274,7 @@ describe( "extend()" , function() {
 	} ) ;
 	
 	
-	it( "with the 'descriptor' option, it should preserve descriptor as well" , function() {
-		
+	it( "with the 'descriptor' option, it should preserve descriptor as well" , () => {
 		var r ;
 		
 		var proto = {
@@ -337,8 +333,7 @@ describe( "extend()" , function() {
 		expect( Object.getOwnPropertyDescriptor( r , 'getterAndSetter' ) ).to.equal( { get: getter , set: setter , enumerable: false , configurable: false } ) ;
 	} ) ;
 	
-	it( "with the 'deep' option should extend a deep Object into another deep Object correctly" , function() {
-		
+	it( "with the 'deep' option should extend a deep Object into another deep Object correctly" , () => {
 		var copy ;
 		
 		copy = extend( { deep: true } , {} , input.subtree ) ;
@@ -388,8 +383,7 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with the 'proto' option and a null (or falsy) target, it should create and return a new Object with the prototype of the source Object" , function() {
-		
+	it( "with the 'proto' option and a null (or falsy) target, it should create and return a new Object with the prototype of the source Object" , () => {
 		var e , o , proto ;
 		
 		proto = {
@@ -412,8 +406,7 @@ describe( "extend()" , function() {
 		expect( e.hello ).to.be.a( 'function' ) ;
 	} ) ;
 	
-	it( "with the 'proto' option should change the prototype of each target properties for the prototype of the related source properties, if 'deep' is enabled it does so recursively" , function() {
-		
+	it( "with the 'proto' option should change the prototype of each target properties for the prototype of the related source properties, if 'deep' is enabled it does so recursively" , () => {
 		var e , o , proto1 , proto2 ;
 		
 		proto1 = {
@@ -467,8 +460,7 @@ describe( "extend()" , function() {
 		expect( e.embed2.world ).to.be.a( 'function' ) ;
 	} ) ;
 	
-	it( "with 'nofunc' option should skip function" , function() {
-		
+	it( "with 'nofunc' option should skip function" , () => {
 		var e , o , proto ;
 		
 		proto = {
@@ -502,8 +494,7 @@ describe( "extend()" , function() {
 		expect( e.hello ).to.be.a( 'function' ) ;
 	} ) ;
 	
-	it( "with 'preserve' option should not overwrite existing properties in the target" , function() {
-		
+	it( "with 'mask' option should only update existing properties in the target, it should not create new properties" , () => {
 		var e , o ;
 		
 		e = {
@@ -517,13 +508,81 @@ describe( "extend()" , function() {
 			four: '4'
 		} ;
 		
-		extend( { preserve: true } , e , o ) ;
+		extend( { mask: true } , e , o ) ;
+		expect( e ).to.equal( { one: '1' , two: 2 , three: 3 } ) ;
+		expect( o ).to.equal( { three: 3 , four: '4' } ) ;
+
+
+		e = {
+			one: '1' ,
+			two: { sub: 2 } ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			one: 'ONE' ,
+			two: 'TWO' ,
+			three: { sub: 3 }  ,
+			four: '4'
+		} ;
+		
+		extend( { deep: true , mask: true } , e , o ) ;
+		expect( e ).to.equal( { one: 'ONE' , two: { sub: 2 } , three: 'THREE' } ) ;
+		expect( o ).to.equal( { one: 'ONE' , two: 'TWO' , three: { sub: 3 } , four: '4' } ) ;
+
+
+		e = {
+			one: '1' ,
+			two: { sub: 2 } ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			two: { sub: 'TWO' } ,
+		} ;
+		
+		extend( { deep: true , mask: true } , e , o ) ;
+		expect( e ).to.equal( { one: '1' , two: { sub: 'TWO' } , three: 'THREE' } ) ;
+		expect( o ).to.equal( { two: { sub: 'TWO' } } ) ;
+	} ) ;
+
+	it( "with 'preserve' option should not overwrite existing properties in the target" , () => {
+		var e , o ;
+		
+		e = {
+			one: '1' ,
+			two: 2 ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			three: 3 ,
+			four: '4'
+		} ;
+		
+		extend( { deep: true , preserve: true } , e , o ) ;
 		expect( e ).to.equal( { one: '1' , two: 2 , three: 'THREE' , four: '4' } ) ;
 		expect( o ).to.equal( { three: 3 , four: '4' } ) ;
+		
+
+		e = {
+			one: '1' ,
+			two: { sub: 2 } ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			two: 'TWO' ,
+			three: { sub: 3 }  ,
+			four: '4'
+		} ;
+		
+		extend( { deep: true , preserve: true } , e , o ) ;
+		expect( e ).to.equal( { one: '1' , two: { sub: 2 } , three: 'THREE' , four: '4' } ) ;
+		expect( o ).to.equal( { two: 'TWO' , three: { sub: 3 } , four: '4' } ) ;
 	} ) ;
 	
-	it( "with 'move' option should move source properties to target properties, i.e. delete them form the source" , function() {
-		
+	it( "with 'move' option should move source properties to target properties, i.e. delete them form the source" , () => {
 		var e , o ;
 		
 		e = {
@@ -542,8 +601,7 @@ describe( "extend()" , function() {
 		expect( o ).to.equal( {} ) ;
 	} ) ;
 	
-	it( "with 'preserve' and 'move' option should not overwrite existing properties in the target, so it should not move/delete them from the source object" , function() {
-		
+	it( "with 'preserve' and 'move' option should not overwrite existing properties in the target, so it should not move/delete them from the source object" , () => {
 		var e , o ;
 		
 		e = {
@@ -562,8 +620,7 @@ describe( "extend()" , function() {
 		expect( o ).to.equal( { three: 3 } ) ;
 	} ) ;
 	
-	it( "with 'inherit' option should inherit rather than extend: each source property create a new Object or mutate existing Object into the related target property, using itself as the prototype" , function() {
-		
+	it( "with 'inherit' option should inherit rather than extend: each source property create a new Object or mutate existing Object into the related target property, using itself as the prototype" , () => {
 		var e , o ;
 		
 		o = {
@@ -622,8 +679,7 @@ describe( "extend()" , function() {
 		expect( e.subtree.five ).to.be( undefined ) ;
 	} ) ;
 	
-	it( "with 'inherit' and 'deep' option should inherit recursively" , function() {
-		
+	it( "with 'inherit' and 'deep' option should inherit recursively" , () => {
 		var e , o ;
 		
 		o = {
@@ -687,8 +743,7 @@ describe( "extend()" , function() {
 		expect( e.subtree.five ).to.be( 'FIVE' ) ;
 	} ) ;
 	
-	it( "with 'flat' option" , function() {
-		
+	it( "with 'flat' option" , () => {
 		var e , o ;
 		
 		o = {
@@ -734,8 +789,7 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with 'unflat' option" , function() {
-		
+	it( "with 'unflat' option" , () => {
 		var e , o ;
 		
 		o = {
@@ -797,9 +851,8 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "with 'deep' option as an Array/Set of eligible prototype for deep copy" , function() {
-		
-		var o , e , buf = new Buffer( "My buffer" ) ;
+	it( "with 'deep' option as an Array/Set of eligible prototype for deep copy" , () => {
+		var o , e , buf = Buffer.from( "My buffer" ) ;
 		
 		o = {
 			one: '1' ,
@@ -849,9 +902,8 @@ describe( "extend()" , function() {
 		
 	} ) ;
 	
-	it( "with the 'immutables' options, an Array/Set of prototypes of object that are immutables, it should not deep-copy those object and treat them as opaque direct values" , function() {
-		
-		var o , e , buf = new Buffer( "My buffer" ) ;
+	it( "with the 'immutables' options, an Array/Set of prototypes of object that are immutables, it should not deep-copy those object and treat them as opaque direct values" , () => {
+		var o , e , buf = Buffer.from( "My buffer" ) ;
 		
 		o = {
 			one: '1' ,
@@ -900,8 +952,7 @@ describe( "extend()" , function() {
 		} ) ;
 	} ) ;
 	
-	it( "circular references test" , function() {
-		
+	it( "circular references test" , () => {
 		var c , o = {
 			a: 'a',
 			sub: {
