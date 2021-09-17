@@ -273,7 +273,6 @@ describe( "extend()" , () => {
 		} ) ;
 	} ) ;
 	
-	
 	it( "with the 'descriptor' option, it should preserve descriptor as well" , () => {
 		var r ;
 		

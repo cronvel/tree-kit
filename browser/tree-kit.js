@@ -515,6 +515,7 @@ dotPath.prepend = ( object , path , value ) => {
 		* circular: circular references reconnection
 		* move: move properties to target (delete properties from the sources)
 		* preserve: existing properties in the target object are not overwritten
+		* mask: reverse of 'preserve', only update existing properties in the target, do not create new keys
 		* nofunc: skip functions
 		* deepFunc: in conjunction with 'deep', this will process sources functions like objects rather than
 			copying/referencing them directly into the source, thus, the result will not be a function, it forces 'deep'
@@ -616,8 +617,9 @@ function extendOne( runtime , options , target , source ) {
 	//console.log( "\nextendOne():\n" , arguments ) ;
 	//process.exit() ;
 
-	var j , jmax , sourceKeys , sourceKey , sourceValue , sourceValueProto ,
-		value , sourceDescriptor , targetKey , targetPointer , path ,
+	var j , jmax , path ,
+		sourceKeys , sourceKey , sourceValue , sourceValueIsObject , sourceValueProto , sourceDescriptor ,
+		targetKey , targetPointer , targetValue , targetValueIsObject ,
 		indexOfSource = -1 ;
 
 	// Max depth check
@@ -679,6 +681,11 @@ function extendOne( runtime , options , target , source ) {
 			}
 		}
 
+		// Again, trigger an eventual getter only once
+		targetValue = targetPointer[ targetKey ] ;
+		targetValueIsObject = targetValue && ( typeof targetValue === 'object' || typeof targetValue === 'function' ) ;
+		sourceValueIsObject = sourceValue && ( typeof sourceValue === 'object' || typeof sourceValue === 'function' ) ;
+
 
 		if ( options.deep	// eslint-disable-line no-constant-condition
 			&& sourceValue
@@ -688,6 +695,8 @@ function extendOne( runtime , options , target , source ) {
 			&& ( ( sourceValueProto = Object.getPrototypeOf( sourceValue ) ) || true )
 			&& ( ! ( options.deep instanceof Set ) || options.deep.has( sourceValueProto ) )
 			&& ( ! options.immutables || ! options.immutables.has( sourceValueProto ) )
+			&& ( ! options.preserve || targetValueIsObject )
+			&& ( ! options.mask || targetValueIsObject )
 		) {
 			if ( options.circular ) {
 				indexOfSource = runtime.references.sources.indexOf( sourceValue ) ;
@@ -705,65 +714,72 @@ function extendOne( runtime , options , target , source ) {
 			else {
 				if ( indexOfSource >= 0 ) {
 					// Circular references reconnection...
+					targetValue = runtime.references.targets[ indexOfSource ] ;
+
 					if ( options.descriptor ) {
 						Object.defineProperty( targetPointer , targetKey , {
-							value: runtime.references.targets[ indexOfSource ] ,
+							value: targetValue ,
 							enumerable: sourceDescriptor.enumerable ,
 							writable: sourceDescriptor.writable ,
 							configurable: sourceDescriptor.configurable
 						} ) ;
 					}
 					else {
-						targetPointer[ targetKey ] = runtime.references.targets[ indexOfSource ] ;
+						targetPointer[ targetKey ] = targetValue ;
 					}
 
 					continue ;
 				}
 
-				if ( ! targetPointer[ targetKey ] || ! Object.prototype.hasOwnProperty.call( targetPointer , targetKey ) || ( typeof targetPointer[ targetKey ] !== 'object' && typeof targetPointer[ targetKey ] !== 'function' ) ) {
-					if ( Array.isArray( sourceValue ) ) { value = [] ; }
-					else if ( options.proto ) { value = Object.create( sourceValueProto ) ; }	// jshint ignore:line
-					else if ( options.inherit ) { value = Object.create( sourceValue ) ; }
-					else { value = {} ; }
+				if ( ! targetValueIsObject || ! Object.prototype.hasOwnProperty.call( targetPointer , targetKey ) ) {
+					if ( Array.isArray( sourceValue ) ) { targetValue = [] ; }
+					else if ( options.proto ) { targetValue = Object.create( sourceValueProto ) ; }	// jshint ignore:line
+					else if ( options.inherit ) { targetValue = Object.create( sourceValue ) ; }
+					else { targetValue = {} ; }
 
 					if ( options.descriptor ) {
 						Object.defineProperty( targetPointer , targetKey , {
-							value: value ,
+							value: targetValue ,
 							enumerable: sourceDescriptor.enumerable ,
 							writable: sourceDescriptor.writable ,
 							configurable: sourceDescriptor.configurable
 						} ) ;
 					}
 					else {
-						targetPointer[ targetKey ] = value ;
+						targetPointer[ targetKey ] = targetValue ;
 					}
 				}
-				else if ( options.proto && Object.getPrototypeOf( targetPointer[ targetKey ] ) !== sourceValueProto ) {
-					Object.setPrototypeOf( targetPointer[ targetKey ] , sourceValueProto ) ;
+				else if ( options.proto && Object.getPrototypeOf( targetValue ) !== sourceValueProto ) {
+					Object.setPrototypeOf( targetValue , sourceValueProto ) ;
 				}
-				else if ( options.inherit && Object.getPrototypeOf( targetPointer[ targetKey ] ) !== sourceValue ) {
-					Object.setPrototypeOf( targetPointer[ targetKey ] , sourceValue ) ;
+				else if ( options.inherit && Object.getPrototypeOf( targetValue ) !== sourceValue ) {
+					Object.setPrototypeOf( targetValue , sourceValue ) ;
 				}
 
 				if ( options.circular ) {
 					runtime.references.sources.push( sourceValue ) ;
-					runtime.references.targets.push( targetPointer[ targetKey ] ) ;
+					runtime.references.targets.push( targetValue ) ;
 				}
 
 				// Recursively extends sub-object
 				extendOne(
 					{ depth: runtime.depth + 1 , prefix: '' , references: runtime.references } ,
-					options , targetPointer[ targetKey ] , sourceValue
+					options , targetValue , sourceValue
 				) ;
 			}
 		}
-		else if ( options.preserve && targetPointer[ targetKey ] !== undefined ) {
+		else if ( options.mask && ( targetValue === undefined || targetValueIsObject || sourceValueIsObject ) ) {
+			// Do not create new value, and so do not delete source's properties that were not moved.
+			// We also do not overwrite object with non-object, and we don't overwrite non-object with object (preserve hierarchy)
+			continue ;
+		}
+		else if ( options.preserve && targetValue !== undefined ) {
 			// Do not overwrite, and so do not delete source's properties that were not moved
 			continue ;
 		}
 		else if ( ! options.inherit ) {
 			if ( options.descriptor ) { Object.defineProperty( targetPointer , targetKey , sourceDescriptor ) ; }
-			else { targetPointer[ targetKey ] = sourceValue ; }
+			else { targetPointer[ targetKey ] = targetValue = sourceValue ; }
 		}
 
 		// Delete owned property of the source object

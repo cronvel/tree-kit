@@ -1,4 +1,10 @@
 
+v0.7.2
+------
+
+.extend(): fix the 'preserve' option bug when replacing with an object. New option 'mask' that is the revert of 'preserve': only update an object, but do not create new keys
+
+
 v0.7.1
 ------
 
