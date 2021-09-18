@@ -545,6 +545,30 @@ describe( "extend()" , () => {
 		expect( o ).to.equal( { two: { sub: 'TWO' } } ) ;
 	} ) ;
 
+	it( "with 'mask' option as a number" , () => {
+		var e , o , r ;
+		
+		e = {
+			one: '1' ,
+			two: 2 ,
+			three: 'THREE'
+		} ;
+		
+		o = {
+			three: 3 ,
+			four: '4'
+		} ;
+		
+		r = extend( { mask: true } , {} , e , o ) ;
+		expect( r ).to.equal( {} ) ;
+		
+		r = extend( { mask: 1 } , {} , e , o ) ;
+		expect( r ).to.equal( {} ) ;
+		
+		r = extend( { mask: 2 } , {} , e , o ) ;
+		expect( r ).to.equal( { one: '1' , two: 2 , three: 3 } ) ;
+	} ) ;
+
 	it( "with 'preserve' option should not overwrite existing properties in the target" , () => {
 		var e , o ;
 		
@@ -571,14 +595,15 @@ describe( "extend()" , () => {
 		} ;
 		
 		o = {
-			two: 'TWO' ,
-			three: { sub: 3 }  ,
-			four: '4'
+			two: 'TWO' ,			// Can't replace, even if base is an object
+			three: { sub: 3 }  ,	// Can't replace, even by an object
+			four: '4' ,
+			five: { sub: 'FIVE' }	// It's a new key, so it should be added
 		} ;
 		
 		extend( { deep: true , preserve: true } , e , o ) ;
-		expect( e ).to.equal( { one: '1' , two: { sub: 2 } , three: 'THREE' , four: '4' } ) ;
-		expect( o ).to.equal( { two: 'TWO' , three: { sub: 3 } , four: '4' } ) ;
+		expect( e ).to.equal( { one: '1' , two: { sub: 2 } , three: 'THREE' , four: '4' , five: { sub: 'FIVE' } } ) ;
+		expect( o ).to.equal( { two: 'TWO' , three: { sub: 3 } , four: '4' , five: { sub: 'FIVE' } } ) ;
 	} ) ;
 	
 	it( "with 'move' option should move source properties to target properties, i.e. delete them form the source" , () => {

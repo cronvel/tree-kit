@@ -1,4 +1,10 @@
 
+v0.7.3
+------
+
+.extend() option 'mask' now supports a number, the rank at which the masking starts
+
+
 v0.7.2
 ------
 

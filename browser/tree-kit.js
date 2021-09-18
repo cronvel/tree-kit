@@ -512,10 +512,15 @@ dotPath.prepend = ( object , path , value ) => {
 			(it is a replacement for deepFilter.blacklist which was removed in Tree Kit 0.6).
 		* maxDepth: used in conjunction with deep, when max depth is reached an exception is raised, default to 100 when
 			the 'circular' option is off, or default to null if 'circular' is on
-		* circular: circular references reconnection
-		* move: move properties to target (delete properties from the sources)
-		* preserve: existing properties in the target object are not overwritten
-		* mask: reverse of 'preserve', only update existing properties in the target, do not create new keys
+		* circular: boolean, circular references reconnection
+		* move: boolean, move properties to target (delete properties from the sources)
+		* preserve: boolean, existing properties in the target object are not overwritten
+		* mask: boolean or number, reverse of 'preserve', only update existing properties in the target, do not create new keys,
+			if its a number, the mask effect is only effective for the Nth element.
+			E.g: .extend( {mask:2} , {} , object1 , object2 )
+			So object1 extends the empty object like, but object2 do not create new keys not present in object1.
+			With mask:true or mask:1, the mask behavior would apply at step 1 too, when object1 would try to extend the empty object,
+			and since an empty object has no key, nothing would change, and the whole extend would return an empty object.
 		* nofunc: skip functions
 		* deepFunc: in conjunction with 'deep', this will process sources functions like objects rather than
 			copying/referencing them directly into the source, thus, the result will not be a function, it forces 'deep'
@@ -529,7 +534,6 @@ dotPath.prepend = ( object , path , value ) => {
 		* unflat: assume sources are in the 'flat' format, expand all properties deeply into the target, disable 'flat'
 */
 function extend( options , target , ... sources ) {
-	//console.log( "\nextend():\n" , arguments ) ;
 	var i , source , newTarget = false , length = sources.length ;
 
 	if ( ! length ) { return target ; }
@@ -603,7 +607,7 @@ function extend( options , target , ... sources ) {
 	for ( i = 0 ; i < length ; i ++ ) {
 		source = sources[ i ] ;
 		if ( ! source || ( typeof source !== 'object' && typeof source !== 'function' ) ) { continue ; }
-		extendOne( runtime , options , target , source ) ;
+		extendOne( runtime , options , target , source , options.mask <= i + 1 ) ;
 	}
 
 	return target ;
@@ -613,10 +617,7 @@ module.exports = extend ;
 
 
 
-function extendOne( runtime , options , target , source ) {
-	//console.log( "\nextendOne():\n" , arguments ) ;
-	//process.exit() ;
-
+function extendOne( runtime , options , target , source , mask ) {
 	var j , jmax , path ,
 		sourceKeys , sourceKey , sourceValue , sourceValueIsObject , sourceValueProto , sourceDescriptor ,
 		targetKey , targetPointer , targetValue , targetValueIsObject ,
@@ -696,7 +697,7 @@ function extendOne( runtime , options , target , source ) {
 			&& ( ! ( options.deep instanceof Set ) || options.deep.has( sourceValueProto ) )
 			&& ( ! options.immutables || ! options.immutables.has( sourceValueProto ) )
 			&& ( ! options.preserve || targetValueIsObject )
-			&& ( ! options.mask || targetValueIsObject )
+			&& ( ! mask || targetValueIsObject )
 		) {
 			if ( options.circular ) {
 				indexOfSource = runtime.references.sources.indexOf( sourceValue ) ;
@@ -708,7 +709,7 @@ function extendOne( runtime , options , target , source ) {
 
 				extendOne(
 					{ depth: runtime.depth + 1 , prefix: runtime.prefix + sourceKey + options.flat , references: runtime.references } ,
-					options , targetPointer , sourceValue
+					options , targetPointer , sourceValue , mask
 				) ;
 			}
 			else {
@@ -764,11 +765,11 @@ function extendOne( runtime , options , target , source ) {
 				// Recursively extends sub-object
 				extendOne(
 					{ depth: runtime.depth + 1 , prefix: '' , references: runtime.references } ,
-					options , targetValue , sourceValue
+					options , targetValue , sourceValue , mask
 				) ;
 			}
 		}
-		else if ( options.mask && ( targetValue === undefined || targetValueIsObject || sourceValueIsObject ) ) {
+		else if ( mask && ( targetValue === undefined || targetValueIsObject || sourceValueIsObject ) ) {
 			// Do not create new value, and so do not delete source's properties that were not moved.
 			// We also do not overwrite object with non-object, and we don't overwrite non-object with object (preserve hierarchy)
 			continue ;
