@@ -65,6 +65,31 @@ describe( "Tree's dot-path on objects" , () => {
 		expect( path.get( o , 'nothing.nothing' ) ).to.be( undefined ) ;
 	} ) ;
 
+	it( "should support the empty path part syntax", () => {
+		var o = {
+			"": {
+				hidden: "value" ,
+				"": {
+					hidden2: "value2" ,
+				} ,
+				sub: {
+					"": {
+						hidden3: "value3" ,
+					} ,
+				}
+			}
+		} ;
+
+		expect( path.get( o , '' ) ).to.be( o ) ;
+		expect( path.get( o , '.' ) ).to.be( o[''] ) ;
+		expect( path.get( o , '.hidden' ) ).to.be( "value" ) ;
+		expect( path.get( o , '..' ) ).to.be( o[''][''] ) ;
+		expect( path.get( o , '..hidden2' ) ).to.be( "value2" ) ;
+		expect( path.get( o , '.sub' ) ).to.be( o[''].sub ) ;
+		expect( path.get( o , '.sub..' ) ).to.be( o[''].sub[''] ) ;
+		expect( path.get( o , '.sub..hidden3' ) ).to.be( "value3" ) ;
+	} ) ;
+
 	it( "path.delete() on object structure" , () => {
 		var o = {
 			a: 5 ,
