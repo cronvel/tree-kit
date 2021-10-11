@@ -204,7 +204,9 @@ function toPathArray( path ) {
 	}
 
 	if ( ! path ) { return EMPTY_PATH ; }
-	if ( typeof path === 'string' ) { return path.split( '.' ) ; }
+	if ( typeof path === 'string' ) {
+		return path[ path.length - 1 ] === '.' ? path.slice( 0 , -1 ).split( '.' ) : path.split( '.' ) ;
+	}
 
 	throw new TypeError( '[tree.dotPath]: the path argument should be a string or an array' ) ;
 }
