@@ -816,6 +816,40 @@ describe( "extend()" , () => {
 	it( "with 'unflat' option" , () => {
 		var e , o ;
 		
+		e = {} ;
+		extend( { unflat: true } , e , { 'subtree.a': 'value' } ) ;
+		expect( e ).to.equal( {
+			subtree: {
+				a: 'value' ,
+			}
+		} ) ;
+		extend( { unflat: true } , e , { 'subtree.b': 'value2' } ) ;
+		expect( e ).to.equal( {
+			subtree: {
+				a: 'value' ,
+				b: 'value2' ,
+			}
+		} ) ;
+		extend( { unflat: true } , e , { 'subtree.a': 'replaced' } ) ;
+		expect( e ).to.equal( {
+			subtree: {
+				a: 'replaced' ,
+				b: 'value2' ,
+			}
+		} ) ;
+		extend( { unflat: true } , e , { 'subtree2.subtree.c': 'value3' } ) ;
+		expect( e ).to.equal( {
+			subtree: {
+				a: 'replaced' ,
+				b: 'value2' ,
+			} ,
+			subtree2: {
+				subtree: {
+					c: 'value3' ,
+				}
+			}
+		} ) ;
+
 		o = {
 			three: 3 ,
 			four: '4' ,
@@ -1012,6 +1046,39 @@ describe( "extend()" , () => {
 	} ) ;
 	
 	it( "with 'skipRoot' option" ) ;
+	
 } ) ;
 
+
+
+describe( ".extend() security issues" , () => {
+
+	it( "Prototype pollution using .__proto__" , () => {
+		delete Object.prototype.hack ;
+		var o = {} ;
+		extend( { deep: true } , o , { __proto__: { prototype: { hack: "hacked" } } } ) ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+	} ) ;
+
+	it( "Prototype pollution using .constructor" , () => {
+		delete Object.prototype.hack ;
+		var o = {} ;
+		extend( { deep: true } , o , { constructor: { prototype: { hack: "hacked" } } } ) ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+	} ) ;
+
+	it( "Prototype pollution using 'unflat' option and using .__proto__" , () => {
+		delete Object.prototype.hack ;
+		var o = {} ;
+		extend( { unflat: true } , o , { "__proto__.hack": "hacked" } ) ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+	} ) ;
+
+	it( "Prototype pollution using 'unflat' option and using .constructor" , () => {
+		delete Object.prototype.hack ;
+		var o = {} ;
+		extend( { unflat: true } , o , { "constructor.prototype.hack": "hacked" } ) ;
+		expect( Object.prototype.hack ).to.be.undefined() ;
+	} ) ;
+} ) ;
 

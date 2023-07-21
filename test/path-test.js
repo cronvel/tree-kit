@@ -940,6 +940,7 @@ describe( "Tree's array path on objects" , function() {
 describe( ".path() security issues" , () => {
 
 	it( "Prototype pollution using .__proto__" , () => {
+		delete Object.prototype.hack ;
 		expect( () => path.set( {} , '__proto__.hack' , 'hacked' ) ).to.throw() ;
 		expect( Object.prototype.hack ).to.be.undefined() ;
 		expect( () => path.set( {} , '__proto__' , 'hacked' ) ).to.throw() ;
@@ -949,6 +950,7 @@ describe( ".path() security issues" , () => {
 	} ) ;
 
 	it( "Prototype pollution using a path array: [['__proto__']]" , () => {
+		delete Object.prototype.hack ;
 		expect( () => path.set( {} , [['__proto__'],'hack'] , 'hacked' ) ).to.throw() ;
 		expect( Object.prototype.hack ).to.be.undefined() ;
 		expect( () => path.set( {} , '__proto__' , 'hacked' ) ).to.throw() ;
@@ -958,6 +960,7 @@ describe( ".path() security issues" , () => {
 	} ) ;
 
 	it( "Prototype pollution using .constructor" , () => {
+		delete Object.prototype.hack ;
 		expect( () => path.set( {} , 'constructor.prototype' , 'hacked' ) ).to.throw() ;
 		expect( () => path.set( {} , 'constructor.prototype.hack' , 'hacked' ) ).to.throw() ;
 		expect( Object.prototype.hack ).to.be.undefined() ;
