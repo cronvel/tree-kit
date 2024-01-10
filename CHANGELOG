@@ -1,4 +1,10 @@
 
+v0.8.2
+------
+
+New: wildDotPath.get() and wildDotPath.getPathValue() (more methods will be added later, e.g. wildDotPath.set())
+
+
 v0.7.5
 ------
 
