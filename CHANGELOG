@@ -1,4 +1,10 @@
 
+v0.8.3
+------
+
+Fix missing require for new wildDotPath
+
+
 v0.8.2
 ------
 
