@@ -36,7 +36,7 @@ const wildDotPath = require( '../lib/wildDotPath.js' ) ;
 
 describe( "Tree's wild-dot-path" , () => {
 
-	it( "wildDotPath.get() on array of objects" , () => {
+	it( ".get()/.getPaths()/.getPathValueMap() on array of objects" , () => {
 		var a = {
 			embedded: [
 				{ firstName: 'Bobby' , lastName: 'Fischer' } ,
@@ -56,14 +56,20 @@ describe( "Tree's wild-dot-path" , () => {
 		expect( wildDotPath.get( a , 'unexistant.*.unexistant' ) ).to.equal( [] ) ;
 		expect( wildDotPath.get( a , 'embedded.1.firstName' ) ).to.equal( [ 'Bob' ] ) ;
 
-		expect( wildDotPath.getPathValue( a , 'embedded.*.firstName' ) ).to.equal( {
+		expect( wildDotPath.getPaths( a , 'embedded.*.firstName' ) ).to.equal( [
+			"embedded.0.firstName" ,
+			"embedded.1.firstName" ,
+			"embedded.2.firstName"
+		] ) ;
+
+		expect( wildDotPath.getPathValueMap( a , 'embedded.*.firstName' ) ).to.equal( {
 			"embedded.0.firstName": 'Bobby' ,
 			"embedded.1.firstName": 'Bob' ,
 			"embedded.2.firstName": 'Joe'
 		} ) ;
 	} ) ;
 
-	it( "wildDotPath.get() on object of objects" , () => {
+	it( ".get()/.getPaths()/.getPathValueMap() on object of objects" , () => {
 		var a = {
 			embedded: {
 				father: { firstName: 'Bobby' , lastName: 'Fischer' } ,
@@ -83,7 +89,13 @@ describe( "Tree's wild-dot-path" , () => {
 		expect( wildDotPath.get( a , 'unexistant.*.unexistant' ) ).to.equal( [] ) ;
 		expect( wildDotPath.get( a , 'embedded.godfather.firstName' ) ).to.equal( [ 'Bob' ] ) ;
 
-		expect( wildDotPath.getPathValue( a , 'embedded.*.firstName' ) ).to.equal( {
+		expect( wildDotPath.getPaths( a , 'embedded.*.firstName' ) ).to.equal( [
+			"embedded.father.firstName" ,
+			"embedded.godfather.firstName" ,
+			"embedded.friend.firstName"
+		] ) ;
+
+		expect( wildDotPath.getPathValueMap( a , 'embedded.*.firstName' ) ).to.equal( {
 			"embedded.father.firstName": 'Bobby' ,
 			"embedded.godfather.firstName": 'Bob' ,
 			"embedded.friend.firstName": 'Joe'
