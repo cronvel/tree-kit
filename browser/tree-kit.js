@@ -259,10 +259,7 @@ dotPath.get = ( object , path ) => walk( object , toPathArray( path ) ) ;
 
 
 dotPath.set = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -279,10 +276,7 @@ dotPath.set = ( object , path , value ) => {
 
 
 dotPath.define = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -293,16 +287,13 @@ dotPath.define = ( object , path , value ) => {
 
 	if ( ! ( key in pointer ) ) { pointer[ key ] = value ; }
 
-	return value ;
+	return pointer[ key ] ;
 } ;
 
 
 
-dotPath.inc = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+dotPath.inc = ( object , path ) => {
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -314,16 +305,13 @@ dotPath.inc = ( object , path , value ) => {
 	if ( typeof pointer[ key ] === 'number' ) { pointer[ key ] ++ ; }
 	else if ( ! pointer[ key ] || typeof pointer[ key ] !== 'object' ) { pointer[ key ] = 1 ; }
 
-	return value ;
+	return pointer[ key ] ;
 } ;
 
 
 
-dotPath.dec = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+dotPath.dec = ( object , path ) => {
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -335,16 +323,13 @@ dotPath.dec = ( object , path , value ) => {
 	if ( typeof pointer[ key ] === 'number' ) { pointer[ key ] -- ; }
 	else if ( ! pointer[ key ] || typeof pointer[ key ] !== 'object' ) { pointer[ key ] = - 1 ; }
 
-	return value ;
+	return pointer[ key ] ;
 } ;
 
 
 
 dotPath.concat = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -359,16 +344,13 @@ dotPath.concat = ( object , path , value ) => {
 	}
 	//else ? do nothing???
 
-	return value ;
+	return pointer[ key ] ;
 } ;
 
 
 
 dotPath.insert = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -383,7 +365,7 @@ dotPath.insert = ( object , path , value ) => {
 	}
 	//else ? do nothing???
 
-	return value ;
+	return pointer[ key ] ;
 } ;
 
 
@@ -404,10 +386,7 @@ dotPath.delete = ( object , path ) => {
 
 
 dotPath.autoPush = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -426,10 +405,7 @@ dotPath.autoPush = ( object , path , value ) => {
 
 
 dotPath.append = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -448,10 +424,7 @@ dotPath.append = ( object , path , value ) => {
 
 
 dotPath.prepend = ( object , path , value ) => {
-	if ( ! object || typeof object !== 'object' ) {
-		// Throw?
-		return undefined ;
-	}
+	if ( ! object || typeof object !== 'object' ) { return ; }
 
 	var pathArray = toPathArray( path ) ,
 		key = pathArray[ pathArray.length - 1 ] ;
@@ -1189,7 +1162,7 @@ function toPathArray( path ) {
 
 
 
-// Walk the tree using the path array.
+// Walk the tree and return an array of values.
 function wildWalk( object , pathArray , maxOffset = 0 , index = 0 , result = [] ) {
 	var indexMax , key ,
 		pointer = object ;
@@ -1218,8 +1191,16 @@ function wildWalk( object , pathArray , maxOffset = 0 , index = 0 , result = [] 
 
 
 
-// Same than wildWalk, but return an object of path => value.
-function wildWalkPathValue( object , pathArray , maxOffset = 0 , index = 0 , path = '' , result = {} ) {
+const VALUE_LIST_MODE = 0 ;
+const PATH_LIST_MODE = 1 ;
+const PATH_VALUE_MAP_MODE = 2 ;
+
+// Same than wildWalk, but either return an array of path, or an object of path => value.
+function wildWalkPathValue( object , pathArray , resultMode , maxOffset = 0 , index = 0 , path = '' , result = null ) {
+	if ( ! result ) {
+		result = resultMode === PATH_VALUE_MAP_MODE ? {} : [] ;
+	}
+
 	var indexMax , key ,
 		pointer = object ;
 
@@ -1233,13 +1214,13 @@ function wildWalkPathValue( object , pathArray , maxOffset = 0 , index = 0 , pat
 			if ( Array.isArray( pointer ) ) {
 				let subKey = 0 ;
 				for ( let subPointer of pointer ) {
-					wildWalkPathValue( subPointer , pathArray , maxOffset , index + 1 , path ? path + '.' + subKey : subKey , result ) ;
+					wildWalkPathValue( subPointer , pathArray , resultMode , maxOffset , index + 1 , path ? path + '.' + subKey : subKey , result ) ;
 					subKey ++ ;
 				}
 			}
 			else {
 				for ( let [ subKey , subPointer ] of Object.entries( pointer ) ) {
-					wildWalkPathValue( subPointer , pathArray , maxOffset , index + 1 , path ? path + '.' + subKey : subKey , result ) ;
+					wildWalkPathValue( subPointer , pathArray , resultMode , maxOffset , index + 1 , path ? path + '.' + subKey : subKey , result ) ;
 				}
 			}
 
@@ -1250,7 +1231,15 @@ function wildWalkPathValue( object , pathArray , maxOffset = 0 , index = 0 , pat
 		pointer = pointer[ key ] ;
 	}
 
-	result[ path ] = pointer ;
+	if ( resultMode === VALUE_LIST_MODE ) {
+		result.push( pointer ) ;
+	}
+	else if ( resultMode === PATH_LIST_MODE ) {
+		result.push( path ) ;
+	}
+	else if ( resultMode === PATH_VALUE_MAP_MODE ) {
+		result[ path ] = pointer ;
+	}
 
 	return result ;
 }
@@ -1258,8 +1247,181 @@ function wildWalkPathValue( object , pathArray , maxOffset = 0 , index = 0 , pat
 
 
 // Get with wildcard, return an array
-wildDotPath.get = ( object , path ) => wildWalk( object , toPathArray( path ) ) ;
-wildDotPath.getPathValue = ( object , path ) => wildWalkPathValue( object , toPathArray( path ) ) ;
+wildDotPath.get = wildDotPath.getValues = ( object , path ) => wildWalk( object , toPathArray( path ) ) ;
+wildDotPath.getPaths = ( object , path ) => wildWalkPathValue( object , toPathArray( path ) , PATH_LIST_MODE ) ;
+wildDotPath.getPathValueMap = ( object , path ) => wildWalkPathValue( object , toPathArray( path ) , PATH_VALUE_MAP_MODE ) ;
+
+
+
+// Walk and pave the tree and exec a hook at leaf.
+// Object MUST be an object! no check are performed for the first step!
+function wildWalkPave( object , pathArray , leafHookFn , leafHookArg , index = 0 ) {
+	var indexMax , key ,
+		pointer = object ;
+
+	for ( indexMax = pathArray.length - 1 ; index < indexMax ; index ++ ) {
+		key = pathArray[ index ] ;
+
+		if ( typeof key === 'object' || key === '__proto__' || typeof pointer === 'function' ) { throw new Error( PROTO_POLLUTION_MESSAGE ) ; }
+		if ( ! pointer || typeof pointer !== 'object' ) { return 0 ; }
+
+		if ( key === '*' ) {
+			let count = 0 ;
+			for ( let subPointer of Array.isArray( pointer ) ? pointer : Object.values( pointer ) ) {
+				count += wildWalkPave( subPointer , pathArray , leafHookFn , leafHookArg , index + 1 ) ;
+			}
+
+			return count ;
+		}
+
+		// Pave
+		if ( ! pointer[ key ] || typeof pointer[ key ] !== 'object' ) { pointer[ key ] = {} ; }
+
+		pointer = pointer[ key ] ;
+	}
+
+	key = pathArray[ index ] ;	// last key
+	return leafHookFn( pointer , key , leafHookArg ) ;
+}
+
+
+
+const SET_HOOK = ( pointer , key , value ) => {
+	pointer[ key ] = value ;
+	return 1 ;
+} ;
+
+wildDotPath.set = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , SET_HOOK , value ) ;
+} ;
+
+
+
+const DEFINE_HOOK = ( pointer , key , value ) => {
+	if ( key in pointer ) { return 0 ; }
+	pointer[ key ] = value ;
+	return 1 ;
+} ;
+
+wildDotPath.define = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , DEFINE_HOOK , value ) ;
+} ;
+
+
+
+const INC_HOOK = ( pointer , key ) => {
+	if ( typeof pointer[ key ] === 'number' ) { pointer[ key ] ++ ; }
+	else if ( ! pointer[ key ] || typeof pointer[ key ] !== 'object' ) { pointer[ key ] = 1 ; }
+	return 1 ;
+} ;
+
+wildDotPath.inc = ( object , path ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , INC_HOOK ) ;
+} ;
+
+
+
+const DEC_HOOK = ( pointer , key ) => {
+	if ( typeof pointer[ key ] === 'number' ) { pointer[ key ] -- ; }
+	else if ( ! pointer[ key ] || typeof pointer[ key ] !== 'object' ) { pointer[ key ] = - 1 ; }
+	return 1 ;
+} ;
+
+wildDotPath.dec = ( object , path ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , DEC_HOOK ) ;
+} ;
+
+
+
+const CONCAT_HOOK = ( pointer , key , value ) => {
+	if ( ! pointer[ key ] ) {
+		pointer[ key ] = value ;
+	}
+	else if ( Array.isArray( pointer[ key ] ) && Array.isArray( value ) ) {
+		pointer[ key ] = pointer[ key ].concat( value ) ;
+	}
+
+	return 1 ;
+} ;
+
+wildDotPath.concat = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , CONCAT_HOOK , value ) ;
+} ;
+
+
+
+const INSERT_HOOK = ( pointer , key , value ) => {
+	if ( ! pointer[ key ] ) {
+		pointer[ key ] = value ;
+	}
+	else if ( Array.isArray( pointer[ key ] ) && Array.isArray( value ) ) {
+		pointer[ key ] = value.concat( pointer[ key ] ) ;
+	}
+
+	return 1 ;
+} ;
+
+wildDotPath.insert = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , INSERT_HOOK , value ) ;
+} ;
+
+
+
+const DELETE_HOOK = ( pointer , key ) => {
+	return delete pointer[ key ] ? 1 : 0 ;
+} ;
+
+wildDotPath.delete = ( object , path ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , DELETE_HOOK ) ;
+} ;
+
+
+
+const AUTOPUSH_HOOK = ( pointer , key , value ) => {
+	if ( pointer[ key ] === undefined ) { pointer[ key ] = value ; }
+	else if ( Array.isArray( pointer[ key ] ) ) { pointer[ key ].push( value ) ; }
+	else { pointer[ key ] = [ pointer[ key ] , value ] ; }
+
+	return 1 ;
+} ;
+
+wildDotPath.autoPush = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , AUTOPUSH_HOOK , value ) ;
+} ;
+
+
+
+const APPEND_HOOK = ( pointer , key , value ) => {
+	if ( ! pointer[ key ] ) { pointer[ key ] = [ value ] ; }
+	else if ( Array.isArray( pointer[ key ] ) ) { pointer[ key ].push( value ) ; }
+	return 1 ;
+} ;
+
+wildDotPath.append = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , APPEND_HOOK , value ) ;
+} ;
+
+
+
+const PREPEND_HOOK = ( pointer , key , value ) => {
+	if ( ! pointer[ key ] ) { pointer[ key ] = [ value ] ; }
+	else if ( Array.isArray( pointer[ key ] ) ) { pointer[ key ].unshift( value ) ; }
+	return 1 ;
+} ;
+
+wildDotPath.prepend = ( object , path , value ) => {
+	if ( ! object || typeof object !== 'object' ) { return 0 ; }
+	return wildWalkPave( object , toPathArray( path ) , PREPEND_HOOK , value ) ;
+} ;
 
 
 },{}]},{},[1])(1)

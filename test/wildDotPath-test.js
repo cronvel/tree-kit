@@ -53,8 +53,10 @@ describe( "Tree's wild-dot-path" , () => {
 		expect( wildDotPath.get( a , 'embedded.*.firstName' ) ).to.equal( [ 'Bobby' , 'Bob' , 'Joe' ] ) ;
 		expect( wildDotPath.get( a , 'embedded.*.lastName' ) ).to.equal( [ 'Fischer' , 'Ross' , 'Doe' ] ) ;
 		expect( wildDotPath.get( a , 'embedded.*.unexistant' ) ).to.equal( [ undefined , undefined , undefined ] ) ;
-		expect( wildDotPath.get( a , 'unexistant.*.unexistant' ) ).to.equal( [] ) ;
 		expect( wildDotPath.get( a , 'embedded.1.firstName' ) ).to.equal( [ 'Bob' ] ) ;
+		expect( wildDotPath.get( a , 'unexistant.*.unexistant' ) ).to.equal( [] ) ;
+		expect( wildDotPath.get( { a: 1 } , 'a.*' ) ).to.equal( [] ) ;
+		expect( wildDotPath.get( 1 , 'a.*' ) ).to.equal( [] ) ;
 
 		expect( wildDotPath.getPaths( a , 'embedded.*.firstName' ) ).to.equal( [
 			"embedded.0.firstName" ,
@@ -101,5 +103,109 @@ describe( "Tree's wild-dot-path" , () => {
 			"embedded.friend.firstName": 'Joe'
 		} ) ;
 	} ) ;
+
+	it( ".set() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' } ,
+				{ firstName: 'Bob' , lastName: 'Ross' } ,
+				{ firstName: 'Joe' , lastName: 'Doe' }
+			]
+		} ;
+
+		expect( wildDotPath.set( a , 'embedded.*.lastName' , 'Doe' ) ).to.be( 3 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Doe' } ,
+				{ firstName: 'Bob' , lastName: 'Doe' } ,
+				{ firstName: 'Joe' , lastName: 'Doe' }
+			]
+		} ) ;
+
+		expect( wildDotPath.set( a , 'embedded.*.age' , 42 ) ).to.be( 3 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Doe' , age: 42 } ,
+				{ firstName: 'Bob' , lastName: 'Doe' , age: 42 } ,
+				{ firstName: 'Joe' , lastName: 'Doe' , age: 42 }
+			]
+		} ) ;
+
+		expect( wildDotPath.set( { embedded: [] } , 'embedded.*.age' , 42 ) ).to.be( 0 ) ;
+
+		// Should not throw, but should do nothing
+		expect( wildDotPath.set( 1 , 'embedded.*.lastName' , 'Doe' ) ).to.be( 0 ) ;
+		expect( wildDotPath.set( 1 , 'embedded' , 'Doe' ) ).to.be( 0 ) ;
+	} ) ;
+
+	it( ".set() should pave objects" , () => {
+		var a = {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' } ,
+				{ firstName: 'Bob' , lastName: 'Ross' } ,
+				{ firstName: 'Joe' , lastName: 'Doe' }
+			]
+		} ;
+
+		wildDotPath.set( a , 'embedded.*.data.age' , 42 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' , data: { age: 42 } } ,
+				{ firstName: 'Bob' , lastName: 'Ross' , data: { age: 42 } } ,
+				{ firstName: 'Joe' , lastName: 'Doe' , data: { age: 42 } }
+			]
+		} ) ;
+	} ) ;
+
+	it( ".define() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' } ,
+				{ firstName: 'Jack' } ,
+				{ firstName: 'Bob' , lastName: 'Ross' } ,
+				{ firstName: 'Joe' }
+			]
+		} ;
+
+		expect( wildDotPath.define( a , 'embedded.*.lastName' , 'Doe' ) ).to.be( 2 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' } ,
+				{ firstName: 'Jack' , lastName: 'Doe' } ,
+				{ firstName: 'Bob' , lastName: 'Ross' } ,
+				{ firstName: 'Joe' , lastName: 'Doe' }
+			]
+		} ) ;
+	} ) ;
+
+	it( ".inc()/.dec() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' , data: { age: 51 } } ,
+				{ firstName: 'Bob' , lastName: 'Ross' , data: { age: 34 } } ,
+				{ firstName: 'Joe' , lastName: 'Doe' , data: { age: 42 } }
+			]
+		} ;
+
+		expect( wildDotPath.inc( a , 'embedded.*.data.age' ) ).to.be( 3 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' , data: { age: 52 } } ,
+				{ firstName: 'Bob' , lastName: 'Ross' , data: { age: 35 } } ,
+				{ firstName: 'Joe' , lastName: 'Doe' , data: { age: 43 } }
+			]
+		} ) ;
+
+		expect( wildDotPath.dec( a , 'embedded.*.data.age' ) ).to.be( 3 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' , data: { age: 51 } } ,
+				{ firstName: 'Bob' , lastName: 'Ross' , data: { age: 34 } } ,
+				{ firstName: 'Joe' , lastName: 'Doe' , data: { age: 42 } }
+			]
+		} ) ;
+	} ) ;
+
+	it( "more tests: concat, insert, delete, autoPush, append, prepend" ) ;
 } ) ;
 
