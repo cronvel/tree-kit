@@ -178,6 +178,27 @@ describe( "Tree's wild-dot-path" , () => {
 		} ) ;
 	} ) ;
 
+	it( ".delete() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ firstName: 'Bobby' , lastName: 'Fischer' } ,
+				{ firstName: 'Jack' } ,
+				{ firstName: 'Bob' , lastName: 'Ross' } ,
+				{ firstName: 'Joe' }
+			]
+		} ;
+
+		expect( wildDotPath.delete( a , 'embedded.*.lastName' ) ).to.be( 2 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ firstName: 'Bobby' } ,
+				{ firstName: 'Jack' } ,
+				{ firstName: 'Bob' } ,
+				{ firstName: 'Joe' }
+			]
+		} ) ;
+	} ) ;
+
 	it( ".inc()/.dec() on array of objects" , () => {
 		var a = {
 			embedded: [
@@ -206,6 +227,115 @@ describe( "Tree's wild-dot-path" , () => {
 		} ) ;
 	} ) ;
 
-	it( "more tests: concat, insert, delete, autoPush, append, prepend" ) ;
+	it( ".append()/.prepend() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ name: 'Jack' } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' ] } ,
+				{ name: 'Joe' , friends: []  }
+			]
+		} ;
+
+		expect( wildDotPath.append( a , 'embedded.*.friends' , 'Joana' ) ).to.be( 4 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ name: 'Jack' , friends: [ 'Joana' ] } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' , 'Joana' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' , 'Joana' ] } ,
+				{ name: 'Joe' , friends: [ 'Joana' ]  }
+			]
+		} ) ;
+
+		a = {
+			embedded: [
+				{ name: 'Jack' } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' ] } ,
+				{ name: 'Joe' , friends: []  }
+			]
+		} ;
+
+		expect( wildDotPath.prepend( a , 'embedded.*.friends' , 'Joana' ) ).to.be( 4 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ name: 'Jack' , friends: [ 'Joana' ] } ,
+				{ name: 'Bobby' , friends: [ 'Joana' , 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Joana' , 'Clara' ] } ,
+				{ name: 'Joe' , friends: [ 'Joana' ]  }
+			]
+		} ) ;
+	} ) ;
+
+	it( ".autoPush() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ name: 'Jack' } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' ] } ,
+				{ name: 'Joe' , friends: []  }
+			]
+		} ;
+
+		expect( wildDotPath.autoPush( a , 'embedded.*.friends' , 'Joana' ) ).to.be( 4 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ name: 'Jack' , friends: 'Joana' } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' , 'Joana' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' , 'Joana' ] } ,
+				{ name: 'Joe' , friends: [ 'Joana' ]  }
+			]
+		} ) ;
+
+		expect( wildDotPath.autoPush( a , 'embedded.*.friends' , 'Nina' ) ).to.be( 4 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ name: 'Jack' , friends: [ 'Joana' , 'Nina' ] } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' , 'Joana' , 'Nina' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' , 'Joana' , 'Nina' ] } ,
+				{ name: 'Joe' , friends: [ 'Joana' , 'Nina' ]  }
+			]
+		} ) ;
+	} ) ;
+
+	it( ".concat()/.insert() on array of objects" , () => {
+		var a = {
+			embedded: [
+				{ name: 'Jack' } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' ] } ,
+				{ name: 'Joe' , friends: []  }
+			]
+		} ;
+
+		expect( wildDotPath.concat( a , 'embedded.*.friends' , [ 'Joana' , 'Kate' ] ) ).to.be( 4 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ name: 'Jack' , friends: [ 'Joana' , 'Kate' ] } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' , 'Joana' , 'Kate' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' , 'Joana' , 'Kate' ] } ,
+				{ name: 'Joe' , friends: [ 'Joana' , 'Kate' ]  }
+			]
+		} ) ;
+
+		a = {
+			embedded: [
+				{ name: 'Jack' } ,
+				{ name: 'Bobby' , friends: [ 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Clara' ] } ,
+				{ name: 'Joe' , friends: []  }
+			]
+		} ;
+
+		expect( wildDotPath.insert( a , 'embedded.*.friends' , [ 'Joana' , 'Kate' ] ) ).to.be( 4 ) ;
+		expect( a ).to.equal( {
+			embedded: [
+				{ name: 'Jack' , friends: [ 'Joana' , 'Kate' ] } ,
+				{ name: 'Bobby' , friends: [ 'Joana' , 'Kate' , 'Jack' , 'Nickie' ] } ,
+				{ name: 'Bob' , friends: [ 'Joana' , 'Kate' , 'Clara' ] } ,
+				{ name: 'Joe' , friends: [ 'Joana' , 'Kate' ]  }
+			]
+		} ) ;
+	} ) ;
 } ) ;
 

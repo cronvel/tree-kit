@@ -378,9 +378,11 @@ dotPath.delete = ( object , path ) => {
 
 	var pointer = walk( object , pathArray , - 1 ) ;
 
-	if ( ! pointer || typeof pointer !== 'object' ) { return false ; }
+	if ( ! pointer || typeof pointer !== 'object' || ! Object.hasOwn( pointer , key ) ) { return false ; }
 
-	return delete pointer[ key ] ;
+	delete pointer[ key ] ;
+
+	return true ;
 } ;
 
 
@@ -1374,7 +1376,9 @@ wildDotPath.insert = ( object , path , value ) => {
 
 
 const DELETE_HOOK = ( pointer , key ) => {
-	return delete pointer[ key ] ? 1 : 0 ;
+	if ( ! Object.hasOwn( pointer , key ) ) { return 0 ; }
+	delete pointer[ key ] ;
+	return 1 ;
 } ;
 
 wildDotPath.delete = ( object , path ) => {
