@@ -29,6 +29,50 @@
 
 
 
+// Mimic Array's prototype methods, like Array#map(), Array#filter(), and so on...
+
+exports.map = function( object , fn ) {
+	if ( ! object || typeof object !== 'object' ) { throw new Error( "Expecting an object" ) ; }
+	return Object.fromEntries( Object.entries( object ).map(   entry => [ entry[ 0 ] , fn( entry[ 1 ] ) ]   ) ) ;
+} ;
+
+exports.filter = function( object , fn ) {
+	if ( ! object || typeof object !== 'object' ) { throw new Error( "Expecting an object" ) ; }
+	return Object.fromEntries( Object.entries( object ).filter(   entry => fn( entry[ 1 ] )   ) ) ;
+} ;
+
+
+},{}],2:[function(require,module,exports){
+/*
+	Tree Kit
+
+	Copyright (c) 2014 - 2021 Cédric Ronvel
+
+	The MIT License (MIT)
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+*/
+
+"use strict" ;
+
+
+
 // Browser only get the essential of tree-kit, not the unfinished parts of it
 
 const tree = {} ;
@@ -42,8 +86,10 @@ tree.path = require( './path.js' ) ;
 tree.dotPath = require( './dotPath.js' ) ;
 tree.wildDotPath = require( './wildDotPath.js' ) ;
 
+Object.assign( tree , require( './arrayLike.js' ) ) ;
 
-},{"./clone.js":2,"./dotPath.js":3,"./extend.js":4,"./path.js":5,"./wildDotPath.js":6}],2:[function(require,module,exports){
+
+},{"./arrayLike.js":1,"./clone.js":3,"./dotPath.js":4,"./extend.js":5,"./path.js":6,"./wildDotPath.js":7}],3:[function(require,module,exports){
 /*
 	Tree Kit
 
@@ -152,7 +198,7 @@ clone.opaque = new Map() ;
 clone.opaque.set( Date.prototype , src => new Date( src ) ) ;
 
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /*
 	Tree Kit
 
@@ -446,7 +492,7 @@ dotPath.prepend = ( object , path , value ) => {
 } ;
 
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*
 	Tree Kit
 
@@ -801,7 +847,7 @@ function extendOneKV( runtime , options , target , source , sourceKey , mask ) {
 }
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*
 	Tree Kit
 
@@ -1105,7 +1151,7 @@ treePath.upgrade = function( object ) {
 } ;
 
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*
 	Tree Kit
 
@@ -1434,5 +1480,5 @@ wildDotPath.prepend = ( object , path , value ) => {
 } ;
 
 
-},{}]},{},[1])(1)
+},{}]},{},[2])(2)
 });
