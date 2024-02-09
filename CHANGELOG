@@ -1,4 +1,10 @@
 
+v0.8.6
+------
+
+Expose .toPathArray() in dotPath and wildDotPath
+
+
 v0.8.5
 ------
 

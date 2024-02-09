@@ -212,6 +212,9 @@ function toPathArray( path ) {
 	throw new TypeError( '[tree.dotPath]: the path argument should be a string or an array' ) ;
 }
 
+// Expose toPathArray()
+dotPath.toPathArray = toPathArray ;
+
 
 
 // Walk the tree using the path array.
@@ -1161,6 +1164,9 @@ function toPathArray( path ) {
 
 	throw new TypeError( '[tree.wildDotPath]: the path argument should be a string or an array' ) ;
 }
+
+// Expose toPathArray()
+wildDotPath.toPathArray = toPathArray ;
 
 
 
